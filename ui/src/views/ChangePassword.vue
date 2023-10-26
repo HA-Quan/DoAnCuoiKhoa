@@ -14,7 +14,7 @@
                                 <div class="text-field-form">
                                     <div :class="['input-form border', { 'error': errors.passwordOld }]">
                                         <input type="password" ref="txtPasswordOld" v-model.trim="passwordModel.passwordOld"
-                                            maxlength="255">
+                                            maxlength="255" @blur="validatePasswordOld">
                                         <div v-show="passwordModel.passwordOld" class="icon"
                                             :class="showPasswordOld ? 'hide' : 'visible'" @click="hidePasswordOld"></div>
                                     </div>
@@ -30,7 +30,7 @@
                                 <div class="text-field-form">
                                     <div :class="['input-form border', { 'error': errors.password }]">
                                         <input type="password" ref="txtPassword" v-model.trim="passwordModel.password"
-                                            maxlength="255" @blur="validatePassword">
+                                            maxlength="255" @blur="validatePassword(); validateVerifyPassword()">
                                         <div v-show="passwordModel.password" class="icon"
                                             :class="showPassword ? 'hide' : 'visible'" @click="hidePassword"></div>
                                     </div>
@@ -45,10 +45,12 @@
                             <td>
                                 <div class="text-field-form">
                                     <div :class="['input-form border', { 'error': errors.verifyPassword }]">
-                                        <input type="password" ref="txtVerifyPassword" v-model.trim="passwordModel.verifyPassword"
-                                            maxlength="255" @blur="validateVerifyPassword">
+                                        <input type="password" ref="txtVerifyPassword"
+                                            v-model.trim="passwordModel.verifyPassword" maxlength="255"
+                                            @blur="blurVerifyPassword = true; validateVerifyPassword()">
                                         <div v-show="passwordModel.verifyPassword" class="icon"
-                                            :class="showVerifyPassword ? 'hide' : 'visible'" @click="hideVerifyPassword"></div>
+                                            :class="showVerifyPassword ? 'hide' : 'visible'" @click="hideVerifyPassword">
+                                        </div>
                                     </div>
                                     <div class="error-text">{{ errors.verifyPassword }}</div>
                                 </div>
@@ -56,8 +58,8 @@
                         </tr>
                     </tbody>
                 </table>
-                
-                <div  class="d-flex justify-content mt-10">
+
+                <div class="d-flex justify-content mt-10">
                     <BaseButton @click="btnCancelOnclick" class="btn sub-button ml-10">
                         {{ Resource.Button.Cancel }}
                     </BaseButton>
@@ -120,7 +122,8 @@ export default {
 
             showPasswordOld: false,
             showPassword: false,
-            showVerifyPassword: false
+            showVerifyPassword: false,
+            blurVerifyPassword: false
         };
     },
     methods: {
@@ -158,13 +161,13 @@ export default {
             this.passwordModel.password = '';
             this.passwordModel.passwordOld = '';
             this.passwordModel.verifyPassword = '';
+            this.blurVerifyPassword = false;
         },
 
         btnSaveOnclick() {
             try {
                 let valid = this.validate();
                 if (valid) {
-                    this.accountNow.password = this.passwordModel.password;
                     this.sendRequestUpdate();
                 }
             } catch (error) {
@@ -178,16 +181,29 @@ export default {
         */
         async sendRequestUpdate() {
             try {
-                await axios.put("Account/" + this.$store.getters.user.accountID, this.accountNow)
+                let passwordModel = {
+                    passwordOld: this.passwordModel.passwordOld,
+                    passwordNew: this.passwordModel.password
+                };
+                await axios.put("Account/change-password" + this.$store.getters.user.accountID, passwordModel)
                     .then((response) => {
                         this.accountNow = response.data;
                         this.$store.dispatch('setUser', response.data);
+                        this.passwordModel.password = '';
+                        this.passwordModel.passwordOld = '';
+                        this.passwordModel.verifyPassword = '';
                         // Hiển thị toast thông báo thành công
                         this.showToast(Resource.Message.ChangePasswordSucces, Const.TypeToast.Success);
                     })
 
                     .catch((error) => {
                         console.log(error);
+                        if (error.response.data.errorCode == Enum.Error.PasswordOldInvalid) {
+                            this.errors.passwordOld = Resource.Error.PasswordOldInvalid;
+                        }
+                    })
+                    .finally(() => {
+                        this.blurVerifyPassword = false;
                     });
             } catch (error) {
                 console.log(error);
@@ -221,13 +237,22 @@ export default {
             }
         },
 
+        validatePasswordOld() {
+            if (!this.passwordModel.passwordOld) {
+                this.errors.passwordOld = Resource.Error.PasswordOld;
+                return false;
+            }
+            this.errors.passwordOld = null;
+            return true;
+        },
+
         validatePassword() {
             // var validPassword = '/^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/';
             if (!this.passwordModel.password) {
                 this.errors.password = Resource.Error.Password;
                 return false;
             }
-            if (this.registerModel.password.includes(' ')) {
+            if (this.passwordModel.password.includes(' ')) {
                 this.errors.password = Resource.Error.PasswordNotSpace;
                 return false;
             }
@@ -240,7 +265,7 @@ export default {
         },
 
         validateVerifyPassword() {
-            if (this.passwordModel.password != this.passwordModel.verifyPassword) {
+            if (this.blurVerifyPassword && this.passwordModel.password != this.passwordModel.verifyPassword) {
                 this.errors.verifyPassword = Resource.Error.VerifyPassword;
                 return false;
             }
@@ -259,7 +284,7 @@ export default {
                     valid = false;
                     this.$refs.txtPassword.focus();
                 }
-                
+
                 return valid;
 
             } catch (error) {
@@ -284,7 +309,7 @@ export default {
             }, 5000);
         },
 
-        
+
     },
 
     created() {
@@ -336,47 +361,52 @@ table td:nth-child(odd) {
     width: 30%;
     min-width: 150px;
 }
-.text-field-form{
+
+.text-field-form {
     background: #fff;
     padding: 0;
     width: 100%;
     border-radius: 3.5px;
 }
-.input-form{
+
+.input-form {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-.input-form input{
+.input-form input {
     border: none;
     padding: 9px 12px;
     background: 0 0;
     min-height: 34px;
     width: 240px;
 }
+
 .border {
     border: 1px solid #e0e0e0;
     border-radius: 3.5px;
 }
+
 .border.error {
     border: 1px solid #ef5350;
 }
 
 :focus-visible {
     outline: none;
-  }
+}
 
-.border:not(.error):focus-within, 
+.border:not(.error):focus-within,
 .border:not(.error):hover {
     border: 1px solid #1a73e8;
 }
+
 .error-text {
     color: #ef5350;
     margin-top: 6px;
 }
 
-.icon{
+.icon {
     height: 24px;
     width: 24px;
     position: relative;
@@ -385,15 +415,14 @@ table td:nth-child(odd) {
     cursor: pointer;
 }
 
-.icon.visible{
+.icon.visible {
     background: transparent url(../assets/icon/visible.png) no-repeat;
     background-position: center;
     background-size: 24px 24px;
 }
 
-.icon.hide{
+.icon.hide {
     background: transparent url(../assets/icon/hide.png) no-repeat;
     background-position: center;
     background-size: 24px 24px;
-}
-</style>
+}</style>

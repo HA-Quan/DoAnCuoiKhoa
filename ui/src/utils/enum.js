@@ -26,6 +26,7 @@ const Enum = {
   Error: {
     Duplicode: 2, // lỗi trùng mã 
     InputValid: 6, // lỗi dữ liệu đầu vào
+    PasswordOldInvalid: 8 // lỗi mật khẩu cũ k khớp
   },
 
   FirstPage: 1, // trang hiển thị mặc định

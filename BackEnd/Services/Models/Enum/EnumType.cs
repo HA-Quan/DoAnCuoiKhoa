@@ -474,6 +474,11 @@ namespace Services.Models.Enum
             /// </summary>
             RenewTokenFail = 7,
 
+            /// <summary>
+            /// Lỗi mật khẩu cũ không đúng
+            /// </summary>
+            PasswordOldInvalid = 8,
+
         }
     }
 }
