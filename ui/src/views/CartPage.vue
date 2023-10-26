@@ -489,8 +489,11 @@ export default {
         },
 
         nextStep() {
-            debugger
-            if (this.step == Enum.Step.SelectProduct) {
+            if(this.$store.getters.user == null){
+                this.$router.push({name: "LoginForm"})
+            }
+            else {
+                if (this.step == Enum.Step.SelectProduct) {
                 this.step = Enum.Step.InfoOrder;
                 this.orderModel.order.total = this.totalMoney;
             }
@@ -503,6 +506,8 @@ export default {
                     this.step = Enum.Step.Payment;
                 }
             }
+            }
+            
         },
 
         /**
