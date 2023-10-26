@@ -1,0 +1,37 @@
+.radio-checkmark {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 2px;
+    height: 24px;
+    width: 24px;
+    z-index: 1;
+    background-position: 0px 0px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url(https://cegovapp.misacdn.net/r/cegov/img/ic_radio_inactive.478d13c5.svg);
+  }
+  
+  .radio:hover>.radio-checkmark {
+    background-image: url(https://cegovapp.misacdn.net/r/cegov/img/ic_radio_hover.9f996444.svg);
+  }
+  
+  .radio>.radio-input:checked~.radio-checkmark {
+    background-image: url(https://cegovapp.misacdn.net/r/cegov/img/ic_radio_active.68000fa3.svg);
+  }
+  
+  .radio-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  
+  .radio .radio-input:checked~.radio-checkmark:after {
+    display: block;
+  }
+  
+  .radio .radio-input:checked:disabled~.radio-checkmark {
+    background-color: #f5f5f5;
+    border-color: #cccccc;
+  }
+  
