@@ -30,6 +30,7 @@ namespace Services.Service
         ApiReponse GetInfoByToken(string token);
         ApiReponse AddNewMember(SingUpModel singUpModel);
         ApiReponse SaveAccount(Account account, Guid accountID);
+        ApiReponse UpdatePassword(Guid accountId, PasswordModel passwordModel);
         ApiReponse UpdateMultiple(List<Guid> listID, bool status);
         ApiReponse DeleteAccount(List<Guid> listID);
         Task<ApiReponse> UpdateAvatar(Guid accountID, IFormFile img);
@@ -235,13 +236,7 @@ namespace Services.Service
                 {
                     if (_accountRepository.CheckExist(account) && account.AccountID == accountID)
                     {
-                        if(!FindByCondition(a => a.AccountID  == accountID && a.Password == account.Password).Any())
-                        {
-                            account.Password = HashPasswordService.HashPassword(account.Password);
-                        }
-                        Update(account);
-                        result.Success = true;
-                        result.Data = account;
+                        result = Update(account);
                     }
                     else
                     {
@@ -255,11 +250,45 @@ namespace Services.Service
                     account.AccountID = Guid.NewGuid();
                     account.Password = HashPasswordService.HashPassword(account.Password);
                     account.Username = account.Username.ToLower();
-                    Create(account);
-                    result.Success = true;
-                    result.Data = account;
+                    result = Create(account);
                 }
 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                result.Success = false;
+                result.Data = HandleError.GenerateErrorResultException();
+            }
+            return result;
+        }
+        public ApiReponse UpdatePassword(Guid accountId, PasswordModel passwordModel)
+        {
+            ApiReponse result = new ApiReponse();
+            try
+            {
+                var account = FindByCondition(a => a.DelFalg == EnumType.DeleteFlag.Using && a.AccountID == accountId).FirstOrDefault();
+                if (account != null)
+                {
+                    if(HashPasswordService.Verify(account.Password, passwordModel.PasswordOld))
+                    {
+                        account.Password = HashPasswordService.HashPassword(passwordModel.PasswordNew);
+                        result = Update(account);
+                    }
+                    else
+                    {
+                        result.Success = false;
+                        result.Data = new ErrorResult()
+                        {
+                            ErrorCode = EnumType.ErrorCode.PasswordOldInvalid
+                        };
+                    }
+                }
+                else
+                {
+                    result.Success = false;
+                }
+                    
             }
             catch (Exception ex)
             {

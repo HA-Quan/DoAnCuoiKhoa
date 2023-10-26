@@ -52,6 +52,8 @@ const Resource = {
         FullName: "Không để trống họ tên người dùng",
         UserName: "Không để trống tên đăng nhập",
         Password: "Không để trống mật khẩu",
+        PasswordOld: "Vui lòng nhập mật khẩu hiện tại",
+        PasswordOldInvalid: "Mật khẩu hiện tại không đúng",
         PasswordNotSpace: "Mật khẩu không được chứ dấu cách",
         VerifyPassword: "Mật khẩu không khớp",
         Email: "Không để trống email",
@@ -67,7 +69,8 @@ const Resource = {
         PromotionOverTime: "Mã Voucher đã hết hạn",
         Unconditional: "Đơn hàng của bạn không đủ điều kiện để áp dụng mã Voucher",
         DateStart:"Ngày bắt đầu không được lớn hơn ngày hiện tại",
-        DateEnd:"Ngày kết thúc không được lớn hơn ngày hiện tại"
+        DateEnd:"Ngày kết thúc không được lớn hơn ngày hiện tại",
+
     },
 
     // Nội dung tin nhắn, thông báo

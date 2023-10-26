@@ -168,6 +168,36 @@ namespace BaseProject.Controllers
         }
 
         /// <summary>
+        /// Đổi mật khẩu tài khoản
+        /// </summary>
+        /// <param name="account">Thông tin mật khẩu cần đổi</param>
+        /// <param name="id">ID của tài khoản mmuoosn đổi mật khẩu</param>
+        /// <returns>Thông tin bản ghi vừa sửa</returns>
+        /// Author: HAQUAN (15/09/2023)
+        [HttpPut]
+        [Route("change-password{id}")]
+        public IActionResult UpdatePassword([FromBody] PasswordModel passwordModel, [FromRoute] Guid id)
+        {
+            try
+            {
+                var result = _accountService.UpdatePassword(id, passwordModel);
+
+                if (result.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, result.Data);
+                }
+
+                return StatusCode(StatusCodes.Status400BadRequest, result.Data);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
+            }
+        }
+
+        /// <summary>
         /// Sửa nhiều tài khoản
         /// </summary>
         /// <param name="listID">Danh sách ID các tài khoản cần sửa</param>
