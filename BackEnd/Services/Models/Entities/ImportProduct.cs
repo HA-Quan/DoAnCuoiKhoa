@@ -28,8 +28,8 @@ namespace Services.Models.Entities
         [Column("amount")]
         public int Amount { get; set; }
 
-        [Column("totalPrice")]
-        public long TotalPrice { get; set; }
+        [Column("price")]
+        public long Price { get; set; }
         [Column("delFlag")]
         public bool DelFalg { get; set; } = EnumType.DeleteFlag.Using;
     }
