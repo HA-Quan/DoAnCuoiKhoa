@@ -15,6 +15,7 @@ namespace Services.Service
     public interface IStatisticService
     {
         ApiReponse GetTop(DateTime? timeStart, DateTime? timeEnd, int number, byte typeGet);
+        ApiReponse GetStatistic(DateTime? timeStart, DateTime? timeEnd, byte typeGet);
     }
     public class StatisticService : IStatisticService
     {
@@ -116,6 +117,101 @@ namespace Services.Service
                                      select ord.Price * ord.Amount).Sum()
                         };
                         result.Add(record);
+                    }
+                    return new ApiReponse()
+                    {
+                        Success = true,
+                        Data = result
+                    };
+                }
+                return new ApiReponse()
+                {
+                    Success = false
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new ApiReponse()
+                {
+                    Success = false,
+                    Data = HandleError.GenerateErrorResultException()
+                };
+            }
+        }
+        public ApiReponse GetStatistic(DateTime timeStart, DateTime timeEnd, byte typeGet)
+        {
+            try
+            {
+                var result = new StatisticModel();
+                var query = (from order in _repositoryContext.OrderDetails
+                             join p in _repositoryContext.Products on order.ProductID equals p.ProductID
+                             join cate in _repositoryContext.Categorys on p.CategoryID equals cate.CategoryID
+                             where order.CreatedDate >= timeStart && order.CreatedDate < timeEnd
+                             select new
+                             {
+                                 Trade = cate.Trademark,
+                                 Price = order.Amount * order.Price,
+                             }).ToList();
+                var kq = query.GroupBy(x => x.Trade).Select(x => new
+                {
+                    Name = x.Key,
+                    Total = x.Sum(y => y.Price)
+                });
+                foreach (var item in kq)
+                {
+                    result.PieChart.Add(new PieChartModel()
+                    {
+                        Label = item.Name,
+                        Value = item.Total
+                    });
+                }
+                var dateStart = timeStart;
+                var dateEnd = timeStart;
+                if (typeGet == (byte)EnumType.ByType.ByYear)
+                {
+                    dateEnd = new DateTime(dateEnd.Year + 1, 1, 1);
+                    while (dateEnd <= timeEnd)
+                    {
+                        var areaChart = new AreaChartModel()
+                        {
+                            Label = dateStart.Year.ToString(),
+                            Capital = (from ip in _repositoryContext.ImportProducts
+                                       where dateStart <= ip.CreatedDate && dateEnd > ip.CreatedDate
+                                       select ip.Price * ip.Amount).Sum(),
+                            Revenue = (from order in _repositoryContext.OrderProducts
+                                       where dateStart <= order.CreatedDate && dateEnd > order.CreatedDate
+                                       select order.Total).Sum()
+                        };
+                        result.AreaChart.Add(areaChart);
+                        dateStart = dateEnd;
+                        dateEnd = new DateTime(dateEnd.Year + 1, 1, 1);
+                    }
+                    return new ApiReponse()
+                    {
+                        Success = true,
+                        Data = result
+                    };
+                }
+                if (typeGet == (byte)EnumType.ByType.ByMonth)
+                {
+                    dateEnd = new DateTime(dateEnd.Year, dateEnd.Month + 1, 1);
+                    while (dateEnd <= timeEnd)
+                    {
+                        var areaChart = new AreaChartModel()
+                        {
+                            Label = dateStart.Month.ToString("MMMM"),
+                            Capital = (from ip in _repositoryContext.ImportProducts
+                                       where dateStart <= ip.CreatedDate && dateEnd > ip.CreatedDate
+                                       select ip.Price * ip.Amount).Sum(),
+                            Revenue = (from order in _repositoryContext.OrderProducts
+                                       where dateStart <= order.CreatedDate && dateEnd > order.CreatedDate
+                                       select order.Total).Sum()
+                        };
+                        result.AreaChart.Add(areaChart);
+                        dateStart = dateEnd;
+                        dateEnd = new DateTime(dateEnd.Year, dateEnd.Month + 1, 1);
+
                     }
                     return new ApiReponse()
                     {
