@@ -44,16 +44,17 @@
                   {{ Resource.Label.Avatar }}
                 </label>
                 <div class="d-flex text-field-form space-between">
-                    <div class="content">
-                      <InputString :transmissionString="nameFileAvatar" :isReadonly="true" :hasError="errors.avatarProduct != ''" />
-                    </div>
-                    <div class="action">
-                      <input class="input-file" type="file" ref="avatar" accept=".jpg" @change="handleUploadAvatar"
-                        tabindex="2">
-                      <BaseButton @click="seeAvatar" @keydown.enter="seeAvatar" class="main-button btn ml-10">{{
-                        Resource.Button.See }}</BaseButton>
-                    </div>
-                  
+                  <div class="content">
+                    <InputString :transmissionString="nameFileAvatar" :isReadonly="true"
+                      :hasError="errors.avatarProduct != ''" />
+                  </div>
+                  <div class="action">
+                    <input class="input-file" type="file" ref="avatar" accept=".jpg" @change="handleUploadAvatar"
+                      tabindex="2">
+                    <BaseButton @click="seeAvatar" @keydown.enter="seeAvatar" class="main-button btn ml-10">{{
+                      Resource.Button.See }}</BaseButton>
+                  </div>
+
                 </div>
                 <div class="error-text">{{ errors.avatarProduct }}</div>
               </div>
@@ -305,6 +306,84 @@
               </div>
             </div>
 
+            <div class="row-form d-flex" v-if="formMode == Enum.Mode.Edit">
+              <div class="flex mr-10">
+                <label for="" class="label-form d-flex">
+                  {{ Resource.Label.TotalQuantity }}
+                </label>
+                <div class="flex text-field-form">
+                  <InputNumber :transmissionNumber="product.quantity" :decimalPlaces="0" :isReadonly="true" />
+                </div>
+              </div>
+              <div class="flex mr-10 block">
+                <label for="" class="label-form d-flex">
+                  {{ Resource.Label.AmountSell }}
+                </label>
+
+                <div class="flex text-field-form">
+                  <InputNumber :transmissionNumber="product.quantity - product.inventory" :decimalPlaces="0"
+                    isReadonly="true" />
+                </div>
+              </div>
+              <div class="flex mr-10 block">
+                <label for="" class="label-form d-flex">
+                  {{ Resource.Label.Inventory }}
+                </label>
+
+                <div class="flex text-field-form">
+                  <InputNumber :transmissionNumber="product.inventory" :decimalPlaces="0" isReadonly="true" />
+                </div>
+              </div>
+              <div class="flex mr-10 block flex-end-center">
+                <BaseButton tabindex="19" @click="isShowFormImport = true" @keydown.enter="isShowFormImport = true"
+                  class="main-button btn ml-10">{{ Resource.Button.ImportProduct }}
+                </BaseButton>
+              </div>
+            </div>
+
+            <div class="row-form d-flex" v-if="formMode == Enum.Mode.Edit">
+              <div class="flex mr-10">
+                <label for="" class="label-form d-flex">
+                  {{ Resource.Label.Price }}
+                </label>
+                <div class="flex text-field-form">
+                  <InputNumber :transmissionNumber="product.price" :decimalPlaces="0" tabindex="20"
+                    :nameProperty="Resource.ProductProperty.Price" @update="updateValue" />
+                </div>
+              </div>
+              <div class="flex mr-10 block">
+                <label for="" class="label-form d-flex">
+                  {{ Resource.Label.Discount }}
+                </label>
+
+                <div class="flex text-field-form">
+                  <InputNumber :transmissionNumber="product.discount" :decimalPlaces="0" tabindex="21" :max="100"
+                    :nameProperty="Resource.ProductProperty.Discount" @update="updateValue" />
+                </div>
+              </div>
+              <div class="flex mr-10 block">
+                <label for="" class="label-form d-flex">
+                  {{ Resource.Label.PriceSell }}
+                </label>
+
+                <div class="flex text-field-form">
+                  <InputNumber :transmissionNumber="getNewPrice(product.price, product.discount)" :decimalPlaces="0"
+                    tabindex="22" :nameProperty="Resource.ProductProperty.Discount" @update="updateDiscount" />
+                </div>
+              </div>
+              <div class="flex mr-10 block">
+                <label for="" class="label-form d-flex">
+                  {{ Resource.Label.Status }}
+                </label>
+
+                <div class="flex combobox-form">
+                  <BaseCombobox tabindex="23" :hasIcon="true" :items="Const.StatusProduct"
+                    :initItem="configStatus(product.status)" fieldName="Label" @getValue="setStatus" :isReadonly="true" />
+
+                </div>
+              </div>
+            </div>
+
             <div class="row-form d-flex">
               <div class="flex mr-10 block">
                 <label for="" class="label-form d-flex">
@@ -312,7 +391,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputNumber :transmissionNumber="product.amountDisk" :decimalPlaces="0" tabindex="19" :hasIcon="true"
+                  <InputNumber :transmissionNumber="product.amountDisk" :decimalPlaces="0" tabindex="24" :hasIcon="true"
                     :max="10" :nameProperty="Resource.ProductProperty.AmountDisk" @update="updateValue" />
                 </div>
               </div>
@@ -322,7 +401,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputNumber :transmissionNumber="product.weight" :decimalPlaces="2" tabindex="20" :hasIcon="true"
+                  <InputNumber :transmissionNumber="product.weight" :decimalPlaces="2" tabindex="25" :hasIcon="true"
                     :max="10" :nameProperty="Resource.ProductProperty.Weight" @update="updateValue" />
                 </div>
               </div>
@@ -333,7 +412,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="product.dimension" maxlength="255" tabindex="21"
+                  <InputString :transmissionString="product.dimension" maxlength="255" tabindex="26"
                     :nameProperty="Resource.ProductProperty.Dimension" @updateValue="updateValue" />
                 </div>
               </div>
@@ -344,7 +423,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="product.material" maxlength="100" tabindex="22"
+                  <InputString :transmissionString="product.material" maxlength="100" tabindex="27"
                     :nameProperty="Resource.ProductProperty.Material" @updateValue="updateValue" />
                 </div>
               </div>
@@ -358,7 +437,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="product.color" maxlength="50" tabindex="23"
+                  <InputString :transmissionString="product.color" maxlength="50" tabindex="28"
                     :nameProperty="Resource.ProductProperty.Color" @updateValue="updateValue" />
                 </div>
               </div>
@@ -368,7 +447,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="product.operatingSystem" maxlength="100" tabindex="24"
+                  <InputString :transmissionString="product.operatingSystem" maxlength="100" tabindex="29"
                     :nameProperty="Resource.ProductProperty.OperatingSystem" @updateValue="updateValue" />
                 </div>
               </div>
@@ -379,7 +458,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="product.touchpad" maxlength="255" tabindex="25"
+                  <InputString :transmissionString="product.touchpad" maxlength="255" tabindex="30"
                     :nameProperty="Resource.ProductProperty.Touchpad" @updateValue="updateValue" />
                 </div>
               </div>
@@ -390,7 +469,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="product.keyboard" maxlength="255" tabindex="26"
+                  <InputString :transmissionString="product.keyboard" maxlength="255" tabindex="31"
                     :nameProperty="Resource.ProductProperty.Keyboard" @updateValue="updateValue" />
                 </div>
               </div>
@@ -404,7 +483,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="product.speakers" maxlength="255" tabindex="27"
+                  <InputString :transmissionString="product.speakers" maxlength="255" tabindex="32"
                     :nameProperty="Resource.ProductProperty.Speakers" @updateValue="updateValue" />
                 </div>
               </div>
@@ -414,7 +493,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="product.battery" maxlength="255" tabindex="28"
+                  <InputString :transmissionString="product.battery" maxlength="255" tabindex="33"
                     :nameProperty="Resource.ProductProperty.Battery" @updateValue="updateValue" />
                 </div>
               </div>
@@ -425,7 +504,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="product.camera" maxlength="255" tabindex="29"
+                  <InputString :transmissionString="product.camera" maxlength="255" tabindex="34"
                     :nameProperty="Resource.ProductProperty.Camera" @updateValue="updateValue" />
                 </div>
               </div>
@@ -436,7 +515,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="product.connectivityNetwork" tabindex="30"
+                  <InputString :transmissionString="product.connectivityNetwork" tabindex="35"
                     :nameProperty="Resource.ProductProperty.ConnectivityNetwork" @updateValue="updateValue" />
                 </div>
               </div>
@@ -453,7 +532,7 @@
 
                 <div class="flex-row border">
                   <textarea :placeholder="Resource.Placehoder.StandardPorts" class="aria-form flex" rows="4"
-                    v-model.trim="product.standardPorts" tabindex="31"></textarea>
+                    v-model.trim="product.standardPorts" tabindex="36"></textarea>
                 </div>
               </div>
             </div>
@@ -468,7 +547,7 @@
 
                 <div class="flex-row border">
                   <textarea :placeholder="Resource.Placehoder.Description" class="aria-form flex" rows="4"
-                    v-model.trim="product.description" tabindex="32"></textarea>
+                    v-model.trim="product.description" tabindex="37"></textarea>
                 </div>
               </div>
             </div>
@@ -479,7 +558,7 @@
               </label>
 
               <div class="flex combobox-form">
-                <ComboboxCheckbox tabindex="33" :items="listGift" :initItem="this.listGifts" fieldName="description"
+                <ComboboxCheckbox tabindex="38" :items="listGift" :initItem="this.listGifts" fieldName="description"
                   @getValue="setListGifts" :placehoder="Resource.Placehoder.Gift" :isReadonly="true" />
 
               </div>
@@ -489,24 +568,24 @@
         <div class="modal-footer">
           <div class="flex-row flex-end">
 
-            <BaseButton tabindex="36" @keydown.tab.prevent.exact="this.focusProductName = true;" @mousedown="closeForm"
+            <BaseButton tabindex="41" @keydown.tab.prevent.exact="this.focusProductName = true;" @mousedown="closeForm"
               @keydown.enter="closeForm" class="sub-button btn">
               {{ Resource.Button.Cancel }}
             </BaseButton>
 
             <el-tooltip effect="dark" :content="Const.KeyStrokes.CtrlShiftS" placement="top">
-              <BaseButton tabindex="35" @click="save(true)" @keydown.enter="save(true)" v-show="!checkForm()"
+              <BaseButton tabindex="40" @click="save(true)" @keydown.enter="save(true)" v-show="!checkForm()"
                 class="button-blue btn ml-10">{{ Resource.Button.SaveAndNew }}
               </BaseButton>
             </el-tooltip>
 
             <el-tooltip effect="dark" :content="Const.KeyStrokes.CtrlS" placement="top">
-              <BaseButton tabindex="34" @click="save(false)" @keydown.enter="save(false)" v-show="!checkForm()"
+              <BaseButton tabindex="39" @click="save(false)" @keydown.enter="save(false)" v-show="!checkForm()"
                 class="main-button btn ml-10">{{ Resource.Button.Save }}</BaseButton>
             </el-tooltip>
 
             <el-tooltip effect="dark" :content="Const.KeyStrokes.CtrlS" placement="top">
-              <BaseButton tabindex="34" @click="save(false)" @keydown.enter="save(false)" v-show="checkForm()"
+              <BaseButton tabindex="39" @click="save(false)" @keydown.enter="save(false)" v-show="checkForm()"
                 style="padding: 0 16px;" class="main-button btn ml-10">{{ Resource.Button.SaveChange }}</BaseButton>
             </el-tooltip>
 
@@ -516,6 +595,9 @@
     </form>
   </div>
 
+  <ImportProduct @refreshData="reloadData" @showToast="showToast"
+    :productId="product.productID" :closeFormImport="closeFormImport" v-if="isShowFormImport"/>
+
   <BasePopup @close="closePopup" class="popup-delete" :title="this.titlePopup" :content="contentPopup" v-if="isShowPopup">
 
     <template #buttons>
@@ -523,7 +605,14 @@
     </template>
 
   </BasePopup>
-  <ViewImage :link="Resource.PrefixImage + product.mainImage" v-show="isShowMainImage" @focusoutImage="isShowMainImage = false;"/>
+
+  <BaseToastMessage v-show="toastMessage.isShowed" :class="`toast-${toastMessage.type} icon-toast-${toastMessage.type}`">
+
+    <template #message>{{ toastMessage.message }}</template>
+  </BaseToastMessage>
+
+  <ViewImage :link="Resource.PrefixImage + product.mainImage" v-show="isShowMainImage"
+    @focusoutImage="isShowMainImage = false;" />
 </template>
 <script>
 import Const from '@/utils/const'
@@ -536,11 +625,14 @@ import InputString from '@/components/base/BaseInputString.vue';
 import InputNumber from '@/components/base/BaseInputNumber.vue';
 import BaseRadio from '@/components/base/BaseRadio.vue';
 import ComboboxCheckbox from '@/components/base/ComboboxCheckbox.vue';
+import ImportProduct from './ImportProduct.vue';
+import BaseToastMessage from '@/components/base/BaseToastMessage.vue';
 import ViewImage from './ViewImage.vue';
 import axios from 'axios';
 export default {
   components: {
-    BaseCombobox, BaseButton, BasePopup, InputString, InputNumber, BaseRadio, ComboboxCheckbox, ViewImage
+    BaseCombobox, BaseButton, BasePopup, InputString, InputNumber, BaseRadio,
+    ComboboxCheckbox, ViewImage, ImportProduct, BaseToastMessage
   },
   props: ["closeFormDetail", "productIdUpdate", "formMode"],
   data() {
@@ -555,6 +647,8 @@ export default {
       contentPopup: "", // nội dung cảnh báo
 
       isShowPopup: false, // cờ điền khiển đóng mở cảnh báo lỗi
+
+      isShowFormImport: false, // cờ điền khiển đóng mở form nhập hàng
 
       isShowMainImage: false, // Cờ điều khiển đóng mở xem ảnh sản phẩm
 
@@ -608,13 +702,13 @@ export default {
         camera: '', // máy ảnh
         connectivityNetwork: '', // giao tiếp mạng
         standardPorts: '', // cổng kết nốt
-        createdBy: '5dd9b7cf-7185-4a4c-b922-5a9c12ce1a89'
+        createdBy: '5dd9b7cf-7185-4a4c-b922-5a9c12ce1a89',
 
-        // quantity: 0, // tổng số lượng
-        // inventory: 0, // số lượng còn trong kho
-        // price: 0, // giá gốc
-        // discount: 0, // giảm giá
-        // status: 1, // trạng thái sản phẩm (0: tạm ngừng bán, 1: đang bán, 2: hàng sắp về)
+        quantity: 0, // tổng số lượng
+        inventory: 0, // số lượng còn trong kho
+        price: 0, // giá gốc
+        discount: 0, // giảm giá
+        status: 1, // trạng thái sản phẩm (0: tạm ngừng bán, 1: đang bán, 2: hàng sắp về)
         // numberView: 0, // lượt xem
       },
 
@@ -648,6 +742,12 @@ export default {
       focusStorageDetail: false,
       focusDisplayDetail: false,
       focusCardDetail: false,
+
+      toastMessage: { // cảnh báo
+        message: "", // nội dung cảnh báo
+        type: "", // loại cảnh báo
+        isShowed: false, // cờ điều khiển bật tắt cảnh báo
+      },
     };
   },
 
@@ -655,6 +755,13 @@ export default {
 
     updateValue(value, nameProperty) {
       this.product[nameProperty] = value;
+    },
+
+    updateDiscount(value, nameProperty) {
+      let discount = value * 100 / this.product.price;
+      discount = discount - discount % 1;
+      discount = 100 - discount;
+      this.product[nameProperty] = discount;
     },
 
     handleUploadAvatar() {
@@ -673,35 +780,23 @@ export default {
       console.log(this.$refs.imageDetail.files);
     },
 
-    // updateProductName(value) {
-    //   this.product.productName = value;
-    // },
-
-    // updateChipDetail(value) {
-    //   this.product.chipDetail = value;
-    // },
-
-    // updateMemoryDetail(value) {
-    //   this.product.memoryDetail = value;
-    // },
-
-    // updateStorageDetail(value) {
-    //   this.product.storageDetail = value;
-    // },
-
-    // updateDisplayDetail(value) {
-    //   this.product.displayDetail = value;
-    // },
-
-    // updateCardDetail(value) {
-    //   this.product.cardDetail = value;
-    // },
+    getNewPrice(oldPrice, saleoff) {
+      let money = oldPrice * (100 - saleoff) / 1000000;
+      money = money - money % 1;
+      money = money * 10000;
+      return money;
+    },
 
     updateImage(value) {
       this.product.mainImage = value;
     },
     updateImageDetail(value) {
       this.product.listImageString = value;
+    },
+
+    reloadData(){
+      this.getProductByID(this.productIdUpdate);
+      this.$emit("refreshData");
     },
 
     /**
@@ -929,6 +1024,36 @@ export default {
     },
 
     /**
+    * Set giá trị text trạng thái sản phẩm về giá trị lưu trong DB
+    * @param {string} value :  giá trị trạng thái sản phẩm dạng text người dùng chọn
+    * Author: HAQUAN(29/08/2023) 
+    */
+    setStatus(value) {
+      Const.StatusProduct.find((item) => {
+        if (item.Label == value) {
+          this.product.status = item.Value;
+        }
+      });
+    },
+
+    /**
+    * Hiển thị giá trị text trạng thái sản phẩm tương ứng với giá trị trạng thái sản phẩm lưu trong DB
+    * @param {string} value : giá trị trạng thái sản phẩm lưu trong DB
+    * Author: HAQUAN(29/08/2023) 
+    */
+    configStatus(value) {
+      let result;
+      Const.StatusProduct.find(
+        (item) => {
+          if (item.Value == value) {
+            result = item.Label;
+          }
+        }
+      );
+      return result;
+    },
+
+    /**
     * Convert danh sách nhu cầu sử dụng về chuỗi string để lưu trong DB
     * @param {array} value : danh sách nhu cầu sử dụng người dùng chọn
     * Author: HAQUAN(29/08/2023) 
@@ -1121,6 +1246,14 @@ export default {
     },
 
     /**
+    * Đóng form nhập hàng 
+    * Author: HAQUAN(28/10/2022)
+    */
+    closeFormImport() {
+      this.isShowFormImport = false;
+    },
+
+    /**
      * Lưu thông tin sản phẩm
      * @param {*} control: kiểu lưu sản phẩm, nếu false thì lưu và đóng form, còn true thì lưu và reset dữ liệu, không đóng form
      *  Author: HAQUAN(29/08/2023)  
@@ -1150,10 +1283,9 @@ export default {
      */
     async sendRequestUpdate() {
       try {
-        console.log(this.listGifts);
         let productModel = {
-            product: this.product,
-            listGifts: this.listGifts
+          product: this.product,
+          listGifts: this.listGifts
         };
         await axios.put("Product/" + this.product.productID, productModel)
           .then((response) => {
@@ -1185,19 +1317,19 @@ export default {
       formData.append('listImages[' + 0 + ']', this.$refs.avatar.files[0]);
       let list = this.$refs.imageDetail.files;
       for (var i = 0; i < list.length; i++) {
-        formData.append('listImages[' + (i+1) + ']', list[i]);
+        formData.append('listImages[' + (i + 1) + ']', list[i]);
       }
       formData.append('product', JSON.stringify(this.product));
       formData.append('listGifts', JSON.stringify(this.listGifts));
       try {
         await axios.post('Product/', formData, {
-        headers: {
-        'Content-Type': 'multipart/form-data',
-          "Access-Control-Allow-Origin": "*",
-        },
-      }).then((response) => {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            "Access-Control-Allow-Origin": "*",
+          },
+        }).then((response) => {
           console.log(response);
-          
+
           // Hiển thị toast thông báo thành công
           this.$emit("showToast", Resource.Message.AddProductSucces, Const.TypeToast.Success);
           this.$emit("refreshData");
@@ -1464,7 +1596,7 @@ export default {
     },
 
     /**
-     * Validate thông tin danh hiệu thi đua trước khi lưu
+     * Validate thông tin sản phẩm trước khi lưu
      * Author: HAQUAN(29/08/2023)  
      */
     validate() {
@@ -1547,7 +1679,6 @@ export default {
           .then((response) => {
             this.product = response.data.product;
             this.listGifts = response.data.listGifts;
-            console.log(this.listGifts);
           })
 
           .catch((error) => {
@@ -1574,6 +1705,22 @@ export default {
         this.errors.productName = Resource.Error.ProductNameExists;
         this.focusProductName = true;
       }
+    },
+
+    /**
+    * Hiển thị toast message khi thực hiện thành công
+    * @param {*} contentToast: nội dung thông báo 
+    * Author: HAQUAN(28/10/2022)
+    */
+    showToast(contentToast, TypeToast) {
+      this.toastMessage = {
+        message: contentToast,
+        type: TypeToast,
+        isShowed: true,
+      };
+      setTimeout(() => {
+        this.toastMessage.isShowed = false;
+      }, 5000);
     },
 
     /**
@@ -1612,6 +1759,7 @@ export default {
 </script>
 <style scoped>
 @import url(../css/base/radio.css);
+
 .modal-detail-wrapper {
   top: 0;
   left: 0;
@@ -1862,4 +2010,5 @@ input.input-file:hover {
 
 .action {
   display: flex;
-}</style>
+}
+</style>

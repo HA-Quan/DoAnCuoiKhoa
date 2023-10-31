@@ -389,15 +389,15 @@ namespace Services.Models.Enum
             /// </summary>
             Product = 4,
 
-            /// <summary>
-            /// Theo năm
-            /// </summary>
-            ByYear = 5,
+            ///// <summary>
+            ///// Theo năm
+            ///// </summary>
+            //ByYear = 5,
 
-            /// <summary>
-            /// Theo tháng
-            /// </summary>
-            ByMonth = 6,
+            ///// <summary>
+            ///// Theo tháng
+            ///// </summary>
+            //ByMonth = 6,
 
         }
 

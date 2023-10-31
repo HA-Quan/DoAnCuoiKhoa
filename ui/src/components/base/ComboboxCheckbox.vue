@@ -128,7 +128,6 @@ export default {
             }
         })
         this.selectedOptions = this.initItem;
-        console.log(this.initItem);
         this.setIndexOption();
     },
 

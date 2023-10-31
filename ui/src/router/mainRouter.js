@@ -12,6 +12,7 @@ import ProductDetailPage from '@/views/ProductDetailPage.vue';
 import CartPage from '@/views/CartPage.vue';
 import InfoAccount from '@/views/InfoAccount.vue';
 import ChangePassword from '@/views/ChangePassword.vue';
+import StatisticPage from '@/views/StatisticPage.vue';
 import CommonFn from '@/utils/commonFuncion';
 import store from "@/utils/vuex";
 import axios from "axios";
@@ -107,8 +108,22 @@ const routes = [
           {
             path: '/order',
             name: 'OrderList',
-            component: OrderList
-          }
+            component: OrderList,
+            meta: {
+              isManager: true,
+              loginRequired: true
+            }
+          },
+          {
+            path: '/statistic',
+            name: 'StatisticPage',
+            component: StatisticPage,
+            meta: {
+              isManager: true,
+              loginRequired: true
+            }
+          },
+
         ]
       }
     ],

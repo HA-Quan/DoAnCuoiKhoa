@@ -2,7 +2,7 @@
     <div :class="['flex-row border align-items-center ',
         { 'error': hasError }, {}]" v-if="!isCart">
         <input class="input-form flex text-right" :class="hasIcon ? ' padding-r' : ''" @keyup="updateValue"
-            @blur="this.evenBlur();" :tabindex="tabindex" ref="refName">
+            @blur="evenBlur" :tabindex="tabindex" ref="refName" :readonly="isReadonly">
         <div class="up-down" v-if="hasIcon">
             <div class="icon-up" @keydown.up="clickOnIconUp" @click="clickOnIconUp">
             </div>
@@ -66,6 +66,11 @@ export default {
         isCart: {
             type: Boolean,
             default: false,
+        },
+
+        isReadonly: {
+            type: Boolean,
+            default: false
         }
 
     },

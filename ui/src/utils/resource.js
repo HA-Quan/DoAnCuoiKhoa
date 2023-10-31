@@ -30,7 +30,9 @@ const Resource = {
         ProductName: "Tên sản phẩm không được để trống",
         Title: "Tiêu đề sản phẩm không được để trống",
         Category: "Danh mục sản phẩm không được để trống",
+        Supplier: "Nhà cung cấp không được để trống",
         CategoryNotFound: "Danh mục sản phẩm không đúng. Vui lòng chọn danh mục sản phẩm trong danh sách.",
+        SupplierNotFound: "Nhà cung cấp không đúng. Vui lòng chọn nhà cung cấp trong danh sách.",
         Chip: "Loại chip không được để trống",
         ChipNotFound: "Loại chip không đúng. Vui lòng chọn loại chip trong danh sách.",
         Memory: "Loại Ram không được để trống",
@@ -77,6 +79,7 @@ const Resource = {
     Message: {
         NoData: "Không có dữ liệu",
         AddProductSucces: "Thêm sản phẩm thành công",
+        ImportProductSucces: "Nhập hàng thành công",
         UpdateProductSucces: "Cập nhật sản phẩm thành công",
         DeleteSucces: "Xóa thành công",
         UsingSucces: "Sử dụng thành công",
@@ -107,7 +110,8 @@ const Resource = {
         Error: "Lỗi",
         Management: "Manager Home",
         VerifyDelete: "Xác nhận xóa",
-        OrderSucces: "Đặt hàng thành công"
+        OrderSucces: "Đặt hàng thành công",
+        ImportProduct: "Nhập hàng"
     },
 
     All: "Tất cả",
@@ -189,6 +193,11 @@ const Resource = {
         Demand: "Nhu cầu sử dụng",
         Condition: "Tình trạng sản phẩm",
         AmountRam: "Số lượng Ram",
+        TotalQuantity: "Tổng số lượng",
+        AmountSell: "Đã bán",
+        Inventory: "Số lượng trong kho",
+        Price: "Giá niêm yết",
+        Discount: "Giảm giá",
         AmountDisk: "Số lượng ổ cứng",
         Weight: "Khối lượng",
         Dimension: "Kích thước",
@@ -239,7 +248,11 @@ const Resource = {
         Note: "Yêu cầu khác",
         PromotionCode: "Mã Voucher",
         Info: "Thông tin tài khoản",
-        ChangePassword: "Đổi mật khẩu"
+        ChangePassword: "Đổi mật khẩu",
+        Supplier: "Nhà cung cấp",
+        Statistic: "Xem báo cáo, thống kê",
+        TotalCapital: "Tổng tiền vốn",
+        TotalRevenue: "Tổng doanh thu"
     },
 
     LabelProduct: {
@@ -274,6 +287,10 @@ const Resource = {
         CardDetail: "cardDetail", // chi tiết card
         Description: "description", // thông tin chi tiết
         AmountRam: "amountRam", // số lượng ram
+        Quantity: "quantity",
+        Inventory: "inventory",
+        Price: "price",
+        Discount: "discount",
         AmountDisk: "amountDisk", // số ổ đĩa
         Weight: "weight", // cân nặng
         Dimension: "dimension", // kích thước
@@ -287,6 +304,11 @@ const Resource = {
         Camera: "camera", // máy ảnh
         ConnectivityNetwork: "connectivityNetwork", // giao tiếp mạng
         StandardPorts: "standardPorts", // cổng kết nốt
+    },
+
+    ImportProductProperty: {
+        Amount: "amount",
+        Price: "price"
     },
     
     InfoGuestProperty: {
@@ -322,6 +344,7 @@ const Resource = {
         CardDetail: "Nhập chi tiết Card màn hình",
         StandardPorts: "Nhập thông tin cổng kết nối",
         Category: "Chọn danh mục sản phẩm",
+        Supplier: "Chọn nhà cung cấp",
         Chip: "Chọn loại chip",
         Memory: "Chọn loại ram",
         Storage: "Chọn loại ổ cứng",
@@ -362,6 +385,7 @@ const Resource = {
         DeleteProduct: "Xóa sản phẩm",
         Delete: "Xóa",
         Import: "Import",
+        ImportProduct: "Nhập hàng",
         Export: "Export",
         See: "Xem ảnh",
         UpdateAvatar: "Cập nhật ảnh đại diện",
@@ -375,7 +399,8 @@ const Resource = {
         ContinueShoping: "Tiếp tục mua hàng",
         AddNewOrder: "Thêm mới đơn hàng",
         UpdateInfo: "Sửa thông tin",
-        UpdatePassword: "Cập nhật mật khẩu"
+        UpdatePassword: "Cập nhật mật khẩu",
+        ExportFile: "Xuất file"
     },
 
     Warranty:[

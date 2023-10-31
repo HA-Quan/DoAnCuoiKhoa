@@ -8,7 +8,9 @@ namespace Services.Models.Entities.DTO
 {
     public class StatisticModel
     {
-        public List<AreaChartModel>? AreaChart { get; set; }
-        public List<PieChartModel>? PieChart { get; set; }
+        public long TotalCapital { get; set; }
+        public long TotalRevenue { get; set; }
+        public List<AreaChartModel> AreaChart { get; set; } = new List<AreaChartModel>();
+        public List<PieChartModel> PieChart { get; set; } = new List<PieChartModel>();
     }
 }
