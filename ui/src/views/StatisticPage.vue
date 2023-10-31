@@ -25,13 +25,13 @@
             </div>
         </div>
 
-        <div>
+        <div class="box">
             <!-- <canvas id="chart-line" class="line-chart"></canvas>
             <canvas id="chart-bar" class="line-chart"></canvas>
             <canvas id="chart-pie" class="pie-chart"></canvas> -->
             <!-- <ChartView :lineData="lineData" :pieData="pieData"/> -->
-            <!-- <ChartView :statisticModel="statisticModel" v-if="isShow"/> -->
-            <ChartView :statisticModel="statisticModel"/>
+            <ChartView :lineData="lineData" :pieData="pieData" v-if="isShow"/>
+
         </div>
 
     </div>
@@ -46,7 +46,6 @@ import BaseCombobox from "../components/base/BaseCombobox.vue";
 import BaseButton from "../components/base/BaseButton.vue";
 // import { Bar } from 'vue-chartjs'
 // import { Chart as ChartJS, Title, Tooltip, Legend, BarElement ,PointElement, LineElement, CategoryScale, LinearScale } from 'chart.js'
-
 // ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement)
 // import Chart from 'chart.js/auto'
 import ChartView from './ChartView.vue';
@@ -65,11 +64,41 @@ export default {
             listYear: [],
             yearStatistic: '',
             statisticModel: {},
-            
+            lineData: {
+                labels: [],
+                datasets: [
+                    {
+                        label: "Tiền vốn",
+                        borderColor: "#FC2525",
+                        pointBackgroundColor: "white",
+                        borderWidth: 1,
+                        pointBorderColor: "black",
+                        backgroundColor: "rgba(255, 0, 0, 0.25)",
+                        data: []
+                    },
+                    {
+                        label: "Doanh thu",
+                        borderColor: "#05CBE1",
+                        pointBackgroundColor: "white",
+                        pointBorderColor: "black",
+                        borderWidth: 1,
+                        backgroundColor: "rgba(0, 231, 255, 0.25)",
+                        data: [] 
+                    }
+                ]
+            },
+            pieData: {
+                labels: [],
+                datasets: [
+                    {
+                        backgroundColor: ["#05CBE1", "#FC2525", "#00D8FF"],
+                        data: [40, 20, 10]
+                    }
+                ]
+            },
         };
     },
     methods: {
-
         /**
          * Lấy danh sách các năm
          * Author: HAQUAN(26/08/2023)
@@ -88,7 +117,6 @@ export default {
                 console.log(error);
             }
         },
-
         /**
          * Lấy dữ liệu thống kê
          * Author: HAQUAN(26/08/2023)
@@ -99,21 +127,23 @@ export default {
                 await axios.get(`Statistic/chart?time=${this.yearStatistic}`)
                     .then((response) => {
                         this.statisticModel = response.data;
+                        this.lineData.labels = this.statisticModel.areaChart.map(i => i.label);
+                        this.lineData.datasets[0].data = this.statisticModel.areaChart.map(i => i.capital);
+                        this.lineData.datasets[1].data = this.statisticModel.areaChart.map(i => i.revenue);
+                        this.pieData.labels = this.statisticModel.pieChart.map(i => i.label);
+                        this.pieData.datasets[0].data = this.statisticModel.pieChart.map(i => i.value);
                         // this.handleStatistic();
                     })
                     .catch((error) => {
                         console.log(error);
                     })
-
                     .finally(() => {
                         this.isLoading = false;
-
                     });
             } catch (error) {
                 console.log(error);
             }
         },
-
         // handleStatistic() {
         //     var displayLine = document.getElementById('chart-line');
         //     var displayBar = document.getElementById('chart-bar');
@@ -137,7 +167,6 @@ export default {
         //     barChart;
         //     pieChart
         // },
-
         async setYear(value) {
             this.isShow = false;
             await this.listYear.find((item) => {
@@ -148,7 +177,6 @@ export default {
             });
             this.isShow = true;
         },
-
         configYear(value) {
             let result = value;
             this.listYear.find((item) => {
@@ -158,23 +186,19 @@ export default {
             });
             return result;
         },
-
     },
-    async created() {
+    created() {
         document.title = Resource.Title.Management;
+    },
+    async mounted() {
         // Lấy danh sách các năm
         await this.getListYear();
-
-    },
-     mounted() {
-        
     },
     // watch: {
     //     yearStatistic() {
     //         this.getData();
     //     }
     // }
-
 }
 </script>
 <style scoped>
@@ -184,16 +208,13 @@ export default {
     font-weight: 700;
     line-height: 35px;
 }
-
 .toolbar {
     margin: 0 0 16px;
     justify-content: space-between;
 }
-
 .toolbar-left {
     position: relative;
 }
-
 .btn .text-button {
     display: inline-block;
     white-space: nowrap;
@@ -201,7 +222,6 @@ export default {
     font-weight: 400;
     font-size: 14px;
 }
-
 .icon-sum {
     background: transparent url(../assets/icon/icon-sum.png);
     background-size: 24px 24px;
@@ -219,5 +239,4 @@ export default {
     width: 100%;
     height: 100%;
 }
-
 </style>
