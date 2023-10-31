@@ -25,6 +25,9 @@ namespace Services.Models.Entities
         [Column("supplierID")]
         public Guid SupplierID { get; set; }
 
+        [Column("supplierName")]
+        public string SupplierName { get; set; }
+
         [Column("amount")]
         public int Amount { get; set; }
 

@@ -72,6 +72,7 @@ public static class ServiceExtensions
         services.AddScoped<IRateService, RateService>();
         services.AddScoped<IStorageService, StorageService>();
         services.AddScoped<ISupplierService, SupplierService>();
+        services.AddScoped<IStatisticService, StatisticService>();
 
         //services.AddScoped<IRepositoryManager, RepositoryManager>();
         services.AddScoped<IAccountRepository, AccountRepository>();
