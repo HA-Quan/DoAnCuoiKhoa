@@ -41,5 +41,51 @@ namespace BaseProject.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
             }
         }
+
+        [HttpGet("chart")]
+        public IActionResult GetDataChart([FromQuery] int time)
+        {
+            try
+            {
+               var result = _statisticService.GetStatistic(time);
+                if (result.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, result.Data);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Data);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
+            }
+        }
+
+        [HttpGet("year")]
+        public IActionResult GetListYear()
+        {
+            try
+            {
+                var result = _statisticService.GetListYear();
+                if (result.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, result.Data);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Data);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
+            }
+        }
     }
 }

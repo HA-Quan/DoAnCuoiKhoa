@@ -15,7 +15,8 @@ namespace Services.Service
     public interface IStatisticService
     {
         ApiReponse GetTop(DateTime? timeStart, DateTime? timeEnd, int number, byte typeGet);
-        ApiReponse GetStatistic(DateTime? timeStart, DateTime? timeEnd, byte typeGet);
+        ApiReponse GetStatistic(int time);
+        ApiReponse GetListYear();
     }
     public class StatisticService : IStatisticService
     {
@@ -139,10 +140,16 @@ namespace Services.Service
                 };
             }
         }
-        public ApiReponse GetStatistic(DateTime timeStart, DateTime timeEnd, byte typeGet)
+        public ApiReponse GetStatistic(int time)
         {
             try
             {
+                var timeStart = new DateTime(time, 1, 1);
+                var timeEnd = DateTime.Now;
+                if(DateTime.Now.Year > time)
+                {
+                    timeEnd = new DateTime(time+1, 1, 1); ;
+                }
                 var result = new StatisticModel();
                 var query = (from order in _repositoryContext.OrderDetails
                              join p in _repositoryContext.Products on order.ProductID equals p.ProductID
@@ -167,61 +174,70 @@ namespace Services.Service
                     });
                 }
                 var dateStart = timeStart;
-                var dateEnd = timeStart;
-                if (typeGet == (byte)EnumType.ByType.ByYear)
+                var dateEnd = timeStart.AddMonths(1);
+                do
                 {
-                    dateEnd = new DateTime(dateEnd.Year + 1, 1, 1);
-                    while (dateEnd <= timeEnd)
+                    if(dateEnd > timeEnd)
                     {
-                        var areaChart = new AreaChartModel()
-                        {
-                            Label = dateStart.Year.ToString(),
-                            Capital = (from ip in _repositoryContext.ImportProducts
-                                       where dateStart <= ip.CreatedDate && dateEnd > ip.CreatedDate
-                                       select ip.Price * ip.Amount).Sum(),
-                            Revenue = (from order in _repositoryContext.OrderProducts
-                                       where dateStart <= order.CreatedDate && dateEnd > order.CreatedDate
-                                       select order.Total).Sum()
-                        };
-                        result.AreaChart.Add(areaChart);
-                        dateStart = dateEnd;
-                        dateEnd = new DateTime(dateEnd.Year + 1, 1, 1);
+                        dateEnd = timeEnd;
                     }
-                    return new ApiReponse()
+                    var areaChart = new AreaChartModel()
                     {
-                        Success = true,
-                        Data = result
+                        Label = dateStart.ToString("MMMM"),
+                        Capital = (from ip in _repositoryContext.ImportProducts
+                                   where dateStart <= ip.CreatedDate && dateEnd > ip.CreatedDate
+                                   select ip.Price * ip.Amount).Sum(),
+                        Revenue = (from order in _repositoryContext.OrderProducts
+                                   where dateStart <= order.CreatedDate && dateEnd > order.CreatedDate
+                                   select order.Total).Sum()
                     };
-                }
-                if (typeGet == (byte)EnumType.ByType.ByMonth)
-                {
-                    dateEnd = new DateTime(dateEnd.Year, dateEnd.Month + 1, 1);
-                    while (dateEnd <= timeEnd)
-                    {
-                        var areaChart = new AreaChartModel()
-                        {
-                            Label = dateStart.Month.ToString("MMMM"),
-                            Capital = (from ip in _repositoryContext.ImportProducts
-                                       where dateStart <= ip.CreatedDate && dateEnd > ip.CreatedDate
-                                       select ip.Price * ip.Amount).Sum(),
-                            Revenue = (from order in _repositoryContext.OrderProducts
-                                       where dateStart <= order.CreatedDate && dateEnd > order.CreatedDate
-                                       select order.Total).Sum()
-                        };
-                        result.AreaChart.Add(areaChart);
-                        dateStart = dateEnd;
-                        dateEnd = new DateTime(dateEnd.Year, dateEnd.Month + 1, 1);
-
-                    }
-                    return new ApiReponse()
-                    {
-                        Success = true,
-                        Data = result
-                    };
-                }
+                    result.AreaChart.Add(areaChart);
+                    dateStart = dateEnd;
+                    dateEnd = dateEnd.AddMonths(1);
+                } while (dateStart < timeEnd);
+                result.TotalRevenue = result.AreaChart.Sum(a => a.Revenue);
+                result.TotalCapital = result.AreaChart.Sum(a => a.Capital);
                 return new ApiReponse()
                 {
-                    Success = false
+                    Success = true,
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new ApiReponse()
+                {
+                    Success = false,
+                    Data = HandleError.GenerateErrorResultException()
+                };
+            }
+        }
+        public ApiReponse GetListYear()
+        {
+            try
+            {
+                var respone = new List<TimeModel>();
+                var startYear = _repositoryContext.ImportProducts.Min(ip => ip.CreatedDate).Year;
+                while (startYear < DateTime.Now.Year)
+                {
+                    respone.Add(new TimeModel
+                    {
+                        Label = "Năm " + startYear,
+                        Value = startYear
+                    });
+                    startYear++;
+                }
+                respone.Add(new TimeModel
+                {
+                    Label = "Năm nay",
+                    Value = startYear
+                });
+                respone.Reverse();
+                return new ApiReponse()
+                {
+                    Success = true,
+                    Data = respone
                 };
             }
             catch (Exception ex)
@@ -235,4 +251,5 @@ namespace Services.Service
             }
         }
     }
+    
 }

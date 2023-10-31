@@ -576,7 +576,13 @@ const Const = {
       content: "Quản lý tin tức", 
       link: "/overview",
       role: [1,2,3,4]
-    }
+    },
+    {
+      icon: "icon-product",
+      content: "Báo cáo, thống kê",
+      link: "/statistic",
+      role: [3,4]
+    },
   ]
 };
 export default Const;
