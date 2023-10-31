@@ -25,13 +25,13 @@
             </div>
         </div>
 
-        <div class="box statistic flex-column space-between">
+        <div>
             <!-- <canvas id="chart-line" class="line-chart"></canvas>
             <canvas id="chart-bar" class="line-chart"></canvas>
             <canvas id="chart-pie" class="pie-chart"></canvas> -->
             <!-- <ChartView :lineData="lineData" :pieData="pieData"/> -->
-            <ChartView :lineData="lineData" :pieData="pieData" v-if="isShow"/>
-            
+            <!-- <ChartView :statisticModel="statisticModel" v-if="isShow"/> -->
+            <ChartView :statisticModel="statisticModel"/>
         </div>
 
     </div>
@@ -65,38 +65,7 @@ export default {
             listYear: [],
             yearStatistic: '',
             statisticModel: {},
-            lineData: {
-                labels: [],
-                datasets: [
-                    {
-                        label: "Tiền vốn",
-                        borderColor: "#FC2525",
-                        pointBackgroundColor: "white",
-                        borderWidth: 1,
-                        pointBorderColor: "black",
-                        backgroundColor: "rgba(255, 0, 0, 0.25)",
-                        data: []
-                    },
-                    {
-                        label: "Doanh thu",
-                        borderColor: "#05CBE1",
-                        pointBackgroundColor: "white",
-                        pointBorderColor: "black",
-                        borderWidth: 1,
-                        backgroundColor: "rgba(0, 231, 255, 0.25)",
-                        data: [] 
-                    }
-                ]
-            },
-            pieData: {
-                labels: [],
-                datasets: [
-                    {
-                        backgroundColor: ["#05CBE1", "#FC2525", "#00D8FF"],
-                        data: [40, 20, 10]
-                    }
-                ]
-            },
+            
         };
     },
     methods: {
@@ -130,11 +99,6 @@ export default {
                 await axios.get(`Statistic/chart?time=${this.yearStatistic}`)
                     .then((response) => {
                         this.statisticModel = response.data;
-                        this.lineData.labels = this.statisticModel.areaChart.map(i => i.label);
-                        this.lineData.datasets[0].data = this.statisticModel.areaChart.map(i => i.capital);
-                        this.lineData.datasets[1].data = this.statisticModel.areaChart.map(i => i.revenue);
-                        this.pieData.labels = this.statisticModel.pieChart.map(i => i.label);
-                        this.pieData.datasets[0].data = this.statisticModel.pieChart.map(i => i.value);
                         // this.handleStatistic();
                     })
                     .catch((error) => {
@@ -196,13 +160,14 @@ export default {
         },
 
     },
-    created() {
+    async created() {
         document.title = Resource.Title.Management;
-
-    },
-    async mounted() {
         // Lấy danh sách các năm
         await this.getListYear();
+
+    },
+     mounted() {
+        
     },
     // watch: {
     //     yearStatistic() {
@@ -246,22 +211,13 @@ export default {
     margin: 0 5px 0 12px;
 }
 
-.statistic {
+.box {
     background-color: #fff;
+    box-shadow: 0 0 11px rgb(0 0 0 / 8%);
     position: relative;
     border-radius: 4px;
     width: 100%;
     height: 100%;
 }
 
-.box {
-    background-color: #fff;
-    border-radius: 4px;
-    box-shadow: 0 0 11px rgb(0 0 0 / 8%);
-}
-
-.line-chart {
-    width: 100%;
-    height: 100%;
-}
 </style>
