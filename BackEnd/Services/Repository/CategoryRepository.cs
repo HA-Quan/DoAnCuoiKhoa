@@ -35,6 +35,7 @@ namespace Services.Repository
                 else
                 {
                     category.Status = status;
+                    category.ModifiedDate = DateTime.Now;
                     listCategory.Add(category);
                 }
             }
@@ -65,6 +66,7 @@ namespace Services.Repository
                 else
                 {
                     category.DelFalg = EnumType.DeleteFlag.Deleted;
+                    category.ModifiedDate = DateTime.Now;
                     listCategory.Add(category);
                 }
             }

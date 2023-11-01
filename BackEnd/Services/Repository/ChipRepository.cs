@@ -35,6 +35,7 @@ namespace Services.Repository
                 else
                 {
                     chip.Status = status;
+                    chip.ModifiedDate = DateTime.Now;
                     listChip.Add(chip);
                 }
             }
@@ -65,6 +66,7 @@ namespace Services.Repository
                 else
                 {
                     chip.DelFalg = EnumType.DeleteFlag.Deleted;
+                    chip.ModifiedDate = DateTime.Now;
                     listChip.Add(chip);
                 }
             }

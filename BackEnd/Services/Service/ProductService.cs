@@ -98,6 +98,7 @@ namespace Services.Service
                     //}
                     
                     product.NumberView += 1;
+                    product.ModifiedDate = DateTime.Now;
                     Update(product);
                     return new ApiReponse()
                     {
@@ -292,6 +293,7 @@ namespace Services.Service
                             }
 
                         }
+                        p.ModifiedDate = DateTime.Now;
                         _repositoryBase.Update(p);
                         _productRepository.Save();
                         if (_giftByProductRepository.UpdateMultiple(listGiftByProducts, productID) == 0)
@@ -380,6 +382,7 @@ namespace Services.Service
                         {
                             _giftByProductRepository.DeleteByProductID(productID);
                             product.DelFalg = EnumType.DeleteFlag.Deleted;
+                            product.ModifiedDate = DateTime.Now;
                             listProduct.Add(product);
                         }
                     }

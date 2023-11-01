@@ -61,6 +61,7 @@ namespace Services.Service
                     if (_repositoryBase.FindByCondition(p => p.DelFalg == EnumType.DeleteFlag.Using &&
                     p.RateID == rateID && rate.RateID == rateID).Any())
                     {
+                        rate.ModifiedDate = DateTime.Now;
                         Update(rate);
                         result.Success = true;
                         result.Data = rate.RateID;
@@ -98,6 +99,7 @@ namespace Services.Service
                 if (result != null)
                 {
                     result.DelFalg = EnumType.DeleteFlag.Deleted;
+                    result.ModifiedDate = DateTime.Now;
                     Update(result);
                     return new ApiReponse()
                     {

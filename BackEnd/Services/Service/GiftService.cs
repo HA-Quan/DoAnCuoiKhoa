@@ -96,6 +96,7 @@ namespace Services.Service
                     if (_repositoryBase.FindByCondition(p => p.DelFalg == EnumType.DeleteFlag.Using &&
                     p.GiftID == giftID && gift.GiftID == giftID).Any())
                     {
+                        gift.ModifiedDate = DateTime.Now;
                         Update(gift);
                         result.Success = true;
                         result.Data = gift.GiftID;

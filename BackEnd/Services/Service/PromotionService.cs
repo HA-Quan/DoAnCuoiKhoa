@@ -126,6 +126,7 @@ namespace Services.Service
                     if (_repositoryBase.FindByCondition(p => p.DelFalg == EnumType.DeleteFlag.Using &&
                     p.PromotionID == promotionID && promotion.PromotionID == promotionID).Any())
                     {
+                        promotion.ModifiedDate = DateTime.Now;
                         Update(promotion);
                         result.Success = true;
                         result.Data = promotion.PromotionID;

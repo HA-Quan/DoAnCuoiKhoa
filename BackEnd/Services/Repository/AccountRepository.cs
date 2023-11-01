@@ -176,6 +176,7 @@ namespace Services.Repository
                 else
                 {
                     account.Status = status;
+                    account.ModifiedDate = DateTime.Now;
                     listAccount.Add(account);
                 }
             }
