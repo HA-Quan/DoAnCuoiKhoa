@@ -8,10 +8,14 @@
                 <div class="row-form">
                     <label for="">Fullname</label>
                     <div class="text-field-form">
-                        <div :class="['input-form border', { 'error': error.fullname }]">
+                        <!-- <div :class="['input-form border', { 'error': error.fullname }]">
                             <input type="text" ref="txtFullname" v-model.trim="registerModel.fullName" maxlength="100"
                                 @blur="validateFullname">
-                        </div>
+                        </div> -->
+                        <InputString :transmissionString="registerModel.fullName" :hasError="error.fullname != ''"
+                            maxlength="100" tabindex="1" :nameProperty="Resource.AccountProperty.FullName"
+                            @updateValue="updateValue" @eventBlur="focusFullname = false; validateFullname();"
+                            :isRef="focusFullname" />
                         <div class="error-text">{{ error.fullname }}</div>
                     </div>
                 </div>
@@ -19,71 +23,68 @@
                 <div class="row-form">
                     <label for="">Email</label>
                     <div class="text-field-form">
-                        <div :class="['input-form border', { 'error': error.email }]">
+                        <!-- <div :class="['input-form border', { 'error': error.email }]">
                             <input type="text" ref="txtEmail" v-model.trim="registerModel.email" maxlength="150"
                                 @blur="this.validateEmail">
-                        </div>
+                        </div> -->
+
+                        <InputString :transmissionString="registerModel.email" :hasError="error.email != ''"
+                            maxlength="150" tabindex="2" :nameProperty="Resource.AccountProperty.Email"
+                            @updateValue="updateValue" @eventBlur="focusEmail = false; validateEmail();"
+                            :isRef="focusEmail" />
                         <div class="error-text">{{ error.email }}</div>
                     </div>
                 </div>
                 <div class="row-form">
                     <label for="">Username</label>
                     <div class="text-field-form">
-                        <div :class="['input-form border', { 'error': error.username }]">
+                        <!-- <div :class="['input-form border', { 'error': error.username }]">
                             <input type="text" ref="txtUsername" v-model.trim="registerModel.userName" maxlength="50"
                                 @blur="validateUsername">
-                        </div>
+                        </div> -->
+                        <InputString :transmissionString="registerModel.username" :hasError="error.username != ''"
+                            maxlength="50" tabindex="3" :nameProperty="Resource.AccountProperty.Username"
+                            @updateValue="updateValue" @eventBlur="focusUsername = false; validateUsername();"
+                            :isRef="focusUsername" />
                         <div class="error-text">{{ error.username }}</div>
                     </div>
                 </div>
                 <div class="row-form">
                     <label for="">Password</label>
                     <div class="text-field-form">
-                        <div :class="['input-form border', { 'error': error.password }]">
+                        <!-- <div :class="['input-form border', { 'error': error.password }]">
                             <input type="password" ref="txtPassword" v-model.trim="registerModel.password" maxlength="255"
                                 @blur="validatePassword">
                             <div v-show="registerModel.password" class="icon" :class="showPassword ? 'hide' : 'visible'"
                                 @click="hidePassword"></div>
-                        </div>
+                        </div> -->
+
+                        <InputPassword :transmissionString="registerModel.password" :hasError="error.password != ''"
+                            maxlength="255" tabindex="4" :nameProperty="Resource.AccountProperty.Password"
+                            @updateValue="updateValue" @eventBlur="focusPassword = false; validatePassword();"
+                            :isFocus="focusPassword" />
                         <div class="error-text">{{ error.password }}</div>
                     </div>
                 </div>
                 <div class="row-form">
                     <label for="">Confirm Password</label>
                     <div class="text-field-form">
-                        <div :class="['input-form border', { 'error': error.verifyPassword }]">
+                        <!-- <div :class="['input-form border', { 'error': error.verifyPassword }]">
                             <input type="password" ref="txtVetifyPassword" v-model.trim="verifyPassword" maxlength="255"
-                                @blur="validateVetifyPassword">
+                                @blur="validateVerifyPassword">
                             <div v-show="verifyPassword" class="icon" :class="showVetifyPassword ? 'hide' : 'visible'"
                                 @click="hideVetifyPassword"></div>
-                        </div>
+                        </div> -->
+
+                        <InputPassword :transmissionString="registerModel.verifyPassword"
+                            :hasError="error.verifyPassword != ''" maxlength="255" tabindex="5"
+                            :nameProperty="Resource.AccountProperty.VerifyPassword" @updateValue="updateValue"
+                            @eventBlur="focusVerifyPassword = false; validateVerifyPassword();"
+                            :isFocus="focusVerifyPassword" />
                         <div class="error-text">{{ error.verifyPassword }}</div>
                     </div>
                 </div>
-                <!-- <div class="input-box">
-                    <input type="text" v-model.trim="registerModel.fullname" maxlength="100">
-                    <label>Fullname</label>
-                </div>
-                <div class="input-box">
-                    <input type="text" v-model.trim="registerModel.email" maxlength="150">
-                    <label>Email</label>
-                </div>
-                <div class="input-box">
-                    <input type="text" v-model.trim="registerModel.username" maxlength="255">
-                    <label>Username</label>
-                </div>
-                <div class="input-box">
-                    <div v-show="registerModel.password" class="icon" :class="showPassword ? 'hide' : 'visible'"
-                        @click="hidePassword"></div>
-                    <input type="password" ref="password" v-model.trim="registerModel.password" maxlength="255">
-                    <label>Password</label>
-                </div>
-                <div class="input-box">
-                    <div v-show="verifyPassword" class="icon" :class="showVerifyPassword ? 'hide' : 'visible'"
-                        @click="hideVerifyPassword"></div>
-                    <input type="password" ref="password" v-model.trim="verifyPassword" maxlength="255">
-                    <label>Confirm Password</label> 
-                </div>-->
+
             </div>
             <div class="footer">
                 <div class="submit">
@@ -100,33 +101,60 @@
 </template>
 <script>
 import axios from 'axios';
-
+import InputPassword from '@/components/base/BaseInputPassword.vue';
+import InputString from '@/components/base/BaseInputString.vue';
+import Resource from '@/utils/resource';
 export default {
     name: 'RegisterForm',
+    components: {
+        InputPassword, InputString
+    },
     data() {
         return {
+            Resource: Resource,
             registerModel: {
-                userName: null,
-                password: null,
-                email: null,
-                fullName: null
+                username: '',
+                password: '',
+                email: '',
+                fullName: ''
             },
             error: {
-                username: null,
-                password: null,
-                email: null,
-                fullname: null,
-                verifyPassword: null
+                username: '',
+                password: '',
+                email: '',
+                fullname: '',
+                verifyPassword: ''
             },
-            verifyPassword: null,
+            verifyPassword: '',
             showPassword: false,
             showVetifyPassword: false,
+
+            focusFullname: false,
+            focusEmail: false,
+            focusUsername: false,
+            focusPassword: false,
+            focusVerifyPassword: false,
+
         };
+    },
+    
+    created(){
+        this.focusFullname = true;
     },
     methods: {
         goToLogin() {
             this.$router.push({ path: '/login' });
         },
+
+        updateValue(value, nameProperty) {
+            if (nameProperty == Resource.AccountProperty.VerifyPassword) {
+                this.verifyPassword = value;
+            }
+            else {
+                this.registerModel[nameProperty] = value;
+            }
+        },
+
         hidePassword() {
             this.showPassword = !this.showPassword;
             if (this.showPassword) {
@@ -136,6 +164,7 @@ export default {
                 this.$refs.txtPassword.type = "password";
             }
         },
+
         hideVetifyPassword() {
             this.showVetifyPassword = !this.showVetifyPassword;
             if (this.showVetifyPassword) {
@@ -148,22 +177,16 @@ export default {
 
         async singUp() {
             try {
-                console.log(1);
                 if (await this.validate()) {
                     await axios.post("Account/SingUp", this.registerModel)
                         .then((response) => {
-                            console.log(2);
                             console.log(response);
                         })
                         .catch((error) => {
-                            console.log(3);
                             console.log(error);
                         });
                 }
-                else {
-                    console.log(5);
-                }
-            } catch(error) {
+            } catch (error) {
                 console.log(error);
             }
         },
@@ -171,31 +194,30 @@ export default {
         validate() {
             try {
                 let valid = true;
-                if (!this.validateVetifyPassword()) {
-                    this.$refs.txtVetifyPassword.focus();
+                if (!this.validateVerifyPassword()) {
+                    this.focusVerifyPassword = true;
                     valid = false;
                 }
 
                 if (!this.validatePassword()) {
-                    this.$refs.txtPassword.focus();
+                    this.focusPassword = true;
                     valid = false;
                 }
 
                 if (!this.validateUsername()) {
-                    this.$refs.txtUsername.focus();
+                    this.focusUsername = true;
                     valid = false;
                 }
 
                 if (!this.validateEmail()) {
-                    this.$refs.txtEmail.focus();
+                    this.focusEmail = true;
                     valid = false;
                 }
 
                 if (!this.validateFullname()) {
-                    this.$refs.txtFullname.focus();
+                    this.focusFullname = true;
                     valid = false;
                 }
-                console.log(4);
                 return valid;
             } catch (error) {
                 console.log(error);
@@ -204,70 +226,64 @@ export default {
         },
         validateFullname() {
             if (!this.registerModel.fullName) {
-                this.error.fullname = "Họ tên không được để trống!";
+                this.error.fullname = Resource.Error.FullNameNotEmpty;
                 return false;
             }
-            this.error.fullname = null;
+            this.error.fullname = '';
             return true;
         },
         validateEmail() {
-            var validEmail = '^[\\w-.]+@([\\w-]+.)+[\\w-]{2,4}$';
+            // eslint-disable-next-line
+            var validEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
             if (!this.registerModel.email) {
-                this.error.email = "Email không được để trống!";
+                this.error.email = Resource.Error.Email;
                 return false;
             }
             if (!new RegExp(validEmail).test(this.registerModel.email)) {
-                this.error.email = "Email không hợp lệ!";
+                this.error.email = Resource.Error.InvalidEmail;
                 return false;
             }
-            this.error.email = null;
+            this.error.email = '';
             return true;
         },
 
         validateUsername() {
-            if (!this.registerModel.userName) {
-                this.error.username = "Tên đăng nhập không được để trống!";
+            if (!this.registerModel.username) {
+                this.error.username = Resource.Error.UserName;
                 return false;
             }
-            if (this.registerModel.userName.includes(' ')) {
-                this.error.username = "Tên đăng nhập không được chứa dấu cách!";
-                return false;
-            }
-            this.error.username = null;
+            this.error.username = '';
             return true;
         },
 
         validatePassword() {
-            // var validPassword = '/^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/';
+            var validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
             if (!this.registerModel.password) {
-                this.error.password = "Mật khẩu không được để trống!";
+                this.error.password = Resource.Error.Password;
                 return false;
             }
-            if (this.registerModel.password.includes(' ')) {
-                this.error.password = "Mật khẩu không được chứa dấu cách!";
+
+            if (!new RegExp(validPassword).test(this.registerModel.password)) {
+                this.error.password = Resource.Error.InvalidPassword;
                 return false;
             }
-            // if (!new RegExp(validPassword).test(this.registerModel.password)) {
-            //     this.error.password = "Mật khẩu phải có ít nhất 8 ký tự, có ít nhất một chữ thường, một chữ hoa, một chữ số và một kí tự đặc biệt!";
-            //     return false;
-            // }
-            this.error.password = null;
+            this.error.password = '';
             return true;
         },
 
-        validateVetifyPassword() {
+        validateVerifyPassword() {
             if (this.registerModel.password != this.verifyPassword) {
-                this.error.verifyPassword = "Mật khẩu xác nhận không khớp!";
+                this.error.verifyPassword = Resource.Error.VerifyPassword;
                 return false;
             }
-            this.error.verifyPassword = null;
+            this.error.verifyPassword = '';
             return true;
         }
     }
 }
 </script>
 <style scoped>
-.register-form{
+.register-form {
     top: 0;
     left: 0;
     width: 100vw;
@@ -278,7 +294,7 @@ export default {
     background-position: center;
 }
 
-.register-box{
+.register-box {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -292,29 +308,29 @@ export default {
     padding: 20px 40px;
 }
 
-.title{
+.title {
     width: 100%;
     height: 60px;
 }
 
-.title h2{
+.title h2 {
     font-size: 2em;
     color: #000;
     text-align: center;
 }
 
-.content{
+.content {
     display: flex;
     flex-direction: column;
 }
 
-.row-form{
+.row-form {
     margin-bottom: 16px;
     display: flex;
     flex-direction: column;
 }
 
-label{
+label {
     color: #000;
     font-size: 14px;
     font-weight: 400;
@@ -324,48 +340,51 @@ label{
     width: auto;
 }
 
-.text-field-form{
+.text-field-form {
     background: #fff;
     padding: 0;
     width: 100%;
     border-radius: 3.5px;
 }
 
-.input-form{
+.input-form {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-.input-form input{
+.input-form input {
     border: none;
     padding: 9px 12px;
     background: 0 0;
     min-height: 34px;
     width: 100%;
 }
+
 .border {
     border: 1px solid #e0e0e0;
     border-radius: 3.5px;
 }
+
 .border.error {
     border: 1px solid #ef5350;
 }
 
 :focus-visible {
     outline: none;
-  }
+}
 
-.border:not(.error):focus-within, 
+.border:not(.error):focus-within,
 .border:not(.error):hover {
     border: 1px solid #1a73e8;
 }
+
 .error-text {
     color: #ef5350;
     margin-top: 6px;
 }
 
-.icon{
+.icon {
     height: 24px;
     width: 24px;
     position: relative;
@@ -374,13 +393,13 @@ label{
     cursor: pointer;
 }
 
-.icon.visible{
+.icon.visible {
     background: transparent url(../assets/icon/visible.png) no-repeat;
     background-position: center;
     background-size: 24px 24px;
 }
 
-.icon.hide{
+.icon.hide {
     background: transparent url(../assets/icon/hide.png) no-repeat;
     background-position: center;
     background-size: 24px 24px;
@@ -403,7 +422,7 @@ button:hover {
     background: #78c3eb;
 }
 
-.footer{
+.footer {
     margin-top: 20px;
     border-top: 1px solid #e0e0e0;
     padding-top: 20px;
@@ -411,23 +430,24 @@ button:hover {
     flex-direction: column;
 }
 
-.submit{
+.submit {
     display: flex;
     justify-content: center;
 }
-.login{
+
+.login {
     margin-top: 20px;
     display: flex;
     justify-content: center;
 }
 
-.login a{
+.login a {
     color: #000;
     text-decoration: none;
     font-weight: 600;
 }
 
-.login a:hover{
+.login a:hover {
     text-decoration: underline;
     cursor: pointer;
 }

@@ -348,6 +348,7 @@ export default {
     },
     created() {
         this.infoImport = { ...this.importProductInit };
+        this.infoImport.createdBy = this.$store.getters.user.accountID;
         this.getData();
     }
 }

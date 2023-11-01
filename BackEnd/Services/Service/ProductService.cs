@@ -280,6 +280,7 @@ namespace Services.Service
                             g.ProductID == productID && g.GiftID == gift.GiftID);
                             if (giftByProduct != null)
                             {
+                                giftByProduct.ModifiedBy = p.CreatedBy;
                                 listGiftByProducts.Add(giftByProduct);
                             }
                             else
@@ -288,7 +289,8 @@ namespace Services.Service
                                 {
                                     ID = Guid.NewGuid(),
                                     GiftID = gift.GiftID,
-                                    ProductID = productID
+                                    ProductID = productID,
+                                    CreatedBy = p.CreatedBy
                                 });
                             }
 

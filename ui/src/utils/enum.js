@@ -112,7 +112,9 @@ const Enum = {
     All: 0
   },
   Role: {
-    All: 0
+    All: 0,
+    Member: 1,
+    Staff: 2,
   },
   StatusOrder: {
     All: 0

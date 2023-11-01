@@ -247,6 +247,7 @@ namespace Services.Service
                     foreach (var ordDetail in orderModel.ListOrderDetail)
                     {
                         ordDetail.OrderID = op.OrderID;
+                        ordDetail.CreatedBy = op.CreatedBy;
                     }
                     if (_orderDetailRepository.CreateMultiple(orderModel.ListOrderDetail.ToList()) == 0)
                     {

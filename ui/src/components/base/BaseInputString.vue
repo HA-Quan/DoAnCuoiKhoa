@@ -2,7 +2,7 @@
     <div :class="['flex-row border align-items-center',
         { 'error': hasError },{ disabled: disabled } ]">
         <input :placeholder="placeholder" :maxlength="maxlength" class="input-form flex" type="text"
-            @blur="this.evenBlur(); showIcon = false;" @focus="showIcon = true" :tabindex="tabindex"
+            @blur="evenBlur(); showIcon = false;" @focus="showIcon = true" :tabindex="tabindex"
             v-model.trim="value" ref="refName" :readonly="isReadonly" :disabled="disabled">
 
         <div v-show="value && showIcon" @mousedown="value = ''" class="icon-X" style="left=0px;"></div>

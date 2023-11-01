@@ -29,7 +29,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="account.fullName" :hasError="errors.fullName != ''"
+                  <InputString :transmissionString="accountModel.account.fullName" :hasError="errors.fullName != ''"
                     :placeholder="Resource.Placehoder.FullName" maxlength="100" tabindex="1"
                     :nameProperty="Resource.AccountProperty.FullName" @updateValue="updateValue"
                     @eventBlur="focusFullName = false; validateFullName();" :isRef="focusFullName" />
@@ -44,7 +44,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="account.username" :hasError="errors.username != ''"
+                  <InputString :transmissionString="accountModel.account.username" :hasError="errors.username != ''"
                     :placeholder="Resource.Placehoder.Username" maxlength="50" tabindex="2"
                     :disabled="formMode == Enum.Mode.Edit" :nameProperty="Resource.AccountProperty.Username"
                     @updateValue="updateValue" @eventBlur="focusUsername = false; validateUsername();"
@@ -60,10 +60,15 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="account.password" :hasError="errors.password != ''"
+                  <!-- <InputString :transmissionString="accountModel.account.password" :hasError="errors.password != ''"
                     :placeholder="Resource.Placehoder.Password" maxlength="255" tabindex="3"
                     :nameProperty="Resource.AccountProperty.Password" @updateValue="updateValue"
-                    @eventBlur="focusPassword = false; validatePassword();" :isRef="focusPassword" />
+                    @eventBlur="focusPassword = false; validatePassword();" :isRef="focusPassword" /> -->
+
+                  <InputPassword :transmissionString="accountModel.account.password" :hasError="errors.password != ''"
+                    :placeholder="Resource.Placehoder.Password" maxlength="255" tabindex="3"
+                    :nameProperty="Resource.AccountProperty.Password" @updateValue="updateValue"
+                    @eventBlur="focusPassword = false; validatePassword();" :isFocus="focusPassword" />
 
                   <div class="error-text">{{ errors.password }}</div>
                 </div>
@@ -76,11 +81,16 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="verifyPassword" :hasError="errors.verifyPassword != ''"
+                  <!-- <InputString :transmissionString="verifyPassword" :hasError="errors.verifyPassword != ''"
                     :placeholder="Resource.Placehoder.VerifyPassword" maxlength="255" tabindex="4"
                     :nameProperty="Resource.AccountProperty.VerifyPassword" @updateValue="updateValue"
-                    @eventBlur="focusVerifyPassword = false; validateVerifyPassword();" :isRef="focusVerifyPassword" />
+                    @eventBlur="focusVerifyPassword = false; validateVerifyPassword();" :isRef="focusVerifyPassword" /> -->
 
+                  <InputPassword :transmissionString="accountModel.account.verifyPassword"
+                    :hasError="errors.verifyPassword != ''" :placeholder="Resource.Placehoder.VerifyPassword"
+                    maxlength="255" tabindex="4" :nameProperty="Resource.AccountProperty.VerifyPassword"
+                    @updateValue="updateValue" @eventBlur="focusVerifyPassword = false; validateVerifyPassword();"
+                    :isFocus="focusVerifyPassword" />
                   <div class="error-text">{{ errors.verifyPassword }}</div>
                 </div>
               </div>
@@ -92,10 +102,10 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="account.email" :hasError="errors.email != ''"
-                    :placeholder="Resource.Placehoder.Email" maxlength="150" tabindex="5" :disabled="formMode == Enum.Mode.Edit"
-                    :nameProperty="Resource.AccountProperty.Email" @updateValue="updateValue"
-                    @eventBlur="focusEmail = false; validateEmail();" :isRef="focusEmail" />
+                  <InputString :transmissionString="accountModel.account.email" :hasError="errors.email != ''"
+                    :placeholder="Resource.Placehoder.Email" maxlength="150" tabindex="5"
+                    :disabled="formMode == Enum.Mode.Edit" :nameProperty="Resource.AccountProperty.Email"
+                    @updateValue="updateValue" @eventBlur="focusEmail = false; validateEmail();" :isRef="focusEmail" />
 
                   <div class="error-text">{{ errors.email }}</div>
                 </div>
@@ -109,7 +119,7 @@
 
                 <div class="flex combobox-form">
                   <BaseCombobox tabindex="8" :hasIcon="true" :isReadonly="true" :items="Const.Role"
-                    :initItem="configRole(this.account.role)" fieldName="Label" @getValue="setRole" />
+                    :initItem="configRole(accountModel.account.role)" fieldName="Label" @getValue="setRole" />
 
                 </div>
               </div>
@@ -121,7 +131,7 @@
 
                 <div class="flex combobox-form">
                   <BaseCombobox tabindex="9" :hasIcon="true" :isReadonly="true" :items="Const.Status"
-                    :initItem="configStatus(this.account.status)" fieldName="Label" @getValue="setStatus" />
+                    :initItem="configStatus(accountModel.account.status)" fieldName="Label" @getValue="setStatus" />
 
                 </div>
               </div>
@@ -133,7 +143,7 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="account.phone" :hasError="errors.phone != ''"
+                  <InputString :transmissionString="accountModel.account.phone" :hasError="errors.phone != ''"
                     :placeholder="Resource.Placehoder.Phone" maxlength="20" tabindex="6"
                     :nameProperty="Resource.AccountProperty.Phone" @updateValue="updateValue"
                     @eventBlur="focusPhone = false; validatePhone();" :isRef="focusPhone" />
@@ -148,18 +158,21 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputString :transmissionString="account.address" :placeholder="Resource.Placehoder.Address"
-                    maxlength="255" tabindex="7" :nameProperty="Resource.AccountProperty.Address"
-                    @updateValue="updateValue" />
+                  <InputString :transmissionString="accountModel.account.address"
+                    :placeholder="Resource.Placehoder.Address" maxlength="255" tabindex="7"
+                    :nameProperty="Resource.AccountProperty.Address" @updateValue="updateValue" />
                 </div>
               </div>
             </div>
             <div class="flex mr-10">
               <div class="image d-flex justify-content">
-                <img src="http://127.0.0.1:9000/doantotnghiep/user_default.png" alt="">
+                <img :src="url" ref="avt" alt="">
               </div>
               <div class="action d-flex justify-content">
-                <input class="input-file" type="file" ref="avatar" accept=".jpg" @change="handleUploadAvatar">
+                <input class="input-file" type="file" ref="avatar" accept="image/*" @change="changeAvatar">
+                <BaseButton @click="cancelUploadAvatar" class="sub-button btn ml-10" v-show="accountModel.image">
+                  {{ Resource.Button.Cancel }}
+                </BaseButton>
               </div>
             </div>
 
@@ -211,10 +224,11 @@ import BaseCombobox from "../components/base/BaseCombobox.vue";
 import BaseButton from "../components/base/BaseButton.vue";
 import BasePopup from "../components/base/BasePopup.vue";
 import InputString from '@/components/base/BaseInputString.vue';
+import InputPassword from '@/components/base/BaseInputPassword.vue';
 import axios from 'axios';
 export default {
   components: {
-    BaseCombobox, BaseButton, BasePopup, InputString
+    BaseCombobox, BaseButton, BasePopup, InputString, InputPassword
   },
   props: ["closeFormDetail", "accountIdUpdate", "formMode"],
   data() {
@@ -239,18 +253,21 @@ export default {
         phone: "",
       },
 
-      accountInit: { // thông tin tài khoản mặc định của form thêm mới
-        fullName: '', // họ tên người dùng
-        username: '', // tên đăng nhập
-        password: '', // mật khẩu
-        email: '', // email
-        phone: '', // số điện thoại
-        address: '', // địa chỉ
-        role: 2, // quyền hạn
-        createdBy: '5dd9b7cf-7185-4a4c-b922-5a9c12ce1a89'
+      accountModelInit: { // thông tin tài khoản mặc định của form thêm mới
+        account: {
+          fullName: '', // họ tên người dùng
+          username: '', // tên đăng nhập
+          avatar: Resource.DefaultAvatar, //ảnh đại diện
+          password: '', // mật khẩu
+          email: '', // email
+          phone: '', // số điện thoại
+          address: '', // địa chỉ
+          role: Enum.Role.Staff, // quyền hạn
+        },
+        image: null
       },
 
-      account: {}, // thông tin tài khoản trong form thêm mới
+      accountModel: {}, // thông tin tài khoản trong form thêm mới
 
       verifyPassword: "",
 
@@ -263,24 +280,35 @@ export default {
       focusEmail: false,
       focusPhone: false,
 
+      url: '',
     };
   },
 
   methods: {
+    changeAvatar() {
+      this.url = URL.createObjectURL(this.$refs.avatar.files[0]);
+      this.accountModel.image = this.$refs.avatar.files[0];
+      console.log(this.accountModel.image);
+    },
+
+    cancelUploadAvatar() {
+      this.url = Resource.PrefixImage + this.accountModel.account.avatar;
+      this.accountModel.image = null;
+    },
 
     updateValue(value, nameProperty) {
       if (nameProperty == Resource.AccountProperty.VerifyPassword) {
         this.verifyPassword = value;
       }
       else {
-        this.account[nameProperty] = value;
+        this.accountModel.account[nameProperty] = value;
       }
     },
 
     setStatus(value) {
       Const.Status.find((item) => {
         if (item.Label == value) {
-          this.account.status = item.Value;
+          this.accountModel.account.status = item.Value;
         }
       });
     },
@@ -299,7 +327,7 @@ export default {
     setRole(value) {
       Const.Role.find((item) => {
         if (item.Label == value) {
-          this.account.role = item.Value;
+          this.accountModel.account.role = item.Value;
         }
       });
     },
@@ -365,7 +393,14 @@ export default {
      */
     async sendRequestUpdate() {
       try {
-        await axios.put("Account/" + this.account.accountID, this.account)
+        this.accountModel.account.modifiedBy = this.$store.getters.user.accountID;
+
+        await axios.put("Account/" + this.accountModel.account.accountID,
+          { account: this.accountModel.account, image: this.accountModel.image }, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+        })
           .then((response) => {
             console.log(response);
 
@@ -390,34 +425,26 @@ export default {
      *  Author: HAQUAN(29/08/2023) 
      */
     async sendRequestInsert(control) {
-      let formData = new FormData();
-      formData.append('listImages[' + 0 + ']', this.$refs.avatar.files[0]);
-      let list = this.$refs.imageDetail.files;
-      for (var i = 0; i < list.length; i++) {
-        formData.append('listImages[' + (i + 1) + ']', list[i]);
-      }
-      formData.append('account', JSON.stringify(this.account));
-      formData.append('listGifts', JSON.stringify(this.listGifts));
       try {
-        await axios.post('Product/', formData, {
+        await axios.post('Account/', { account: this.accountModel.account, image: this.accountModel.image }, {
           headers: {
-            'Content-Type': 'multipart/form-data',
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'multipart/form-data'
           },
-        }).then((response) => {
-          console.log(response);
-
-          // Hiển thị toast thông báo thành công
-          this.$emit("showToast", Resource.Message.AddProductSucces, Const.TypeToast.Success);
-          this.$emit("refreshData");
-          if (!control) {
-            this.closeFormDetail();
-          }
-          else {
-            this.account = { ...this.accountInit };
-            this.focusProductName = true;
-          }
         })
+          .then((response) => {
+            console.log(response);
+
+            // Hiển thị toast thông báo thành công
+            this.$emit("showToast", Resource.Message.AddAccountSucces, Const.TypeToast.Success);
+            this.$emit("refreshData");
+            if (!control) {
+              this.closeFormDetail();
+            }
+            else {
+              this.accountModel.account = { ...this.accountModelInit };
+              this.focusProductName = true;
+            }
+          })
           .catch((error) => {
             console.log(error);
             this.handleErrorResponse(error);
@@ -456,7 +483,7 @@ export default {
      */
     validateFullName() {
       try {
-        if (!this.account.fullName) {
+        if (!this.accountModel.account.fullName) {
           this.errors.fullName = Resource.Error.FullName;
           return false;
         }
@@ -473,7 +500,7 @@ export default {
      */
     validateUsername() {
       try {
-        if (!this.account.username) {
+        if (!this.accountModel.account.username) {
           this.errors.username = Resource.Error.UserName;
           return false;
         }
@@ -490,7 +517,13 @@ export default {
      */
     validatePassword() {
       try {
-        if (!this.account.password) {
+        var validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+
+        if (!this.accountModel.account.password) {
+          this.errors.password = Resource.Error.Password;
+          return false;
+        }
+        if (!new RegExp(validPassword).test(this.accountModel.account.password)) {
           this.errors.password = Resource.Error.InvalidPassword;
           return false;
         }
@@ -507,7 +540,7 @@ export default {
      */
     validateVerifyPassword() {
       try {
-        if (this.account.password != this.verifyPassword) {
+        if (this.accountModel.account.password != this.verifyPassword) {
           this.errors.verifyPassword = Resource.Error.VerifyPassword;
           return false;
         }
@@ -524,12 +557,13 @@ export default {
      */
     validateEmail() {
       try {
-        var validEmail = '^[\\w-.]+@([\\w-]+.)+[\\w-]{2,4}$';
-        if (!this.account.email) {
+        // eslint-disable-next-line
+        var validEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        if (!this.accountModel.account.email) {
           this.errors.email = Resource.Error.Email;
           return false;
         }
-        if (!new RegExp(validEmail).test(this.account.email)) {
+        if (!new RegExp(validEmail).test(this.accountModel.account.email)) {
           this.errors.email = "Email không hợp lệ!";
           return false;
         }
@@ -546,8 +580,8 @@ export default {
      */
     validatePhone() {
       try {
-        var validPhone = '\\(84|0[3|5|7|8|9])+([0-9]{8})\b\\g;';
-        if (this.account.phone && !new RegExp(validPhone).test(this.account.phone)) {
+        var validPhone = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
+        if (this.accountModel.account.phone && !new RegExp(validPhone).test(this.accountModel.account.phone)) {
           this.errors.phone = Resource.Error.Phone;
           return false;
         }
@@ -614,7 +648,8 @@ export default {
         let url = `Account/${accountID}`;
         await axios.get(url)
           .then((response) => {
-            this.account = response.data;
+            this.accountModel.account = response.data;
+            this.url = Resource.PrefixImage + this.accountModel.account.avatar;
           })
 
           .catch((error) => {
@@ -645,8 +680,9 @@ export default {
 
   },
   created() {
-    console.log(this.formMode);
-    this.account = { ...this.accountInit };
+    this.accountModelInit.account.createdBy = this.$store.getters.user.accountID;
+    this.accountModel = { ...this.accountModelInit };
+    this.url = Resource.PrefixImage + this.accountModel.account.avatar;
     if (this.formMode == Enum.Mode.Edit) {
       this.isTitle = Resource.Title.EditAccount;
       this.getAccountByID(this.accountIdUpdate);

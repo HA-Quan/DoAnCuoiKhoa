@@ -29,7 +29,7 @@ namespace Services.Service
         ApiReponse GetAccountById(Guid accountID);
         ApiReponse GetInfoByToken(string token);
         ApiReponse AddNewMember(SingUpModel singUpModel);
-        ApiReponse SaveAccount(Account account, Guid accountID);
+        Task<ApiReponse> SaveAccount(AccountModel accountModel, Guid accountID);
         ApiReponse UpdatePassword(Guid accountId, PasswordModel passwordModel);
         ApiReponse UpdateMultiple(List<Guid> listID, bool status);
         ApiReponse DeleteAccount(List<Guid> listID);
@@ -63,8 +63,7 @@ namespace Services.Service
         {
             try
             {
-                List<Account> accountList = FindByCondition(a => a.DelFalg == EnumType.DeleteFlag.Using 
-                && a.Role != (byte) EnumType.Role.Management).ToList();
+                List<Account> accountList = FindByCondition(a => a.DelFalg == EnumType.DeleteFlag.Using && a.Role != (byte) EnumType.Role.Admin).ToList();
                 return new ApiReponse()
                 {
                     Success = true,
@@ -207,6 +206,7 @@ namespace Services.Service
                     if (await ImageService.AddImage(img, _configuration) != null)
                     {
                         account.Avatar = await ImageService.AddImage(img, _configuration);
+                        account.ModifiedBy = accountID;
                         account.ModifiedDate = DateTime.Now;
                         Update(account);
                         _accountRepository.Save();
@@ -227,18 +227,40 @@ namespace Services.Service
             
             return result;
         }
-    
-        public ApiReponse SaveAccount(Account account, Guid accountID)
+
+        public async Task<ApiReponse> SaveAccount(AccountModel accountModel, Guid accountID)
         {
             ApiReponse result = new ApiReponse();
             try
             {
+                var account = accountModel.Account;
+                var image = accountModel.Image;
                 if (accountID != Guid.Empty)
                 {
                     if (_accountRepository.CheckExist(account) && account.AccountID == accountID)
                     {
-                        account.ModifiedDate = DateTime.Now;
-                        result = Update(account);
+                        if(image != null)
+                        {
+                            if (account.Avatar != Resource.AvatarDefault)
+                            {
+                                await ImageService.DeleteImage(account.Avatar, _configuration);
+                            }
+                            if (await ImageService.AddImage(image, _configuration) != null)
+                            {
+                                account.Avatar = await ImageService.AddImage(image, _configuration);
+                                account.ModifiedDate = DateTime.Now;
+                                result = Update(account);
+                            }
+                            else
+                            {
+                                result.Success = false;
+                            }
+                        }
+                        else
+                        {
+                            account.ModifiedDate = DateTime.Now;
+                            result = Update(account);
+                        }
                     }
                     else
                     {
@@ -249,10 +271,25 @@ namespace Services.Service
                 }
                 else
                 {
-                    account.AccountID = Guid.NewGuid();
+                    //account.AccountID = Guid.NewGuid();
                     account.Password = HashPasswordService.HashPassword(account.Password);
                     account.Username = account.Username.ToLower();
-                    result = Create(account);
+                    if (image != null)
+                    {
+                        if (await ImageService.AddImage(image, _configuration) != null)
+                        {
+                            account.Avatar = await ImageService.AddImage(image, _configuration);
+                            result = Create(account);
+                        }
+                        else
+                        {
+                            result.Success = false;
+                        }
+                    }
+                    else
+                    {
+                        result = Create(account);
+                    }
                 }
 
             }
@@ -276,6 +313,7 @@ namespace Services.Service
                     {
                         account.Password = HashPasswordService.HashPassword(passwordModel.PasswordNew);
                         account.ModifiedDate = DateTime.Now;
+                        account.ModifiedBy = accountId;
                         result = Update(account);
                     }
                     else
@@ -728,6 +766,7 @@ namespace Services.Service
         {
             if (role == (byte) EnumType.Role.Staff) return "Staff";
             if (role == (byte) EnumType.Role.Management) return "Management";
+            if (role == (byte)EnumType.Role.Admin) return "Admin";
             return "Member";
         }
 

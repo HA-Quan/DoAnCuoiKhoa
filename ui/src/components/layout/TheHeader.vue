@@ -307,7 +307,7 @@ export default {
         // });
         this.getTopProduct();
         this.getCategory();
-        this.amountCart = JSON.parse(localStorage.getItem('cart')).length;
+        this.amountCart = JSON.parse(localStorage.getItem('cart')) != null ? JSON.parse(localStorage.getItem('cart')).length : 0;
         this.configAction();
     },
     mounted() {

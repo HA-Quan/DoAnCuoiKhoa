@@ -1283,6 +1283,7 @@ export default {
      */
     async sendRequestUpdate() {
       try {
+        this.product.modifiedBy = this.$store.getters.user.accountID;
         let productModel = {
           product: this.product,
           listGifts: this.listGifts
@@ -1740,6 +1741,7 @@ export default {
   },
   created() {
     this.product = { ...this.productInit };
+    this.product.createdBy = this.$store.getters.user.accountID;
     this.getDataCombobox();
     if (this.formMode == Enum.Mode.Edit) {
       this.isTitle = Resource.Title.EditProduct;

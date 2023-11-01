@@ -294,7 +294,6 @@ export default {
             step: Enum.Step.SelectProduct,
             orderModel: {
                 order: {
-                    orderBy: 'Hoang Anh Quan',
                     fullName: '',
                     email: '',
                     phone: '',
@@ -571,7 +570,7 @@ export default {
             try {
                 await axios.post('OrderProduct/', this.orderModel)
                     .then((response) => {
-                        console.log(response.data);
+                        console.log(response);
                         this.cart = [];
                         this.step = Enum.Step.Done;
                         this.emitter.emit("updateAmountCart", this.cart.length);
@@ -589,6 +588,8 @@ export default {
     },
     created() {
         this.cart = JSON.parse(localStorage.getItem('cart'));
+        this.orderModel.order.createdBy = this.$store.getters.user.accountID;
+        this.orderModel.order.orderBy = this.$store.getters.user.username;
     }
 }
 </script>
