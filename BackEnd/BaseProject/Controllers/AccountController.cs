@@ -116,12 +116,16 @@ namespace BaseProject.Controllers
         /// <returns>ID của bản ghi vừa thêm. Nếu thêm thất bại thì return về Guid rỗng</returns>
         /// Author: HAQUAN (15/09/2023)
         [HttpPost]
-        public IActionResult InsertAccount([FromBody] Account account)
+        //[Consumes("multipart/form-data")]
+        public async Task<IActionResult> InsertAccount([FromForm] Account account, [FromForm] IFormFile? image )
         {
             try
             {
                 var IdEmpty = Guid.Empty;
-                var result = _accountService.SaveAccount(account, IdEmpty);
+                var accountModel = new AccountModel();
+                accountModel.Account = account;
+                accountModel.Image = image;
+                var result = await _accountService.SaveAccount(accountModel, IdEmpty);
 
                 if (result.Success)
                 {
@@ -146,11 +150,15 @@ namespace BaseProject.Controllers
         /// Author: HAQUAN (15/09/2023)
         [HttpPut]
         [Route("{id}")]
-        public IActionResult UpdateRecord([FromBody] Account account, [FromRoute] Guid id)
+        //[Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateRecord([FromForm] Account account, [FromForm] IFormFile? image, [FromRoute] Guid id)
         {
             try
             {
-                var result = _accountService.SaveAccount(account, id);
+                var accountModel = new AccountModel();
+                accountModel.Account = account;
+                accountModel.Image = image;
+                var result = await _accountService.SaveAccount(accountModel, id);
 
                 if (result.Success)
                 {
@@ -228,7 +236,7 @@ namespace BaseProject.Controllers
         /// <param name="accountID">ID của tài khoản cần xóa</param>
         /// <returns>Số lượng tài khoản vừa xóa</returns>
         /// Author: HAQUAN (15/09/2023)
-        [Authorize(Policy = "IsStaff")]
+        [Authorize(Policy = "IsAdmin")]
         [HttpDelete("{accountID}")]
         public IActionResult DeleteProduct([FromRoute] Guid accountID)
         {

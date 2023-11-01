@@ -1,5 +1,6 @@
 const Resource = {
     PrefixImage: "http://127.0.0.1:9000/doantotnghiep/",
+    DefaultAvatar: "user_default.png",
     DemandCategory: {
         categoryID: null,
         title: "Chọn laptop theo nhu cầu",
@@ -62,7 +63,7 @@ const Resource = {
         Phone: "Số điện thoại không đúng",
         PhoneNotEmpty: "Số điện thoại không được để trống",
         InvalidEmail: "Email không đúng định dạng",
-        InvalidPassword: "Mật khẩu phải có ít nhất 8 ký tự, có ít nhất một chữ thường, một chữ hoa, một chữ số và một kí tự đặc biệt!",
+        InvalidPassword: "Mật khẩu phải có ít nhất 8 ký tự, có ít nhất một chữ thường, một chữ hoa, một chữ số và không kí tự đặc biệt!",
         FullNameNotEmpty: "Họ tên không được để trống",
         PhoneFormat: "Số điện thoại không đúng định dạng",
         AddressNotEmpty: "Vui lòng chọn địa chỉ nhận hàng",
@@ -382,6 +383,7 @@ const Resource = {
         Filter: "Bộ lọc",
         Apply: "Áp dụng",
         AddProduct: "Thêm sản phẩm",
+        AddAccount: "Thêm tài khoản",
         DeleteProduct: "Xóa sản phẩm",
         Delete: "Xóa",
         Import: "Import",

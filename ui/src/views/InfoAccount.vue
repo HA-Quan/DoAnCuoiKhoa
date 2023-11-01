@@ -202,10 +202,11 @@ export default {
         */
         async sendRequestUpdate() {
             try {
+                this.account.modifiedBy = this.$store.getters.user.accountID;
                 await axios.put("Account/" + this.$store.getters.user.accountID, this.account)
                     .then((response) => {
                         console.log(response);
-                        this.accountNow = { ...this.account };
+                        this.accountNow = response.data;
                         this.$store.dispatch('setUser', this.accountNow);
                         this.modeUpdate = false;
                         // Hiển thị toast thông báo thành công
@@ -225,17 +226,12 @@ export default {
         *  Author: HAQUAN(29/08/2023) 
         */
         async uploadAvatar() {
-            debugger
-            let av = {
+            let data = {
                 accountID: this.accountNow.accountID,
                 image: this.$refs.avatar.files[0]
             };
-            // let formData = new FormData();
-            // formData.append('avatar[' + 0 + ']', this.$refs.avatar.files[0]);
-            // formData.append('avatar[' + 1 + ']', this.$refs.avatar.files[0]);
-            // formData.append('accountID', this.accountNow.accountID.toString());
             try {
-                await axios.post('Account/update-avatar', av, {
+                await axios.post('Account/update-avatar', data, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
@@ -338,13 +334,14 @@ export default {
         */
         validateEmail() {
             try {
-                var validEmail = '^[\\w-.]+@([\\w-]+.)+[\\w-]{2,4}$';
+                // eslint-disable-next-line
+                var validEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
                 if (!this.account.email) {
                     this.errors.email = Resource.Error.Email;
                     return false;
                 }
                 if (!new RegExp(validEmail).test(this.account.email)) {
-                    this.errors.email = "Email không hợp lệ!";
+                    this.errors.email = Resource.Error.InvalidEmail;
                     return false;
                 }
                 this.errors.email = '';
@@ -360,15 +357,15 @@ export default {
         */
         validatePhone() {
             try {
-                // var validPhone = '/(84|0[3|5|7|8|9])+([0-9]{8})\b/g';
+                var validPhone = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
                 if (!this.account.phone) {
                     this.errors.phone = Resource.Error.PhoneNotEmpty;
                     return false;
                 }
-                // if (!new RegExp(validPhone).test(this.account.phone)) {
-                //     this.errors.phone = Resource.Error.Phone;
-                //     return false;
-                // }
+                if (!new RegExp(validPhone).test(this.account.phone)) {
+                    this.errors.phone = Resource.Error.Phone;
+                    return false;
+                }
                 this.errors.phone = '';
                 return true;
             } catch (error) {

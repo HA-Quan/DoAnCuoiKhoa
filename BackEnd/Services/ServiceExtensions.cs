@@ -46,6 +46,7 @@ public static class ServiceExtensions
         });
         services.AddAuthorizationCore(config =>
         {
+            config.AddPolicy("IsAdmin", policy => policy.RequireClaim("Roles", "Admin"));
             config.AddPolicy("IsManagement", policy => policy.RequireClaim("Roles", "Management"));
             config.AddPolicy("IsStaff", policy => policy.RequireClaim("Roles", "Staff"));
             config.AddPolicy("IsMember", policy => policy.RequireClaim("Roles", "Member"));

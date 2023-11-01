@@ -362,7 +362,6 @@ export default {
 
             orderModelInit: {
                 order: {
-                    orderBy: 'Hoang Anh Quan',
                     fullName: '',
                     email: '',
                     phone: '',
@@ -564,6 +563,7 @@ export default {
          */
         async sendRequestUpdate() {
             try {
+
                 await axios.put("OrderProduct/" + this.orderModel.order.orderID, this.orderModel)
                     .then((response) => {
                         console.log(response);
@@ -589,32 +589,22 @@ export default {
          *  Author: HAQUAN(29/08/2023) 
          */
         async sendRequestInsert(control) {
-            let formData = new FormData();
-            formData.append('listImages[' + 0 + ']', this.$refs.avatar.files[0]);
-            let list = this.$refs.imageDetail.files;
-            for (var i = 0; i < list.length; i++) {
-                formData.append('listImages[' + (i + 1) + ']', list[i]);
-            }
-            formData.append('product', JSON.stringify(this.product));
-            formData.append('listGifts', JSON.stringify(this.listGifts));
             try {
-                await axios.post('Product/', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        "Access-Control-Allow-Origin": "*",
-                    },
-                }).then((response) => {
+                await axios.post('OrderProduct/', this.orderModel).
+                then((response) => {
                     console.log(response);
 
                     // Hiển thị toast thông báo thành công
-                    this.$emit("showToast", Resource.Message.AddProductSucces, Const.TypeToast.Success);
+                    this.$emit("showToast", Resource.Message.AddAccountSucces, Const.TypeToast.Success);
                     this.$emit("refreshData");
                     if (!control) {
                         this.closeFormDetail();
                     }
                     else {
-                        this.product = { ...this.productInit };
-                        this.focusProductName = true;
+                        this.orderModel = { ...this.orderModelInit };
+                        this.orderModel.order.createdBy = this.$store.getters.user.accountID;
+                        this.orderModel.order.orderBy = this.$store.getters.user.username;
+                        this.focusFullName = true;
                     }
                 })
                     .catch((error) => {
@@ -772,6 +762,8 @@ export default {
     },
     created() {
         this.orderModel = { ...this.orderModelInit };
+        this.orderModel.order.createdBy = this.$store.getters.user.accountID;
+        this.orderModel.order.orderBy = this.$store.getters.user.username;
         if (this.formMode == Enum.Mode.Edit) {
             this.isTitle = Resource.Title.EditOrder;
             this.getOrderByID(this.orderIdUpdate);
@@ -782,7 +774,7 @@ export default {
             this.isTitle = Resource.Title.AddOrder;
         }
         // focus vào ô input tên đơn hàng
-        this.focusProductName = true;
+        this.focusFullName = true;
 
     },
 

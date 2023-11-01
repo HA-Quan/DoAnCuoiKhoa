@@ -247,19 +247,16 @@ export default {
         },
 
         validatePassword() {
-            // var validPassword = '/^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/';
+            var validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
             if (!this.passwordModel.password) {
                 this.errors.password = Resource.Error.Password;
                 return false;
             }
-            if (this.passwordModel.password.includes(' ')) {
-                this.errors.password = Resource.Error.PasswordNotSpace;
+            
+            if (!new RegExp(validPassword).test(this.registerModel.password)) {
+                this.error.password = Resource.Error.InvalidPassword;
                 return false;
             }
-            // if (!new RegExp(validPassword).test(this.registerModel.password)) {
-            //     this.error.password = "Mật khẩu phải có ít nhất 8 ký tự, có ít nhất một chữ thường, một chữ hoa, một chữ số và một kí tự đặc biệt!";
-            //     return false;
-            // }
             this.errors.password = null;
             return true;
         },

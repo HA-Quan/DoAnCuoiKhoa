@@ -1451,5 +1451,22 @@ tr:hover .row-actions {
   left: 5px;
   background-position: 0 -72px;
 }
+.search-input-icon {
+  height: 24px;
+  width: 24px;
+  position: relative;
+  right: 8px;
+  cursor: pointer;
+}
 
+.search-input-icon::before {
+  content: "";
+  position: absolute;
+  background: transparent url(https://cegovapp.misacdn.net/r/cegov/img/sprites.06b14dc5.svg) no-repeat;
+  background-position: -289px -24px;
+  height: 24px;
+  width: 24px;
+  top: 0;
+  left: 0;
+}
 </style>
