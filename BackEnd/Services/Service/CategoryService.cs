@@ -100,6 +100,7 @@ namespace Services.Service
                     if (_repositoryBase.FindByCondition(p =>p.DelFalg == EnumType.DeleteFlag.Using &&
                     p.CategoryID == categoryID && category.CategoryID == categoryID).Any())
                     {
+                        category.ModifiedDate = DateTime.Now;
                         Update(category);
                         result.Success = true;
                         result.Data = category.CategoryID;

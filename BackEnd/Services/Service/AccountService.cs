@@ -207,6 +207,7 @@ namespace Services.Service
                     if (await ImageService.AddImage(img, _configuration) != null)
                     {
                         account.Avatar = await ImageService.AddImage(img, _configuration);
+                        account.ModifiedDate = DateTime.Now;
                         Update(account);
                         _accountRepository.Save();
                         result.Success = true;
@@ -236,6 +237,7 @@ namespace Services.Service
                 {
                     if (_accountRepository.CheckExist(account) && account.AccountID == accountID)
                     {
+                        account.ModifiedDate = DateTime.Now;
                         result = Update(account);
                     }
                     else
@@ -273,6 +275,7 @@ namespace Services.Service
                     if(HashPasswordService.Verify(account.Password, passwordModel.PasswordOld))
                     {
                         account.Password = HashPasswordService.HashPassword(passwordModel.PasswordNew);
+                        account.ModifiedDate = DateTime.Now;
                         result = Update(account);
                     }
                     else
@@ -361,6 +364,7 @@ namespace Services.Service
                             if (_orderProductRepository.DeleteByAccountID(accountID) != 0)
                             {
                                 account.DelFalg = EnumType.DeleteFlag.Deleted;
+                                account.ModifiedDate = DateTime.Now;
                                 listAccount.Add(account);
                             }
                             else
@@ -549,6 +553,7 @@ namespace Services.Service
                     var refreshTokenCurrent = _refreshTokenRepository.GetRefreshToken(tokenModel.RefreshToken);
                     refreshTokenCurrent.IsUsed = true;
                     refreshTokenCurrent.IsRevoked = true;
+                    refreshTokenCurrent.ModifiedDate = DateTime.Now;
                     _refreshTokenRepository.Update(refreshTokenCurrent);
 
                     var acc = GetAccountById(refreshTokenCurrent.CreatedBy);

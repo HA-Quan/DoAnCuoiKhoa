@@ -27,6 +27,7 @@ namespace Services.Repository
             foreach (var item in listImport)
             {
                 item.DelFalg = EnumType.DeleteFlag.Deleted;
+                item.ModifiedDate = DateTime.Now;
             }
             UpdateMultiple(listImport);
             Save();
@@ -37,6 +38,7 @@ namespace Services.Repository
             foreach (var item in listImport)
             {
                 item.DelFalg = EnumType.DeleteFlag.Deleted;
+                item.ModifiedDate = DateTime.Now;
             }
             UpdateMultiple(listImport);
             Save();

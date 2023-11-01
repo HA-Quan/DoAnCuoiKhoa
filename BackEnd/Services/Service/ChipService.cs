@@ -97,6 +97,7 @@ namespace Services.Service
                     if (_repositoryBase.FindByCondition(p => p.DelFalg == EnumType.DeleteFlag.Using &&
                     p.ChipID == chipID && chip.ChipID == chipID).Any())
                     {
+                        chip.ModifiedDate = DateTime.Now;
                         Update(chip);
                         result.Success = true;
                         result.Data = chip.ChipID;

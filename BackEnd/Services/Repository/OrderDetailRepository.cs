@@ -39,6 +39,7 @@ namespace Services.Repository
                 {
                     ordDetail.DetailID = Guid.NewGuid();
                     product.Inventory -= ordDetail.Amount;
+                    product.ModifiedDate = DateTime.Now;
                     _repositoryContext.Products.Update(product);
                 }
             }
@@ -62,6 +63,12 @@ namespace Services.Repository
             foreach (var orderDetail in orderDetailNeedDelete)
             {
                 orderDetail.DelFalg = EnumType.DeleteFlag.Deleted;
+                orderDetail.ModifiedDate = DateTime.Now;
+            }
+
+            foreach(var item in orderDetailNeedUpdate)
+            {
+                item.ModifiedDate = DateTime.Now;
             }
 
             foreach (var orderDetail in orderDetailNeedAdd)
@@ -86,6 +93,7 @@ namespace Services.Repository
             foreach (var orderDetail in orderDetails)
             {
                 orderDetail.DelFalg = EnumType.DeleteFlag.Deleted;
+                orderDetail.ModifiedDate = DateTime.Now;
             }
             UpdateMultiple(orderDetails);
             Save();

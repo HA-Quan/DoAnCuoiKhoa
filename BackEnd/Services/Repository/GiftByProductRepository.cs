@@ -46,6 +46,7 @@ namespace Services.Repository
             foreach (var giftByProduct in giftByProductNeedDelete)
             {
                 giftByProduct.DelFalg = EnumType.DeleteFlag.Deleted;
+                giftByProduct.ModifiedDate = DateTime.Now;
             }
 
             foreach (var giftByProduct in giftByProductNeedAdd)
@@ -69,6 +70,7 @@ namespace Services.Repository
             foreach (var item in records)
             {
                 item.DelFalg = EnumType.DeleteFlag.Deleted;
+                item.ModifiedDate = DateTime.Now;
             }
             UpdateMultiple(records);
             Save();
@@ -79,6 +81,7 @@ namespace Services.Repository
             foreach (var item in records)
             {
                 item.DelFalg = EnumType.DeleteFlag.Deleted;
+                item.ModifiedDate = DateTime.Now;
             }
             UpdateMultiple(records);
             Save();

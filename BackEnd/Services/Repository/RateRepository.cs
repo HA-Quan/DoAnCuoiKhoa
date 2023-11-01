@@ -26,6 +26,7 @@ namespace Services.Repository
             foreach (var rate in listRate)
             {
                 rate.DelFalg = EnumType.DeleteFlag.Deleted;
+                rate.ModifiedDate = DateTime.Now;
             }
             UpdateMultiple(listRate);
             Save();
@@ -36,6 +37,7 @@ namespace Services.Repository
             foreach (var rate in listRate)
             {
                 rate.DelFalg = EnumType.DeleteFlag.Deleted;
+                rate.ModifiedDate = DateTime.Now;
             }
             UpdateMultiple(listRate);
             Save();

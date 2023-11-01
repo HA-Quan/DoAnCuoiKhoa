@@ -97,6 +97,7 @@ namespace Services.Service
                     {
                         if (_repositoryBase.FindByCondition(p =>p.DelFalg == EnumType.DeleteFlag.Using && p.ImportID == importProductID).Any())
                         {
+                            importProduct.ModifiedDate = DateTime.Now;
                             _repositoryBase.Update(importProduct);
                             _importProductRepository.Save();
                             return new ApiReponse()
@@ -132,6 +133,7 @@ namespace Services.Service
                         {
                             product.Quantity += importProduct.Amount;
                             product.Inventory += importProduct.Amount;
+                            product.ModifiedDate = DateTime.Now;
                             _productRepository.Update(product);
                         }
                         importProduct.ImportID = Guid.NewGuid();

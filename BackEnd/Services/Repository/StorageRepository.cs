@@ -35,6 +35,7 @@ namespace Services.Repository
                 else
                 {
                     storage.Status = status;
+                    storage.ModifiedDate = DateTime.Now;
                     listStorage.Add(storage);
                 }
             }
@@ -65,6 +66,7 @@ namespace Services.Repository
                 else
                 {
                     storage.DelFalg = EnumType.DeleteFlag.Deleted;
+                    storage.ModifiedDate = DateTime.Now;
                     listStorage.Add(storage);
                 }
             }

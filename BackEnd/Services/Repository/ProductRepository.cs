@@ -517,6 +517,7 @@ namespace Services.Repository
                 else
                 {
                     record.Status = status;
+                    record.ModifiedDate = DateTime.Now;
                     records.Add(record);
                 }
             }
@@ -616,6 +617,7 @@ namespace Services.Repository
                     _rateRepository.DeleteByProductID(productID);
 
                     product.DelFalg = EnumType.DeleteFlag.Deleted;
+                    product.ModifiedDate = DateTime.Now;
                     listProduct.Add(product);
                 }
             }

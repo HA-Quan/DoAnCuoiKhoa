@@ -98,6 +98,7 @@ namespace Services.Service
                     if (_repositoryBase.FindByCondition(p => p.DelFalg == EnumType.DeleteFlag.Using &&
                     p.StorageID == storageID && storage.StorageID == storageID).Any())
                     {
+                        storage.ModifiedDate = DateTime.Now;
                         Update(storage);
                         result.Success = true;
                         result.Data = storage.StorageID;

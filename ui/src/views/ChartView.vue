@@ -101,6 +101,14 @@ export default {
     max-height: 511px;
     overflow: auto;
 }
+.box::-webkit-scrollbar {
+  width: 5px;
+}
+
+.box::-webkit-scrollbar-thumb {
+  background: #cccccc;
+  border-radius: 4px;
+}
 .w-full {
     width: 100%;
     height: 100%;

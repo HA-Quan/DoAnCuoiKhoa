@@ -36,6 +36,7 @@ namespace Services.Repository
                 else
                 {
                     item.DelFalg = EnumType.DeleteFlag.Deleted;
+                    item.ModifiedDate = DateTime.Now;
                     _orderDetailRepository.DeleteByOrderID(item.OrderID);
                 }
 

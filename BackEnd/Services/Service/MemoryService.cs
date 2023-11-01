@@ -97,6 +97,7 @@ namespace Services.Service
                     if (_repositoryBase.FindByCondition(p => p.DelFalg == EnumType.DeleteFlag.Using &&
                     p.MemoryID == memoryID && memory.MemoryID == memoryID).Any())
                     {
+                        memory.ModifiedDate = DateTime.Now;
                         Update(memory);
                         result.Success = true;
                         result.Data = memory.MemoryID;

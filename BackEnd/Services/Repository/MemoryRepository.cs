@@ -34,6 +34,7 @@ namespace Services.Repository
                 }
                 else
                 {
+                    record.ModifiedDate = DateTime.Now;
                     record.Status = status;
                     records.Add(record);
                 }
@@ -65,6 +66,7 @@ namespace Services.Repository
                 else
                 {
                     record.DelFalg = EnumType.DeleteFlag.Deleted;
+                    record.ModifiedDate = DateTime.Now;
                     records.Add(record);
                 }
             }

@@ -91,7 +91,7 @@ export default {
                 labels: [],
                 datasets: [
                     {
-                        backgroundColor: ["#05CBE1", "#FC2525", "#00D8FF"],
+                        backgroundColor: ["#7db6ed", "#414146", "#92e9e2", "#f45b5b", "#e5d453", "#f15c81", "#8186ea", "#91ee7e"],
                         data: [40, 20, 10]
                     }
                 ]

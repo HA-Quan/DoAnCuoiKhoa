@@ -231,6 +231,7 @@ namespace Services.Service
                             if (promotion.NumUsed < promotion.Quantity && promotion.DayStart < DateTime.Now && promotion.DayExpired > DateTime.Now)
                             {
                                 promotion.NumUsed += 1;
+                                promotion.ModifiedDate = DateTime.Now;
                                 _repositoryContext.Promotions.Update(promotion);
                                 _repositoryContext.SaveChanges();
                             }
@@ -300,6 +301,7 @@ namespace Services.Service
                                 if (promotion.NumUsed < promotion.Quantity && promotion.DayStart < DateTime.Now && promotion.DayExpired > DateTime.Now)
                                 {
                                     promotion.NumUsed += 1;
+                                    promotion.ModifiedDate = DateTime.Now;
                                     _repositoryContext.Promotions.Update(promotion);
                                     _repositoryContext.SaveChanges();
                                 }
@@ -309,6 +311,7 @@ namespace Services.Service
                                 }
                             }
                         }
+                        op.ModifiedDate = DateTime.Now;
                         _repositoryBase.Update(op);
                         _orderProductRepository.Save();
                         List<OrderDetail> listOrderDetail = new List<OrderDetail>();
@@ -367,6 +370,7 @@ namespace Services.Service
                         };
                     }
                     order.Status = status;
+                    order.ModifiedDate = DateTime.Now;
                     Update(order);
                     return new ApiReponse()
                     {
@@ -415,6 +419,7 @@ namespace Services.Service
                         {
                             _orderDetailRepository.DeleteByOrderID(orderID);
                             order.DelFalg = EnumType.DeleteFlag.Deleted;
+                            order.ModifiedDate = DateTime.Now;
                             listOrder.Add(order);
                         }
                     }
