@@ -16,6 +16,7 @@ namespace Services.Service
     {
         ApiReponse GetTop(DateTime? timeStart, DateTime? timeEnd, int number, byte typeGet);
         ApiReponse GetStatistic(int time);
+        ApiReponse GetStatisticNow();
         ApiReponse GetListYear();
     }
     public class StatisticService : IStatisticService
@@ -42,7 +43,7 @@ namespace Services.Service
                 {
                     var topAccount = _repositoryContext.Accounts.Where(a => a.Role == (byte)EnumType.Role.Member).
                         OrderByDescending(a => (from ord in _repositoryContext.OrderProducts
-                                                where a.AccountID == ord.CreatedBy && ord.CreatedDate >= timeStart && ord.CreatedDate <= timeEnd
+                                                where a.AccountID == ord.CreatedBy && ord.CreatedDate >= timeStart && ord.CreatedDate < timeEnd
                                                 select ord.Total).Sum()).Take(number).ToList();
                     var result =new List<TopAccountModel>();
                     foreach(var acc in topAccount)
@@ -55,7 +56,7 @@ namespace Services.Service
                             Email = acc.Email,
                             Phone = acc.Phone,
                             TotalBuy = (from ord in _repositoryContext.OrderProducts
-                                        where acc.AccountID == ord.CreatedBy && ord.CreatedDate >= timeStart && ord.CreatedDate <= timeEnd
+                                        where acc.AccountID == ord.CreatedBy && ord.CreatedDate >= timeStart && ord.CreatedDate < timeEnd
                                         select ord.Total).Sum()
                         };
                         result.Add(record);
@@ -70,7 +71,7 @@ namespace Services.Service
                 {
                     var topAccount = _repositoryContext.Accounts.Where(a => a.Role == (byte)EnumType.Role.Staff).
                         OrderByDescending(a => (from ord in _repositoryContext.OrderProducts
-                                                where a.AccountID == ord.CreatedBy && ord.CreatedDate >= timeStart && ord.CreatedDate <= timeEnd
+                                                where a.AccountID == ord.CreatedBy && ord.CreatedDate >= timeStart && ord.CreatedDate < timeEnd
                                                 select ord.Total).Sum()).Take(number).ToList();
                     var result = new List<TopAccountModel>();
                     foreach (var acc in topAccount)
@@ -83,7 +84,7 @@ namespace Services.Service
                             Email = acc.Email,
                             Phone = acc.Phone,
                             TotalBuy = (from ord in _repositoryContext.OrderProducts
-                                        where acc.AccountID == ord.CreatedBy && ord.CreatedDate >= timeStart && ord.CreatedDate <= timeEnd
+                                        where acc.AccountID == ord.CreatedBy && ord.CreatedDate >= timeStart && ord.CreatedDate < timeEnd
                                         select ord.Total).Sum()
                         };
                         result.Add(record);
@@ -98,7 +99,7 @@ namespace Services.Service
                 {
                     var topProduct = _repositoryContext.Products.
                         OrderByDescending(a => (from ord in _repositoryContext.OrderDetails
-                                                where a.ProductID == ord.ProductID && ord.CreatedDate >= timeStart && ord.CreatedDate <= timeEnd
+                                                where a.ProductID == ord.ProductID && ord.CreatedDate >= timeStart && ord.CreatedDate < timeEnd
                                                 select ord.Price * ord.Amount).Sum()).Take(number).ToList();
                     var result = new List<TopProductModel>();
                     foreach (var pro in topProduct)
@@ -110,11 +111,11 @@ namespace Services.Service
                             Condition = pro.Condition,
                             Status = pro.Status,
                             AmountBuy = (from ord in _repositoryContext.OrderDetails
-                                         where pro.ProductID == ord.ProductID && ord.CreatedDate >= timeStart && ord.CreatedDate <= timeEnd
+                                         where pro.ProductID == ord.ProductID && ord.CreatedDate >= timeStart && ord.CreatedDate < timeEnd
                                          select ord.Amount).Sum(),
                             NumberView = pro.NumberView,
                             Total = (from ord in _repositoryContext.OrderDetails
-                                     where pro.ProductID == ord.ProductID && ord.CreatedDate >= timeStart && ord.CreatedDate <= timeEnd
+                                     where pro.ProductID == ord.ProductID && ord.CreatedDate >= timeStart && ord.CreatedDate < timeEnd
                                      select ord.Price * ord.Amount).Sum()
                         };
                         result.Add(record);
@@ -140,6 +141,84 @@ namespace Services.Service
                 };
             }
         }
+        public ApiReponse GetStatisticNow()
+        {
+            try
+            {
+                var timeEnd = DateTime.Now;
+                var timeStart = new DateTime(timeEnd.Year, timeEnd.Month, 1, 0, 0, 0);
+                var result = new StatisticModel();
+
+                var topMember = GetTop(timeStart, timeEnd, 3, (byte)EnumType.ByType.Member);
+                if (topMember.Success)
+                {
+                    result.TopMembers = (List<TopAccountModel>)topMember.Data;
+                }
+
+                var topStaff = GetTop(timeStart, timeEnd, 3, (byte)EnumType.ByType.Staff);
+                if (topStaff.Success)
+                {
+                    result.TopStaffs = (List<TopAccountModel>)topStaff.Data;
+                }
+
+                var topProduct = GetTop(timeStart, timeEnd, 3, (byte)EnumType.ByType.Product);
+                if (topProduct.Success)
+                {
+                    result.TopProducts = (List<TopProductModel>)topProduct.Data;
+                }
+
+                var query = (from order in _repositoryContext.OrderDetails
+                             join p in _repositoryContext.Products on order.ProductID equals p.ProductID
+                             join cate in _repositoryContext.Categorys on p.CategoryID equals cate.CategoryID
+                             where order.CreatedDate >= timeStart && order.CreatedDate < timeEnd
+                             select new
+                             {
+                                 Trade = cate.Trademark,
+                                 Price = order.Amount * order.Price,
+                             }).ToList();
+                var kq = query.GroupBy(x => x.Trade).Select(x => new
+                {
+                    Name = x.Key,
+                    Total = x.Sum(y => y.Price)
+                });
+                foreach (var item in kq)
+                {
+                    result.PieChart.Add(new PieChartModel()
+                    {
+                        Label = item.Name,
+                        Value = item.Total
+                    });
+                }
+                
+                result.TotalRevenue = (from order in _repositoryContext.OrderProducts
+                                       where timeStart <= order.CreatedDate && timeEnd > order.CreatedDate
+                                       select order.Total).ToList().Sum();
+                result.TotalCapital = (from ip in _repositoryContext.ImportProducts
+                                       where timeStart <= ip.CreatedDate && timeEnd > ip.CreatedDate
+                                       select ip.Price * ip.Amount).ToList().Sum();
+                var lastMonth = timeStart.AddMonths(-1);
+                result.RevenueLastMonth = (from order in _repositoryContext.OrderProducts
+                                       where lastMonth <= order.CreatedDate && timeStart > order.CreatedDate
+                                       select order.Total).ToList().Sum();
+                result.CapitalLastMonth = (from ip in _repositoryContext.ImportProducts
+                                       where lastMonth <= ip.CreatedDate && timeStart > ip.CreatedDate
+                                       select ip.Price * ip.Amount).ToList().Sum();
+                return new ApiReponse()
+                {
+                    Success = true,
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new ApiReponse()
+                {
+                    Success = false,
+                    Data = HandleError.GenerateErrorResultException()
+                };
+            }
+        }
         public ApiReponse GetStatistic(int time)
         {
             try
@@ -148,9 +227,28 @@ namespace Services.Service
                 var timeEnd = DateTime.Now;
                 if(DateTime.Now.Year > time)
                 {
-                    timeEnd = new DateTime(time+1, 1, 1); ;
+                    timeEnd = new DateTime(time + 1, 1, 1); ;
                 }
                 var result = new StatisticModel();
+
+                var topMember = GetTop(timeStart, timeEnd, 3, (byte)EnumType.ByType.Member);
+                if(topMember.Success)
+                {
+                    result.TopMembers = (List<TopAccountModel>) topMember.Data;
+                }
+
+                var topStaff = GetTop(timeStart, timeEnd, 3, (byte)EnumType.ByType.Staff);
+                if (topStaff.Success)
+                {
+                    result.TopStaffs = (List<TopAccountModel>)topStaff.Data;
+                }
+
+                var topProduct = GetTop(timeStart, timeEnd, 3, (byte)EnumType.ByType.Product);
+                if (topProduct.Success)
+                {
+                    result.TopProducts = (List<TopProductModel>)topProduct.Data;
+                }
+
                 var query = (from order in _repositoryContext.OrderDetails
                              join p in _repositoryContext.Products on order.ProductID equals p.ProductID
                              join cate in _repositoryContext.Categorys on p.CategoryID equals cate.CategoryID
@@ -186,10 +284,10 @@ namespace Services.Service
                         Label = dateStart.ToString("MMMM"),
                         Capital = (from ip in _repositoryContext.ImportProducts
                                    where dateStart <= ip.CreatedDate && dateEnd > ip.CreatedDate
-                                   select ip.Price * ip.Amount).Sum(),
+                                   select ip.Price * ip.Amount).ToList().Sum(),
                         Revenue = (from order in _repositoryContext.OrderProducts
                                    where dateStart <= order.CreatedDate && dateEnd > order.CreatedDate
-                                   select order.Total).Sum()
+                                   select order.Total).ToList().Sum()
                     };
                     result.AreaChart.Add(areaChart);
                     dateStart = dateEnd;

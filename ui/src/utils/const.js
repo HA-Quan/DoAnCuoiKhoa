@@ -1,5 +1,27 @@
 const Const = {
 
+  DemandCategory: {
+    categoryID: null,
+    title: "Chọn laptop theo nhu cầu",
+    categories: [
+      {
+        categoryName: "Laptop sinh viên - văn phòng",
+        categories: []
+      },
+      {
+        categoryName: "Laptop Gaming",
+        categories: []
+      },
+      {
+        categoryName: "Laptop đồ họa",
+        categories: []
+      },
+      {
+        categoryName: "Laptop mỏng nhẹ",
+        categories: []
+      },
+    ]
+  },
   // Loại thông báo
   TypeToast: {
     Warning: "warning",
@@ -7,12 +29,10 @@ const Const = {
     Fail: "fail",
   },
 
-  // Sắp sếp
-  Sort: {
-    ProductName: "ProductName",
-    Quantity: "Quantity",
-    Price: "Price",
-    Desc: " DESC",
+  // Hủy sắp sếp
+  CancelSort: {
+    Label: "Hủy sắp xếp",
+    Value: 0,
   },
 
   ListSort: [
@@ -69,7 +89,7 @@ const Const = {
       Value: true,
     },
     Onboard: {
-      Label: "Card liền",
+      Label: "Card Onboard",
       Value: false,
     }
   },
@@ -357,6 +377,17 @@ const Const = {
     }
   },
 
+  UseStatus: {
+    Using: {
+      Label: "Đang sử dụng",
+      Value: true
+    },
+    StopUsing: {
+      Label: "Ngừng sử dụng",
+      Value: false
+    }
+  },
+
   PaymentStatusFilter: [
     {
       Label: "Tất cả",
@@ -452,13 +483,13 @@ const Const = {
           icon: "icon-change-password"
         },
         {
-          name: "Quản lý sản phẩm",
-          comand: "historyShoppingOnClick",
-          icon: "icon-history-shopping"
+          name: "Quản lý đơn hàng ",
+          comand: "manageOrderOnClick",
+          icon: "icon-shopping-list"
         },
         {
-          name: "Quản lý đơn hàng ",
-          comand: "listOrderOnClick",
+          name: "Quản lý nhập hàng ",
+          comand: "manageImportOnClick",
           icon: "icon-shopping-list"
         },
         {
@@ -482,18 +513,23 @@ const Const = {
           icon: "icon-change-password"
         },
         {
-          name: "Quản lý tài khoản",
-          comand: "historyShoppingOnClick",
-          icon: "icon-history-shopping"
-        },
-        {
           name: "Quản lý sản phẩm",
-          comand: "listOrderOnClick",
+          comand: "manageProductOnClick",
           icon: "icon-shopping-list"
         },
         {
           name: "Quản lý đơn hàng",
-          comand: "listOrderOnClick",
+          comand: "manageOrderOnClick",
+          icon: "icon-shopping-list"
+        },
+        {
+          name: "Quản lý nhập hàng",
+          comand: "manageImportOnClick",
+          icon: "icon-shopping-list"
+        },
+        {
+          name: "Quản lý quà tặng",
+          comand: "manageGiftOnClick",
           icon: "icon-shopping-list"
         },
         {
@@ -527,8 +563,33 @@ const Const = {
           icon: "icon-history-shopping"
         },
         {
-          name: "Quản lý đơn hàng ",
+          name: "Quản lý đơn hàng",
           comand: "manageOrderOnClick",
+          icon: "icon-shopping-list"
+        },
+        {
+          name: "Quản lý nhập hàng ",
+          comand: "manageImportOnClick",
+          icon: "icon-shopping-list"
+        },
+        {
+          name: "Quản lý quà tặng",
+          comand: "manageGiftOnClick",
+          icon: "icon-shopping-list"
+        },
+        {
+          name: "Quản lý khuyến mãi",
+          comand: "managePromotionOnClick",
+          icon: "icon-shopping-list"
+        },
+        {
+          name: "Quản lý tin tức",
+          comand: "manageNewsOnClick",
+          icon: "icon-shopping-list"
+        },
+        {
+          name: "Báo cáo, thống kê",
+          comand: "statisticOnClick",
           icon: "icon-shopping-list"
         },
         {
@@ -539,50 +600,112 @@ const Const = {
       ]
     },
   ],
-  
+
   ListMenu: [
     {
       icon: "icon-product",
       content: "Thông tin cá nhân",
       link: "/info-user",
-      role: [1,2,3,4]
+      role: [1, 2, 3, 4]
     },
     {
       icon: "icon-product",
       content: "Đổi mật khẩu",
       link: "/change-password",
-      role: [1,2,3,4]
+      role: [1, 2, 3, 4]
+    },
+    {
+      icon: "icon-product",
+      content: "Lịch sử mua hàng",
+      link: "/history-shopping",
+      role: [1]
     },
     {
       icon: "icon-product",
       content: "Quản lý tài khoản",
       link: "/account",
-      role: [3,4]
+      role: [4]
     },
-    { 
-      icon: "icon-product", 
-      content: "Quản lý sản phẩm", 
+    {
+      icon: "icon-product",
+      content: "Quản lý sản phẩm",
       link: "/product",
-      role: [2,3,4]
+      role: [2, 3, 4]
     },
-    { 
-      icon: "icon-order", 
-      content: "Quản lý đơn hàng", 
+    {
+      icon: "icon-order",
+      content: "Quản lý đơn hàng",
       link: "/order",
-      role: [2,3,4]
+      role: [2, 3, 4]
     },
-    { 
-      icon: "icon-news", 
-      content: "Quản lý tin tức", 
+    {
+      icon: "icon-order",
+      content: "Quản lý nhập hàng",
+      link: "/import",
+      role: [2, 3, 4]
+    },
+    {
+      icon: "icon-order",
+      content: "Quản lý quà tặng",
+      link: "/gift",
+      role: [2, 3, 4]
+    },
+    {
+      icon: "icon-order",
+      content: "Quản lý khuyến mãi",
+      link: "/promotion",
+      role: [2, 3, 4]
+    },
+    {
+      icon: "icon-news",
+      content: "Quản lý tin tức",
       link: "/overview",
-      role: [1,2,3,4]
+      role: [2, 3, 4]
     },
     {
       icon: "icon-product",
       content: "Báo cáo, thống kê",
       link: "/statistic",
-      role: [3,4]
+      role: [3, 4]
     },
-  ]
+  ],
+
+  Criteria: [
+    {
+      Label: "Thương hiệu",
+      Value: "trademark",
+      Key: "name"
+    },  
+    {
+      Label: "CPU",
+      Value: "chip",
+      Key: "id"
+    },
+    {
+      Label: "RAM",
+      Value: "memory",
+      Key: "id"
+    },
+    {
+      Label: "Dung lượng ổ cứng",
+      Value: "storage",
+      Key: "id"
+    },
+    {
+      Label: "Màn hình",
+      Value: "display",
+      Key: "id"
+    },
+    {
+      Label: "Card đồ họa",
+      Value: "cardType",
+      Key: "name"
+    },
+    {
+      Label: "Dòng máy",
+      Value: "demand",
+      Key: "id"
+    },
+  ],
 };
 export default Const;

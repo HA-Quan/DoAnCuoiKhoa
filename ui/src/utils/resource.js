@@ -1,29 +1,9 @@
 const Resource = {
+    NameWeb: "Top Laptop",
     PrefixImage: "http://127.0.0.1:9000/doantotnghiep/",
     DefaultAvatar: "user_default.png",
-    DemandCategory: {
-        categoryID: null,
-        title: "Chọn laptop theo nhu cầu",
-        categories: [
-            {
-                categoryName: "Laptop sinh viên - văn phòng",
-                categories: []
-            },
-            {
-                categoryName: "Laptop Gaming",
-                categories: []
-            },
-            {
-                categoryName: "Laptop đồ họa",
-                categories: []
-            },
-            {
-                categoryName: "Laptop mỏng nhẹ",
-                categories: []
-            },
-        ]
-    },
-    
+    DefaultMainImage: "default-image.jpg",
+
     // Nội dung lỗi
     Error: {
         UsernameExists: "Tên đăng nhập đã tồn tại",
@@ -65,14 +45,25 @@ const Resource = {
         InvalidEmail: "Email không đúng định dạng",
         InvalidPassword: "Mật khẩu phải có ít nhất 8 ký tự, có ít nhất một chữ thường, một chữ hoa, một chữ số và không kí tự đặc biệt!",
         FullNameNotEmpty: "Họ tên không được để trống",
+        GiftCodeNotEmpty: "Mã quà tặng không được để trống",
+        GiftInfoNotEmpty: "Thông tin quà tặng không được để trống",
         PhoneFormat: "Số điện thoại không đúng định dạng",
         AddressNotEmpty: "Vui lòng chọn địa chỉ nhận hàng",
         PromotionNotFound: "Mã Voucher không tồn tại",
         PromotionOver: "Mã Voucher đã dùng hết",
         PromotionOverTime: "Mã Voucher đã hết hạn",
         Unconditional: "Đơn hàng của bạn không đủ điều kiện để áp dụng mã Voucher",
-        DateStart:"Ngày bắt đầu không được lớn hơn ngày hiện tại",
-        DateEnd:"Ngày kết thúc không được lớn hơn ngày hiện tại",
+        DateStart: "Ngày bắt đầu không được lớn hơn ngày hiện tại",
+        DateEnd: "Ngày kết thúc không được lớn hơn ngày hiện tại",
+        PromotionCodeNotEmpty: "Mã Voucher không được để trống",
+        PromotionCodeExist: "Mã Voucher đã tồn tại",
+        DiscountNotEmpty: "Giá trị Voucher không được để trống",
+        DayStartNotEmpty: "Ngày bắt đầu áp dụng Voucher không được để trống",
+        DayStartFail: "Ngày bắt đầu không được lớn hơn ngày kết thúc",
+        DayExpiredFail: "Ngày kết thúc không được nhỏ hơn ngày bắt đầu",
+        DayExpiredNotEmpty: "Ngày kết thúc Voucher không được để trống",
+        ProvisoNotEmpty: "Điều kiện áp dụng Voucher không được để trống",
+        QuantityNotEmpty: "Số lượng Voucher không được để trống",
 
     },
 
@@ -94,6 +85,10 @@ const Resource = {
         AddProductToCartSucces: "Thêm sản phẩm vào giỏ hàng thành công",
         AddOrderSucces: "Thêm mới đơn hàng thành công",
         UpdateOrderSucces: "Cập nhật đơn hàng thành công",
+        AddGiftSucces: "Thêm mới quà tặng thành công",
+        UpdateGiftSucces: "Cập nhật quà tặng thành công",
+        AddPromotionSucces: "Thêm mới voucher thành công",
+        UpdatePromotionSucces: "Cập nhật voucher thành công",
     },
 
     // Nội dung tiêu đề form
@@ -105,14 +100,24 @@ const Resource = {
         Delete: "Xóa sản phẩm",
         DeleteAccount: "Xóa tài khoản",
         AddOrder: "Thêm mới đơn hàng",
+        AddGift: "Thêm mới quà tặng",
+        EditGift: "Sửa quà tặng",
         EditOrder: "Sửa đơn hàng",
+        AddImport: "Thêm mới đơn nhập hàng",
+        EditImport: "Sửa đơn nhập hàng",
+        AddPromotion: "Thêm mới voucher",
+        EditPromotion: "Sửa voucher",
         DeleteOrder: "Xóa đơn hàng",
+        DeleteGift: "Xóa quà tặng",
+        DeleteImportProduct: "Xóa đơn nhập hàng",
+        DeletePromotion: "Xóa Voucher",
         Notification: "Thông báo",
         Error: "Lỗi",
         Management: "Manager Home",
         VerifyDelete: "Xác nhận xóa",
         OrderSucces: "Đặt hàng thành công",
-        ImportProduct: "Nhập hàng"
+        ImportProduct: "Nhập hàng",
+        SystemShop: "Hệ thống cửa hàng"
     },
 
     All: "Tất cả",
@@ -136,6 +141,7 @@ const Resource = {
         CanDeleteAccount: "Bạn có chắc chắn muốn xóa Tài khoản",
         CanDeleteOrder: "Bạn có chắc chắn muốn xóa Đơn hàng",
         SelectedNo: "đã chọn không?",
+        CanDeleteImport: "Bạn có chắc chắn muốn xóa Đơn nhập hàng",
         Delete: "Bạn có chắc chắn muốn xóa",
         Selected: "đã chọn?",
         Loading: "Đang tải",
@@ -145,11 +151,11 @@ const Resource = {
         RecordInPage: "Số bản ghi/trang",
         Account: "tài khoản",
         PriceOld: "Giá gốc",
-        InfoWarranty:"Thông tin bảo hành",
-        InfoGift:"Thông tin Khuyến mãi",
+        InfoWarranty: "Thông tin bảo hành",
+        InfoGift: "Thông tin Quà tặng",
         AssuredShopping: "Yên tâm mua hàng",
         Description: "Đặc điểm nổi bật",
-        Property:"Thông số kỹ thuật",
+        Property: "Thông số kỹ thuật",
         SameProduct: "Sản phẩm liên quan",
         FilterPrice: "Chọn khoảng giá:",
         FilterCriteria: "Chọn theo tiêu chí:",
@@ -159,10 +165,19 @@ const Resource = {
         Cart: "Giỏ hàng",
         OutCart: " khỏi giỏ hàng?",
         Order: "đơn hàng",
+        Gift: "quà tặng",
+        Import: "đơn nhập hàng",
+        Promotion: "voucher",
+        SeeMap: "Xem chỉ đường",
+        Card: "Card đồ họa",
+        Demand: "Dòng máy",
+        SeeAll: "Xem tất cả",
+        Login: "Đăng nhập"
     },
 
     Label: {
         SelectQuantity: "Chọn số lượng: ",
+        SelectPriceImport: "Nhập giá nhập: ",
         Product: "Danh sách sản phẩm",
         ProductName: "Tên sản phẩm",
         Quantity: "Số lượng",
@@ -171,10 +186,15 @@ const Resource = {
         PriceOld: "Giá gốc",
         PriceSell: "Giá bán",
         Description: "Thông tin chi tiết sản phẩm",
+        DescriptionGift: "Thông tin chi tiết quà tặng",
         NumberSell: "Đã bán",
+        NumUsed: "Đã sử dụng",
         FilterProduct: "Lọc sản phẩm",
         FilterAccount: "Lọc tài khoản",
         FilterOrder: "Lọc đơn hàng",
+        FilterImport: "Lọc đơn nhập hàng",
+        FilterPromotion: "Lọc Voucher",
+        FilterGift: "Lọc quà tặng",
         Selected: "Đã chọn :",
         StopSelected: "Bỏ chọn",
         Status: "Trạng thái",
@@ -198,6 +218,7 @@ const Resource = {
         AmountSell: "Đã bán",
         Inventory: "Số lượng trong kho",
         Price: "Giá niêm yết",
+        PriceImport: "Giá nhập",
         Discount: "Giảm giá",
         AmountDisk: "Số lượng ổ cứng",
         Weight: "Khối lượng",
@@ -211,7 +232,7 @@ const Resource = {
         Battery: "Pin",
         Camera: "Máy ảnh",
         ConnectivityNetwork: "Giao tiếp mạng",
-        StandardPorts: "Cổng kết nối" ,
+        StandardPorts: "Cổng kết nối",
         Gift: "Quà tặng kèm",
         Account: "Danh sách tài khoản",
         Role: "Chức vụ",
@@ -225,9 +246,11 @@ const Resource = {
         Address: "Địa chỉ",
         Chip: "CPU",
         Memory: "RAM",
-        Storage:"Ổ cứng",
-        Card:"Card đồ họa",
-        Display:"Màn hình",
+        Storage: "Ổ cứng",
+        Card: "Card đồ họa",
+        CardHome: "Card",
+        Display: "Màn hình",
+        DisplayHome: "M.Hình",
         TemporaryTotalMoney: "Tổng tiền tạm tính",
         DiscountMoney: "Số tiền được giảm",
         FinalMMoney: "Tổng tiền thanh toán",
@@ -238,12 +261,23 @@ const Resource = {
         Receiver: "Người nhận",
         PaymentMethod: 'Phương thức thanh toán',
         Order: "Danh sách đơn hàng",
+        ImportList: "Danh sách nhập hàng",
+        PromotionList: "Danh sách Voucher",
+        GiftList: "Danh sách quà tặng",
         DeliveryMethod: "Hình thức giao hàng",
         StatusOrder: "Trạng thái đơn hàng",
         PaymentStatus: "Trạng thái thanh toán",
+        UseStatus: "Trạng thái sử dụng",
+        OrderCode: "Mã đơn hàng",
+        GiftCode: "Mã quà tặng",
         OrderBy: "Tài khoản đặt hàng",
+        ImportBy: "Tài khoản nhập hàng",
         ReceiverName: "Tên người nhận",
         Total: "Tổng tiền",
+        TimeOrder: "Ngày đặt hàng",
+        TimeImport: "Ngày nhập hàng",
+        CreatedDate: "Ngày tạo",
+        CreatedBy: "Người tạo",
         TimeStart: "Ngày bắt đầu",
         TimeEnd: "Ngày kết thúc",
         Note: "Yêu cầu khác",
@@ -252,8 +286,19 @@ const Resource = {
         ChangePassword: "Đổi mật khẩu",
         Supplier: "Nhà cung cấp",
         Statistic: "Xem báo cáo, thống kê",
-        TotalCapital: "Tổng tiền vốn",
-        TotalRevenue: "Tổng doanh thu"
+        TotalCapital: "Tổng tiền hàng",
+        TotalRevenue: "Tổng doanh thu",
+        TotalProfit: "Tổng lợi nhuận",
+        ListProductSelected: "Danh sách sản phẩm đã chọn",
+        AddProduct: "Thêm sản phẩm",
+        TopMember: "Top khách hàng mua nhiều nhất",
+        TopStaff: "Top nhân viên bán được nhiều nhất",
+        TopProduct: "Top sản phẩm bán chạy",
+        ValueVoucher: "Giá trị Voucher",
+        Proviso: "Điều kiện áp dụng",
+        Used: "Đã sử dụng",
+        DayStart: "Ngày áp dụng Voucher",
+        DayExpired: "Ngày kết thúc Voucher"
     },
 
     LabelProduct: {
@@ -308,10 +353,15 @@ const Resource = {
     },
 
     ImportProductProperty: {
-        Amount: "amount",
-        Price: "price"
+        Quantity: "quantity",
+        Price: "priceImport"
     },
-    
+
+    GiftProperty: {
+        GiftCode: "giftCode",
+        Description: "description"
+    },
+
     InfoGuestProperty: {
         FullName: 'fullName',
         Phone: 'phone',
@@ -329,6 +379,15 @@ const Resource = {
         Email: "email",
         Phone: "phone",
         Address: "address"
+    },
+
+    PromotionProperty: {
+        PromotionCode: "promotionCode",
+        Discount: "discount",
+        DayStart: "dayStart",
+        DayExpired: "dayExpired",
+        Proviso: "proviso",
+        Quantity: "quantity",
     },
 
     Placehoder: {
@@ -353,7 +412,10 @@ const Resource = {
         Condition: "Chọn tình trạng sản phẩm",
         DemandType: "Chọn nhu cầu sử dụng",
         Gift: "Chọn quà tặng kèm",
-        SearchAccount :"Nhập tên, username tài khoản...",
+        SearchAccount: "Nhập tên, username tài khoản...",
+        SearchCode: "Nhập mã quà tặng...",
+        SearchCodePromotion: "Nhập mã Voucher...",
+        SearchFil: "Tìm kiếm...",
         FullName: "Nhập họ tên người dùng",
         Username: "Nhập tên đăng nhập",
         Password: "Nhập mật khẩu",
@@ -361,6 +423,8 @@ const Resource = {
         Email: "Nhập email",
         Phone: "Nhập số điện thoại",
         Address: "Nhập địa chỉ",
+        GiftCode: "Nhập mã quà tặng",
+        GiftInfo: "Nhập thông tin quà tặng",
         InfoGuest: {
             FullName: "Họ và tên (Bắt buộc)",
             Phone: "Số điện thoại (Bắt buộc)",
@@ -370,7 +434,12 @@ const Resource = {
             PromotionCode: "Nhập mã Voucher"
         },
         TimeStart: "Chọn ngày bắt đầu",
-        TimeEnd: "Chọn ngày kết thúc"
+        TimeEnd: "Chọn ngày kết thúc",
+        Discount: "Nhập giá trị Voucher",
+        DayStart: "Chọn ngày áp dụng Voucher",
+        DayExpired: "Chọn ngày kết thúc Voucher",
+        Proviso: "Nhập điều kiện áp dụng Voucher",
+        Quantity: "Nhập số lượng Voucher"
     },
 
     Button: {
@@ -391,7 +460,7 @@ const Resource = {
         Export: "Export",
         See: "Xem ảnh",
         UpdateAvatar: "Cập nhật ảnh đại diện",
-        Choose:"Chọn ảnh",
+        Choose: "Chọn ảnh",
         BuyNow: "Mua ngay",
         AddToCart: "Thêm vào giỏ hàng",
         MoreAll: "Xem tất cả",
@@ -400,12 +469,15 @@ const Resource = {
         SelectMore: "Chọn thêm sản phẩm khác",
         ContinueShoping: "Tiếp tục mua hàng",
         AddNewOrder: "Thêm mới đơn hàng",
+        AddNewImport: "Thêm mới đơn nhập hàng",
+        AddNewPromotion: "Thêm mới Voucher",
+        AddNewGift: "Thêm mới quà tặng",
         UpdateInfo: "Sửa thông tin",
         UpdatePassword: "Cập nhật mật khẩu",
-        ExportFile: "Xuất file"
+        ExportFile: "Xuất file",
     },
 
-    Warranty:[
+    Warranty: [
         "✅Bảo hành chính hãng Lenovo Việt Nam 36 tháng",
         "✔️Tùy chọn:",
         "- Gói BẢO HÀNH VÀNG: gia tăng thêm 12 tháng bảo hành",
@@ -435,7 +507,11 @@ const Resource = {
         Prefix: "Giỏ hàng có 0 sản phẩm, ",
         Content: "click vào đây",
         Suffix: " để quay lại trang mua hàng"
-    }
+    },
+
+    ListTrademark: [
+        "Acer", "Lenovo", "Asus", "Dell", "Gigabyte", "Apple"
+    ]
 
 };
 export default Resource;

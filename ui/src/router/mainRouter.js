@@ -1,18 +1,21 @@
 import { createRouter, createWebHistory } from "vue-router";
-import LoginForm from '@/views/LoginForm.vue';
-import RegisterForm from '@/views/RegisterForm.vue';
-import MainPage from '@/views/MainPage.vue';
-import HomePage from '@/views/HomePage.vue';
-import FilterPage from '@/views/FilterPage.vue';
-import ManagerPage from '@/views/ManagerPage.vue';
-import ProductList from '@/views/ProductList.vue';
-import AccountList from '@/views/AccountList.vue';
-import OrderList from '@/views/OrderList.vue';
-import ProductDetailPage from '@/views/ProductDetailPage.vue';
-import CartPage from '@/views/CartPage.vue';
-import InfoAccount from '@/views/InfoAccount.vue';
-import ChangePassword from '@/views/ChangePassword.vue';
-import StatisticPage from '@/views/StatisticPage.vue';
+import LoginForm from '@/views/Pages/LoginForm.vue';
+import RegisterForm from '@/views/Pages/RegisterForm.vue';
+import MainPage from '@/views/Pages/MainPage.vue';
+import HomePage from '@/views/Pages/HomePage.vue';
+import FilterPage from '@/views/Pages/FilterPage.vue';
+import ManagerPage from '@/views/Pages/ManagerPage.vue';
+import ProductList from '@/views/ManageProduct/ProductList.vue';
+import AccountList from '@/views/ManageAccount/AccountList.vue';
+import OrderList from '@/views/ManageOrder/OrderList.vue';
+import ImportProductList from '@/views/ManageImport/ImportProductList.vue';
+import GiftList from '@/views/ManageGift/GiftList.vue';
+import PromotionList from '@/views/ManagePromotion/PromotionList.vue';
+import ProductDetailPage from '@/views/Pages/ProductDetailPage.vue';
+import CartPage from '@/views/Pages/CartPage.vue';
+import InfoAccount from '@/views/ManageInformation/InfoAccount.vue';
+import ChangePassword from '@/views/ManageInformation/ChangePassword.vue';
+import StatisticPage from '@/views/ReportAndStatistic/StatisticPage.vue';
 import CommonFn from '@/utils/commonFuncion';
 import store from "@/utils/vuex";
 import axios from "axios";
@@ -109,6 +112,33 @@ const routes = [
             path: '/order',
             name: 'OrderList',
             component: OrderList,
+            meta: {
+              isManager: true,
+              loginRequired: true
+            }
+          },
+          {
+            path: '/import',
+            name: 'ImportProductList',
+            component: ImportProductList,
+            meta: {
+              isManager: true,
+              loginRequired: true
+            }
+          },
+          {
+            path: '/gift',
+            name: 'GiftList',
+            component: GiftList,
+            meta: {
+              isManager: true,
+              loginRequired: true
+            }
+          },
+          {
+            path: '/promotion',
+            name: 'PromotionList',
+            component: PromotionList,
             meta: {
               isManager: true,
               loginRequired: true

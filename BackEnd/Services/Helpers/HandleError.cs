@@ -24,8 +24,8 @@ namespace Services.Helpers
             return new ErrorResult()
             {
                 ErrorCode = EnumType.ErrorCode.Validate,
-                UserMsg = new List<string>() {Resource.UserMsgValidate},
-                DevMsg = new List<string>() {Resource.DevMsgValidate },
+                UserMsg = Resource.UserMsgValidate,
+                DevMsg = Resource.DevMsgValidate,
                 MoreInfo = Resource.MoreInfo
             };
         }
@@ -40,8 +40,8 @@ namespace Services.Helpers
             return new ErrorResult()
             {
                 ErrorCode = EnumType.ErrorCode.Exception,
-                UserMsg = new List<string>() { Resource.UserMsg },
-                DevMsg = new List<string>() { Resource.DevMsgExeption },
+                UserMsg = Resource.UserMsg,
+                DevMsg = Resource.DevMsgExeption        ,
                 MoreInfo = Resource.MoreInfo
             };
         }
@@ -55,9 +55,9 @@ namespace Services.Helpers
         {
             return new ErrorResult()
             {
-                ErrorCode = EnumType.ErrorCode.Validate,
-                UserMsg = new List<string>() { Resource.UserMsgDuplicate },
-                DevMsg = new List<string>() { Resource.DevMsgDuplicate },
+                ErrorCode = EnumType.ErrorCode.Duplicate,
+                UserMsg = Resource.UserMsgDuplicate,
+                DevMsg = Resource.DevMsgDuplicate,
                 MoreInfo = Resource.MoreInfo
             }; 
         }
@@ -72,8 +72,8 @@ namespace Services.Helpers
             return new ErrorResult()
             {
                 ErrorCode = EnumType.ErrorCode.Database,
-                UserMsg = new List<string>() { Resource.UserMsg },
-                DevMsg = new List<string>() { Resource.DevMsgDatabase},
+                UserMsg = Resource.UserMsg,
+                DevMsg = Resource.DevMsgDatabase,
                 MoreInfo = Resource.MoreInfo
             };
         }
@@ -88,8 +88,8 @@ namespace Services.Helpers
             return new ErrorResult()
             {
                 ErrorCode = EnumType.ErrorCode.NotFoundByID,
-                UserMsg = new List<string>() { Resource.UserMsgNotFoundRecordByID },
-                DevMsg = new List<string>() { Resource.DevMsgNotFoundRecordByID },
+                UserMsg = Resource.UserMsgNotFoundRecordByID,
+                DevMsg = Resource.DevMsgNotFoundRecordByID,
                 MoreInfo = Resource.MoreInfo
             };
         }
@@ -104,8 +104,8 @@ namespace Services.Helpers
             return new ErrorResult()
             {
                 ErrorCode = EnumType.ErrorCode.NotFoundByID,
-                UserMsg = new List<string>() { Resource.UserMsgUpdateFail },
-                DevMsg = new List<string>() { Resource.DevMsgUpdateFail },
+                UserMsg = Resource.UserMsgUpdateFail,
+                DevMsg = Resource.DevMsgUpdateFail,
                 MoreInfo = Resource.MoreInfo
             };
         }
@@ -120,8 +120,8 @@ namespace Services.Helpers
             return new ErrorResult()
             {
                 ErrorCode = EnumType.ErrorCode.NotFoundByID,
-                UserMsg = new List<string>() { Resource.UserMsgDeleteFail },
-                DevMsg = new List<string>() { Resource.DevMsgDeleteFail },
+                UserMsg = Resource.UserMsgDeleteFail,
+                DevMsg = Resource.DevMsgDeleteFail,
                 MoreInfo = Resource.MoreInfo
             };
         }
@@ -136,8 +136,8 @@ namespace Services.Helpers
             return new ErrorResult()
             {
                 ErrorCode = EnumType.ErrorCode.NotFoundByID,
-                UserMsg = new List<string>() { Resource.UserMsgAddFail },
-                DevMsg = new List<string>() { Resource.DevMsgAddFail },
+                UserMsg = Resource.UserMsgAddFail,
+                DevMsg = Resource.DevMsgAddFail,
                 MoreInfo = Resource.MoreInfo
             };
         }

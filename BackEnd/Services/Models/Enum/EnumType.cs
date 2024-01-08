@@ -167,6 +167,16 @@ namespace Services.Models.Enum
             /// </summary>
             NumberSellDesc = 16,
 
+            /// <summary>
+            /// Sắp xếp theo tên đăng nhập từ a-z
+            /// </summary>
+            UsernameAsc = 17,
+
+            /// <summary>
+            /// Sắp xếp theo tên đăng nhập từ z-a
+            /// </summary>
+            UsernameDesc = 18,
+
         }
 
         public enum SortAcount
@@ -174,35 +184,99 @@ namespace Services.Models.Enum
             /// <summary>
             /// Sắp xếp theo username tăng dần
             /// </summary>
-            UsernameAsc = 0,
+            UsernameAsc = 1,
             /// <summary>
             /// Sắp xếp theo username giảm dần
             /// </summary>
-            UsernameDesc = 1,
+            UsernameDesc = 2,
             /// <summary>
             /// Sắp xếp theo họ tên tăng dần
             /// </summary>
-            FullNameAsc = 2,
+            FullNameAsc = 3,
             /// <summary>
             /// Sắp xếp theo họ tên giảm dần
             /// </summary>
-            FullNameDesc = 3,
+            FullNameDesc = 4,
             /// <summary>
             /// Sắp xếp theo chức vụ tăng dần
             /// </summary>
-            RoleAsc = 4,
+            RoleAsc = 5,
             /// <summary>
             /// Sắp xếp theo chức vụ giảm dần
             /// </summary>
-            RoleDesc = 5,
+            RoleDesc = 6,
             /// <summary>
             /// Sắp xếp theo trạng thái tăng dần
             /// </summary>
-            StatusAsc = 6,
+            StatusAsc = 7,
             /// <summary>
             /// Sắp xếp theo trạng thái giảm dần
             /// </summary>
-            StatusDesc = 7
+            StatusDesc = 8,
+            TimeAsc = 9, 
+            TimeDesc = 10,
+        }
+
+        public enum SortPromotion {
+            /// <summary>
+            /// Sắp xếp theo mã voucher tăng dần
+            /// </summary>
+            CodeAsc = 1,
+            /// <summary>
+            /// Sắp xếp theo mã voucher giảm dần
+            /// </summary>
+            CodeDesc = 2,
+            /// <summary>
+            /// Sắp xếp theo giá trị voucher tăng dần
+            /// </summary>
+            DiscountAsc = 3,
+            /// <summary>
+            /// Sắp xếp theo giá trị voucher giảm dần
+            /// </summary>
+            DiscountDesc = 4,
+            /// <summary>
+            /// Sắp xếp theo ngày bắt đầu voucher tăng dần
+            /// </summary>
+            DayStartAsc = 5,
+            /// <summary>
+            /// Sắp xếp theo ngày bắt đầu voucher giảm dần
+            /// </summary>
+            DayStartDesc = 6,
+            /// <summary>
+            /// Sắp xếp theo ngày kết thúc voucher tăng dần
+            /// </summary>
+            DayExpiredAsc = 7,
+            /// <summary>
+            /// Sắp xếp theo ngày kết thúc voucher giảm dần
+            /// </summary>
+            DayExpiredDesc = 8,
+            /// <summary>
+            /// Sắp xếp theo điều kiện áp dụng tăng dần
+            /// </summary>
+            ProvisoAsc = 9,
+            /// <summary>
+            /// Sắp xếp theo điều kiện áp dụng giảm dần
+            /// </summary>
+            ProvisoDesc = 10,
+            /// <summary>
+            /// Sắp xếp theo số lượng tăng dần
+            /// </summary>
+            QuantityAsc = 11,
+            /// <summary>
+            /// Sắp xếp theo số lượng giảm dần
+            /// </summary>
+            QuantityDesc = 12,
+            /// <summary>
+            /// Sắp xếp theo số lượng đã sử dụng tăng dần
+            /// </summary>
+            NumUsedAsc = 13,
+            /// <summary>
+            /// Sắp xếp theo số lượng đã sử dụng giảm dần
+            /// </summary>
+            NumUsedDesc = 14,
+            TimeAsc = 15,
+            TimeDesc = 16,
+
         }
 
 
@@ -284,7 +358,12 @@ namespace Services.Models.Enum
             /// <summary>
             /// Hàng sắp về
             /// </summary>
-            PrepairCome = 2
+            PrepairCome = 2,
+
+            /// <summary>
+            /// Tất cả
+            /// </summary>
+            All = 3,
         }
 
         /// <summary>

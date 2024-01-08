@@ -1,0 +1,33 @@
+.icon-sort {
+    height: 24px;
+    width: 24px;
+    position: relative;
+    margin-left: 5px;
+  }
+  
+  .icon-sort::before {
+    content: "";
+    position: absolute;
+    background: transparent url(https://cegovapp.misacdn.net/r/cegov/img/sprites.06b14dc5.svg) no-repeat;
+    background-position: 24px 0px;
+    height: 24px;
+    width: 24px;
+    top: 0;
+    left: 0;
+  }
+  
+  .icon-sort.desc::before {
+    background-position: -143px -117px;
+    width: 16px;
+    top: 2px;
+  }
+  
+  .icon-sort.asc::before {
+    background-position: -160px -117px;
+    width: 16px;
+    top: 2px;
+    /* background-position: -143px -117px;
+    width: 16px;
+    top: 2px; */
+    /* transform: rotateY(180deg); */
+  }

@@ -6,32 +6,29 @@
                     <div class="logo flex-row" @click="clickLogo">
                         <div class="logo-icon"></div>
                         <div class="logo-title">
-                            <p>Top Laptop</p>
+                            <p>{{ Resource.NameWeb }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="header-mid d-flex align-items" v-if="!isManagePage">
                     <div class="form-input-search flex-row">
-                        <input type="text" placeholder="Tìm kiếm...">
-                        <div class="icon">
+                        <input type="text" @keypress.enter="search" v-model="keyword"
+                            :placeholder="Resource.Placehoder.SearchFil">
+                        <div class="icon" @click="search">
                             <div class="list-icon icon-search"></div>
                         </div>
 
                     </div>
                 </div>
                 <div class="header-right flex-row align-items">
-                    <div class="cart" @click="goToCart">
-                        <div class="icon-cart">
-                        </div>
-                        <div class="amount" v-show="amountCart != 0">
-                            {{ amountCart }}
-                        </div>
+                    <div class="btn-login align-items d-flex" @click="btnLoginOnClick" v-if="user == null">
+                        {{ Resource.Text.Login }}
                     </div>
-                    <div class="btn-login align-items d-flex" @click="btnLoginOnClick" v-if="user==null">
-                        Đăng nhập
+                    <div class="title" v-if="user != null">
+                        {{ user.fullName }}
                     </div>
-                    <div class="settings" @click="showOption" v-else>
-                        <div class="icon-setting"></div>
+                    <div class="settings" @click="showOption" v-if="user != null">
+                        <img :src="Resource.PrefixImage +user.avatar" alt="">
                         <div class="list-option pad-8 " id="list-option" v-show="isShowOption"
                             @focusout="isShowOption = false;">
                             <!-- <span class="arrow-list"></span> -->
@@ -46,6 +43,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="cart" @click="goToCart">
+                        <div class="icon-cart">
+                        </div>
+                        <div class="amount" v-show="amountCart != 0">
+                            {{ amountCart }}
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -54,66 +58,66 @@
         <div class="header-bottom " v-if="!isManagePage">
             <div class="container flex-row">
                 <div class="header-menu align-items">
-                <div class="flex-row align-items pointer">
-                    <div class="list-icon icon-menu">
+                    <div class="flex-row align-items pointer">
+                        <div class="list-icon icon-menu">
 
-                    </div>
-                    <div class="title-menu">
-                        <p>Danh mục sản phẩm</p>
-                    </div>
-                </div>
-
-                <div class="list-category">
-                    <div class="cate-item" v-for="(cate, index) in listCate" :key="index">
-                        <div class="item flex-row align-items">
-                            <div class="cate-item-left flex-row align-items"
-                                @click="filterProductByCategory(cate.categoryID)">
-                                <!-- <div class="cate-icon" :class="cate.icon"></div> -->
-                                <div class="cate-icon">
-                                    <img src="../../assets/icon/ic_laptop.png" alt="">
-                                </div>
-                                <p class="cate-title">{{ cate.categoryName }}</p>
-                            </div>
-                            <div class="cate-item-right">
-                                <div class="icon-arrow-right"></div>
-                            </div>
                         </div>
-                        <div class="menu-hover flex-row" v-if="cate.categories.length != 0">
-                            <div class="list-holder" v-for="(item, index) in cate.categories" :key="index">
-                                <p class="holder-title">{{ item.title }}</p>
-                                <div class="item-holder" v-for="(category, index) in item.categories" :key="index">
-                                    <div class="holder-content" @click="filterProductByCategory(category.categoryID)">
-                                        <p>{{ category.categoryName }}</p>
-                                        <div class="icon-arrow-right" v-if="category.categories.length != 0"></div>
+                        <div class="title-menu">
+                            <p>{{ Resource.Label.Category }}</p>
+                        </div>
+                    </div>
+
+                    <div :class="['list-category', {'home': isHomePage == true,}]">
+                        <div class="cate-item" v-for="(cate, index) in listCate" :key="index">
+                            <div class="item flex-row align-items">
+                                <div class="cate-item-left flex-row align-items"
+                                    @click="filterProductByCategory(cate.categoryID)">
+                                    <!-- <div class="cate-icon" :class="cate.icon"></div> -->
+                                    <div class="cate-icon">
+                                        <img src="../../assets/icon/ic_laptop.png" alt="">
                                     </div>
-                                    <div class="list-sub-item" v-if="category.categories.length != 0">
-                                        <div class="sub-item-holder" v-for="(subItem, index) in category.categories"
-                                            :key="index">
-                                            {{ subItem.categoryName }}
+                                    <p class="cate-title">{{ cate.categoryName }}</p>
+                                </div>
+                                <div class="cate-item-right">
+                                    <div class="icon-arrow-right"></div>
+                                </div>
+                            </div>
+                            <div class="menu-hover flex-row" v-if="cate.categories.length != 0">
+                                <div class="list-holder" v-for="(item, index) in cate.categories" :key="index">
+                                    <p class="holder-title">{{ item.title }}</p>
+                                    <div class="item-holder" v-for="(category, index) in item.categories" :key="index">
+                                        <div class="holder-content" @click="filterProductByCategory(category.categoryID)">
+                                            <p>{{ category.categoryName }}</p>
+                                            <div class="icon-arrow-right" v-if="category.categories.length != 0"></div>
+                                        </div>
+                                        <div class="list-sub-item" v-if="category.categories.length != 0">
+                                            <div class="sub-item-holder" v-for="(subItem, index) in category.categories"
+                                                :key="index" @click="filterProductByCategory(subItem.categoryID)">
+                                                {{ subItem.categoryName }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                    </div>
-                </div>
-            </div>
-            <div class="header-bottom-right flex-row align-items">
-                <div class="item-right flex-row" v-for="(item, index) in listItem" :key="index"
-                    @click="goToProduct(item.productID)">
-                    <div class="pulse-icon">
-                        <div class="icon-wrap">
-                        </div>
-                        <div class="elements">
-                            <div class="pulse"></div>
                         </div>
                     </div>
-                    <div class="title-item">
-                        <span :title="item.productName">{{ item.productName }}</span>
+                </div>
+                <div class="header-bottom-right flex-row align-items">
+                    <div class="item-right flex-row" v-for="(item, index) in listItem" :key="index"
+                        @click="goToProduct(item.productID)">
+                        <div class="pulse-icon">
+                            <div class="icon-wrap">
+                            </div>
+                            <div class="elements">
+                                <div class="pulse"></div>
+                            </div>
+                        </div>
+                        <div class="title-item">
+                            <span :title="item.productName">{{ item.productName }}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
 
@@ -132,52 +136,94 @@ export default {
             Resource: Resource,
             Const: Const,
             isShowOption: false,
-            listAction:[],
+            listAction: [],
             listItem: [
             ],
             listCate: [
             ],
             amountCart: 0,
+            keyword: '',
+            isHomePage: false
         };
+    },
+    watch: {
+        '$route.name': {
+            handler: function (newVal) {
+                if (newVal != undefined) {
+                    this.isHomePage = newVal == "HomePage" ? true : false;
+                }
+            }
+        },
     },
     methods: {
         clickLogo() {
             this.$router.push({ name: 'HomePage' });
         },
+
         btnLoginOnClick() {
             this.$router.push({ name: 'LoginForm' });
         },
+
         showOption() {
             this.isShowOption = !this.isShowOption;
         },
+
         action(comand) {
             let me = this;
             me[comand]();
         },
+
         infoOnClick() {
             this.$router.push({ name: 'InfoUser' });
         },
+
         changePasswordOnClick() {
             this.$router.push({ name: 'ChangePassword' });
         },
         manageAccountOnClick() {
             this.$router.push({ name: 'AccountList' });
         },
+
         manageProductOnClick() {
             this.$router.push({ name: 'ProductList' });
         },
+
         manageOrderOnClick() {
             this.$router.push({ name: 'OrderList' });
         },
+
+        manageImportOnClick() {
+            this.$router.push({ name: 'ImportProductList' });
+        },
+
+        manageGiftOnClick() {
+            this.$router.push({ name: 'GiftList' });
+        },
+
+        managePromotionOnClick() {
+            this.$router.push({ name: 'PromotionList' });
+        },
+
+        manageNewsOnClick() {
+            this.$router.push({ name: 'OrderList' });
+        },
+
+        statisticOnClick() {
+            this.$router.push({ name: 'StatisticPage' });
+        },
+
         goToCart() {
             this.$router.push({ name: 'CartPage' });
         },
+
         listOrderOnClick() {
             this.$router.push({ name: 'ManagerPage' });
         },
+
         goToProduct(productID) {
             this.$router.push({ name: 'ProductDetailPage', query: { productId: productID } });
         },
+
         filterProductByCategory(categoryID) {
             this.$router.push(
                 {
@@ -188,13 +234,26 @@ export default {
                 }
             )
         },
+
+        search() {
+            this.$router.push(
+                {
+                    name: 'FilterPage',
+                    query: {
+                        keyword: this.keyword
+                    }
+                }
+            );
+            this.keyword = '';
+        },
+
         logout() {
             CommonFn.eraseCookie('RefreshToken');
             CommonFn.eraseCookie('Token');
             this.$store.dispatch('setUser', null);
-            axios.defaults.headers.common["Authorization"] ="Bearer ";
-            this.$router.push({path: '/'});
-            
+            axios.defaults.headers.common["Authorization"] = "Bearer ";
+            this.$router.push({ path: '/' });
+
         },
 
         async getTopProduct() {
@@ -219,7 +278,7 @@ export default {
                 let url = `Category/getAll`;
                 await axios.get(url)
 
-                    .then((response) => {
+                    .then((response) => {       
                         this.controlCategory(response.data);
                     })
 
@@ -253,12 +312,12 @@ export default {
                     }
                     if (item.categoryName == "Laptop Mới") {
                         category.icon = "laptop-new";
-                        category.categories.push(Resource.DemandCategory);
+                        category.categories.push(Const.DemandCategory);
 
                     }
                     else if (item.categoryName == "Laptop Cũ") {
                         category.icon = "laptop-used";
-                        category.categories.push(Resource.DemandCategory);
+                        category.categories.push(Const.DemandCategory);
                     }
                     this.listCate.push(category);
                 }
@@ -286,15 +345,16 @@ export default {
             });
             return category.categories;
         },
-        configAction(){
-            if(this.user != null){
+
+        configAction() {
+            if (this.user != null) {
                 Const.ListActionSetting.find(
-                (item) => {
-                    if(item.Role == this.user.role){
-                        this.listAction = item.Value;
+                    (item) => {
+                        if (item.Role == this.user.role) {
+                            this.listAction = item.Value;
+                        }
                     }
-                }
-            );
+                );
             }
         }
 
@@ -305,6 +365,10 @@ export default {
         //         this.isOpenCombobox = false
         //     }
         // });
+
+        if(this.$route.name == "HomePage"){
+            this.isHomePage = true;
+        }
         this.getTopProduct();
         this.getCategory();
         this.amountCart = JSON.parse(localStorage.getItem('cart')) != null ? JSON.parse(localStorage.getItem('cart')).length : 0;
@@ -443,7 +507,7 @@ export default {
     border-radius: 35px;
     background: #ff9300;
     position: relative;
-    margin-right: 20px;
+    margin-left: 20px;
 }
 
 .cart .icon-cart {
@@ -475,10 +539,11 @@ export default {
 }
 
 .settings {
-    min-width: 40px;
-    height: 40px;
-    border-radius: 18px;
-    background: #ff9300;
+    min-width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    /* border-radius: 18px; */
+    background: #fff;
     position: relative;
 }
 
@@ -486,15 +551,11 @@ export default {
     cursor: pointer;
 }
 
-.settings .icon-setting {
-    width: 32px;
-    height: 32px;
-    background: transparent url(../../assets/icon/settings.png) no-repeat;
-    background-position: center;
-    background-size: 32px 32px;
+.settings img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
     position: absolute;
-    top: 11%;
-    left: 10%;
 }
 
 .settings .list-option {
@@ -755,6 +816,10 @@ export default {
     display: none;
 }
 
+.list-category.home {
+    display: block;
+}
+
 .header-menu:hover .list-category {
     display: block;
 }
@@ -841,5 +906,12 @@ export default {
     font-size: 16px;
     text-align: center;
     line-height: calc(20/17);
+}
+.title {
+    margin-right: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 35px;
+    color: #fff;
 }
 </style>

@@ -19,6 +19,8 @@ namespace Services.Service
         ApiReponse GetAll();
         ApiReponse GetById(Guid promotionID);
         ApiReponse GetByCode(string promotionCode);
+        ApiReponse GetByFilter(DateTime? timeStart, DateTime? timeEnd, string? keyword, int? sort,
+            bool? status, int pageSize, int pageNumber);
         ApiReponse Save(Promotion promotion, Guid promotionID);
         ApiReponse UpdateMultiple(List<Guid> listID, bool status);
         ApiReponse Delete(List<Guid> listID);
@@ -116,6 +118,34 @@ namespace Services.Service
 
             }
         }
+
+        public ApiReponse GetByFilter(DateTime? timeStart, DateTime? timeEnd, string? keyword, int? sort,
+            bool? status, int pageSize, int pageNumber) {
+            try {
+                if (timeStart == null) {
+                    timeStart = DateTime.MinValue;
+                }
+                if (timeEnd == null) {
+                    timeEnd = DateTime.MaxValue;
+                }
+
+                keyword = keyword == null ? string.Empty : keyword.Trim().ToLower();
+
+                return new ApiReponse() {
+                    Success = true,
+                    Data = _promotionRepository.GetByFilter((DateTime)timeStart, (DateTime)timeEnd, keyword, sort,
+                    status, pageSize, pageNumber)
+                };
+            } catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+                return new ApiReponse() {
+                    Success = false,
+                    Data = HandleError.GenerateErrorResultDatabase()
+                };
+
+            }
+        }
+
         public ApiReponse Save(Promotion promotion, Guid promotionID)
         {
             ApiReponse result = new ApiReponse();
@@ -140,7 +170,8 @@ namespace Services.Service
                 }
                 else
                 {
-                    promotion.PromotionID = Guid.NewGuid();
+                    //promotion.PromotionID = Guid.NewGuid();
+                    promotion.NumUsed = 0;
                     Create(promotion);
                     result.Success = true;
                     result.Data = promotion.PromotionID;

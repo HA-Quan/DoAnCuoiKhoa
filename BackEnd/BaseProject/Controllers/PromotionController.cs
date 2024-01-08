@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Helpers;
 using Services.Models.Entities;
+using Services.Models.Enum;
 using Services.Service;
 
 namespace BaseProject.Controllers
@@ -63,6 +64,30 @@ namespace BaseProject.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
+            }
+        }
+
+        [HttpGet("filter")]
+        public IActionResult GetByFilter(
+            [FromQuery] DateTime? timeStart,
+            [FromQuery] DateTime? timeEnd,
+            [FromQuery] string? keyword,
+            [FromQuery] int? sort,
+            [FromQuery] bool? status,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] int pageNumber = 1) {
+            try {
+                var result = _promotionService.GetByFilter(timeStart, timeEnd, keyword, sort,
+                    status, pageSize, pageNumber);
+                if (result.Success) {
+                    return StatusCode(StatusCodes.Status200OK, result.Data);
+                } else {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Data);
+                }
+
+            } catch (Exception ex) {
                 Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
             }

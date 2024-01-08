@@ -38,7 +38,7 @@ namespace Services.Service
         {
             try
             {
-                var records = FindByCondition(a => a.DelFalg == EnumType.DeleteFlag.Using).ToList();
+                var records = FindByCondition(a => a.DelFalg == EnumType.DeleteFlag.Using).OrderBy(r => r.Specifications).ToList();
                 return new ApiReponse()
                 {
                     Success = true,

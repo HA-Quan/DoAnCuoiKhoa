@@ -18,7 +18,7 @@ namespace Services.Service
     public interface IOrderProductService : IServiceBase<OrderProduct>
     {
         ApiReponse GetAll();
-        ApiReponse GetByAccountID(Guid accountID);
+        ApiReponse GetByAccountID(Guid accountID, bool isDelivered);
         ApiReponse GetById(Guid orderProductID);
         ApiReponse GetOrderDetailByOrderID(Guid orderProductID);
         ApiReponse GetByFilter(DateTime? timeStart, DateTime? timeEnd, string? keyword, int? sort, 
@@ -72,7 +72,8 @@ namespace Services.Service
                 if (order != null)
                 {
                     record.Order = order;
-                    var orderDetails = _repositoryContext.OrderDetails.Where(o => o.OrderID == orderProductID).ToList();
+                    var orderDetails = _repositoryContext.OrderDetails.Where(o => o.OrderID == orderProductID
+                            && o.DelFalg == EnumType.DeleteFlag.Using).ToList();
                     var listOrderDetail = new List<OrderDetailModel>();
                     foreach (var orderDetail in orderDetails)
                     {
@@ -123,11 +124,15 @@ namespace Services.Service
 
             }
         }
-        public ApiReponse GetByAccountID(Guid accountID)
+        public ApiReponse GetByAccountID(Guid accountID, bool isDelivered)
         {
             try
             {
                 var records = FindByCondition(a => a.DelFalg == EnumType.DeleteFlag.Using && a.CreatedBy == accountID).ToList();
+                if (isDelivered)
+                {
+                    records = records.Where(r => r.Status == (byte)EnumType.StatusOrder.Delivered).ToList();
+                }
                 return new ApiReponse()
                 {
                     Success = true,
@@ -181,14 +186,8 @@ namespace Services.Service
                 {
                     timeEnd = DateTime.MaxValue;
                 }
-                if (keyword == null)
-                {
-                    keyword = string.Empty;
-                }
-                else
-                {
-                    keyword = keyword.Trim().ToLower();
-                }
+
+                keyword = keyword == null ? string.Empty : keyword.Trim().ToLower();
 
                 return new ApiReponse()
                 {
@@ -248,6 +247,7 @@ namespace Services.Service
                     {
                         ordDetail.OrderID = op.OrderID;
                         ordDetail.CreatedBy = op.CreatedBy;
+                        ordDetail.CreatedDate = op.CreatedDate;
                     }
                     if (_orderDetailRepository.CreateMultiple(orderModel.ListOrderDetail.ToList()) == 0)
                     {
@@ -323,6 +323,14 @@ namespace Services.Service
                             if (item == null)
                             {
                                 ordDetail.DetailID = Guid.NewGuid();
+                                ordDetail.CreatedBy =(Guid) op.ModifiedBy;
+                                ordDetail.CreatedDate = DateTime.Now;
+                                ordDetail.OrderID = op.OrderID;
+                            }
+                            else if(item != ordDetail)
+                            {
+                                ordDetail.ModifiedBy = op.ModifiedBy;
+                                ordDetail.ModifiedDate = DateTime.Now;
                             }
                             listOrderDetail.Add(ordDetail);
                         }
@@ -356,48 +364,77 @@ namespace Services.Service
         }
         public ApiReponse UpdateStatus(Guid orderID, byte status)
         {
-            try
+            using (var transaction = _repositoryContext.Database.BeginTransaction())
             {
-                var order = FindByCondition(o => o.DelFalg == EnumType.DeleteFlag.Using && o.OrderID == orderID).FirstOrDefault();
-                if(order != null)
+                try
                 {
-                    if((order.Status != (byte) EnumType.StatusOrder.NotApproved && status == (byte)EnumType.StatusOrder.Cancelled )
-                        || (order.Status == (byte)EnumType.StatusOrder.Cancelled))
+                    var order = FindByCondition(o => o.DelFalg == EnumType.DeleteFlag.Using && o.OrderID == orderID).FirstOrDefault();
+                    if (order != null)
+                    {
+                        //if ((order.Status != (byte)EnumType.StatusOrder.NotApproved && status == (byte)EnumType.StatusOrder.Cancelled)
+                        //    || (order.Status == (byte)EnumType.StatusOrder.Cancelled))
+                        //{
+                        //    return new ApiReponse()
+                        //    {
+                        //        Success = false,
+                        //        Data = Guid.Empty,
+                        //    };
+                        //}
+                        order.Status = status;
+                        order.ModifiedDate = DateTime.Now;
+                        Update(order);
+                        if (status == (byte)EnumType.StatusOrder.Cancelled)
+                        {
+                            if (_orderDetailRepository.CancelByOrderID(orderID))
+                            {
+                                transaction.Commit();
+                                return new ApiReponse()
+                                {
+                                    Success = true,
+                                    Data = orderID
+                                };
+                            }
+                            else
+                            {
+                                transaction.Rollback();
+                                return new ApiReponse()
+                                {
+                                    Success = false,
+                                    Data = Guid.Empty
+                                };
+                            }
+                        }
+                        else
+                        {
+                            transaction.Commit();
+                            return new ApiReponse()
+                            {
+                                Success = true,
+                                Data = orderID
+                            };
+                        }
+                    }
+                    else
                     {
                         return new ApiReponse()
                         {
                             Success = false,
-                            Data = Guid.Empty,
+                            Data = Guid.Empty
                         };
                     }
-                    order.Status = status;
-                    order.ModifiedDate = DateTime.Now;
-                    Update(order);
-                    return new ApiReponse()
-                    {
-                        Success = true,
-                        Data = orderID
-                    };
-
                 }
-                else
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
+                    transaction.Rollback();
                     return new ApiReponse()
                     {
                         Success = false,
-                        Data = Guid.Empty
+                        Data = HandleError.GenerateErrorResultException()
                     };
                 }
             }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return new ApiReponse()
-                {
-                    Success = false,
-                    Data = HandleError.GenerateErrorResultException()
-                };
-            }
+    
         }
 
         public ApiReponse Delete(List<Guid> listID)

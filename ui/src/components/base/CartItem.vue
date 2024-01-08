@@ -2,7 +2,7 @@
     <div class="item-row d-flex">
         <div class="item-image">
             <div class="image">
-                <img :src="`${item.mainImage}`" alt="">
+                <img :src="`${Resource.PrefixImage + item.mainImage}`" alt="">
             </div>
         </div>
         <div class="item-info">
@@ -12,7 +12,7 @@
                 </span>
                 <span>{{ item.productName }}</span>
             </p>
-            <div class="price-product d-flex align-items">
+            <div class="price-product d-flex align-items" v-if="!isImport">
                 <div class="price-sell">
                     {{ formatMoney(item.price) }}
                 </div>
@@ -25,23 +25,36 @@
             </div>
             <div class="quantity-product d-flex align-items">
                 <p>{{ Resource.Label.SelectQuantity }}</p>
-                <div class="amount-control">
+                <div class="amount-control" v-if="!isImport">
                     <InputNumber :transmissionNumber="item.amount" :decimalPlaces="0" :max="item.quantity"
-                        @update="updateValue" :isCart="true"/>
+                        @update="updateValue" :isCart="true" />
+                </div>
+                <div class="amount-control" v-else>
+                    <InputNumber :transmissionNumber="item.quantity" :decimalPlaces="0" @update="updateValue"
+                        :isCart="true" />
                 </div>
                 <span class="btn-delete" @click="deleteItem">
                     {{ Resource.Button.Delete }}
                 </span>
             </div>
-            <div class="info-gift" v-if="item.listGift.length > 0">
-                <div class="title">
-                    - {{ Resource.Text.InfoGift }}
+            <div class="quantity-product d-flex align-items mt-10" v-if="isImport">
+                <p>{{ Resource.Label.SelectPriceImport }}</p>
+                <div class="amount-control">
+                    <InputNumber :transmissionNumber="item.priceImport" :decimalPlaces="0" @update="updatePrice" />
                 </div>
-                <div class="content">
-                    <li v-for="(gift, index) in item.listGift" :key="index">
-                        <span>{{ gift.description }}</span>
-                    </li>
+            </div>
+            <div class="info-gift" v-if="!isImport">
+                <div v-if="item.listGift.length > 0">
+                    <div class="title">
+                        - {{ Resource.Text.InfoGift }}
+                    </div>
+                    <div class="content">
+                        <li v-for="(gift, index) in item.listGift" :key="index">
+                            <span>{{ gift.description }}</span>
+                        </li>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -55,7 +68,16 @@ export default {
     components: {
         InputNumber
     },
-    props: ["initItem"],
+    // props: ["initItem", "isImport"],
+    props: {
+        initItem: {
+            type: Object
+        },
+        isImport: {
+            type: Boolean,
+            default: false,
+        }
+    },
     data() {
         return {
             Const: Const,
@@ -63,6 +85,13 @@ export default {
             item: {}
         }
     },
+    // watch: {
+    //     initItem: {
+    //         handler: function (newVal) {
+    //             this.item = newVal;
+    //         }
+    //     },
+    // },
     methods: {
         configCondition(value) {
             let result = value;
@@ -82,22 +111,31 @@ export default {
             money = money * 10000;
             return this.formatMoney(money);
         },
-        updateValue(value){
-            if(value == 0){
-                this.$emit('deleteItem', this.item.productID); 
+        updateValue(value) {
+            if (value == 0) {
+                this.$emit('deleteItem', this.item.productID);
             }
             else {
-                this.item.amount = value;  
-                this.$emit('updateValue', this.item.productID, value); 
+                if (this.isImport) {
+                    this.item.quantity = value;
+                }
+                else {
+                    this.item.amount = value;
+                }
+                this.$emit('updateValue', this.item.productID, value);
             }
-            
+
         },
-        deleteItem(){
-            this.$emit('deleteItem', this.item.productID); 
+        updatePrice(value) {
+            this.item.priceImport = value;
+            this.$emit('updatePrice', this.item.productID, value);
+        },
+        deleteItem() {
+            this.$emit('deleteItem', this.item.productID);
         }
     },
     created() {
-        this.item = {...this.initItem};
+        this.item = this.initItem;
     }
 
 }
@@ -107,6 +145,7 @@ export default {
     width: 100%;
     margin-bottom: 20px;
 }
+
 .item-row .item-image {
     width: 200px;
     margin-right: 15px;
@@ -117,7 +156,7 @@ export default {
     height: 120px;
 } */
 
-.image img{
+.image img {
     width: 180px;
     height: auto;
 }
@@ -154,29 +193,35 @@ export default {
 .quantity-product .amount-control {
     margin-left: 10px;
 }
-.btn-delete{
+
+.btn-delete {
     margin-left: 10px;
     cursor: pointer;
 }
-.btn-delete:hover{
+
+.btn-delete:hover {
     color: #fe6402;
 }
-.info-gift{
+
+.info-gift {
     margin-top: 10px;
     padding: 5px;
     background-color: #f6f6f6;
     border-radius: 10px;
 }
-.info-gift .title{
+
+.info-gift .title {
     padding: 5px 0 5px 10px;
     font-weight: 700;
 }
-.info-gift .content li{
+
+.info-gift .content li {
     position: relative;
     padding-left: 10px;
     padding-bottom: 7px;
 }
-.content li::marker{
+
+.content li::marker {
     color: #d70018;
 }
 </style>

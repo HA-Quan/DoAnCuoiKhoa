@@ -1,7 +1,7 @@
 <template>
     <div @keydown="handleKeyCommand" class="combobox pointer" @focusin="isOpenCombobox = true; setIndexOption()"
         @focusout="focusOut">
-        <div :class="['combobox-select flex-row', { 'border-red': this.isCheck == true }, { disabled: disabled }]">
+        <div :class="['combobox-select flex-row', { 'border-red': isCheck == true }, { disabled: disabled }]">
             <div class="popover flex">
                 <input class="input" type="text" :disabled="disabled" :tabindex="tabindex" :placeholder="placehoder"
                     :readonly="isReadonly" />
@@ -23,8 +23,8 @@
                 </span>
             </div>
             <div class="combobox-values">
-                <div ref="options" v-for="(option, index) in items" @click="handleOptionClicked(option, index)"
-                    :key="index" :class="[
+                <div ref="options" v-for="(option, index) in items" @click="handleOptionClicked(option, index)" :key="index"
+                    :class="[
                         'combobox-value-wrapper',
                         {
                             'combobox-value-wrapper-selected':
@@ -34,8 +34,8 @@
                     ]">
                     <div class="select-all">
                         <BaseCheckbox class="combobox-checkbox" :notClick="true" :checkedProp="selectedOptions.some(
-                            (obj) => obj[fieldName] == option[fieldName] 
-                        )" >
+                            (obj) => obj[fieldName] == option[fieldName]
+                        )">
                             <template #checkmark>
                                 <div class="checkbox-checkmark"></div>
                             </template>
@@ -76,7 +76,7 @@ export default {
                 return [];
             }
         },
-            
+
 
         disabled: { // trạng thái của combobox 
             type: Boolean
@@ -97,16 +97,20 @@ export default {
     },
 
     watch: {
-    
-    'isOpenCombobox': {
-      handler: function (newVal) {
-        if (newVal == false) {
-            console.log(this.selectedOptions);
-          this.$emit("getValue", this.selectedOptions);
-        }
-      }
+        initItem: {
+            handler: function (newVal) {
+                this.selectedOptions = newVal;
+            }
+        },
+        'isOpenCombobox': {
+            handler: function (newVal) {
+                if (newVal == false) {
+                    // console.log(this.selectedOptions);
+                    this.$emit("getValue", this.selectedOptions);
+                }
+            }
+        },
     },
-  },
 
 
     data() {
@@ -395,7 +399,7 @@ export default {
     min-height: 36px;
 }
 
-.combobox-header{
+.combobox-header {
     display: flex;
     align-items: center;
     border-radius: 4px;
@@ -504,12 +508,12 @@ export default {
 }
 
 .select-all {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px !important;
-  max-width: 36px !important;
-  min-width: 36px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px !important;
+    max-width: 36px !important;
+    min-width: 36px !important;
 }
 </style>
   

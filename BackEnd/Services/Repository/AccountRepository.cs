@@ -139,6 +139,11 @@ namespace Services.Repository
 
                 case (byte)EnumType.SortAcount.StatusDesc:
                     return accounts.OrderByDescending(s => s.Status).ThenByDescending(s => s.ModifiedDate).ToList();
+                case (byte)EnumType.SortAcount.TimeAsc:
+                    return accounts.OrderBy(s => s.CreatedDate).ThenByDescending(s => s.ModifiedDate).ToList();
+
+                case (byte)EnumType.SortAcount.TimeDesc:
+                    return accounts.OrderByDescending(s => s.CreatedDate).ThenByDescending(s => s.ModifiedDate).ToList();
 
             }
             return accounts.OrderByDescending(s => s.ModifiedDate).ToList();

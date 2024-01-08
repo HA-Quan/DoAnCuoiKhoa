@@ -9,28 +9,32 @@ using Services.Models.Entities.DTO;
 using Services.Models.Enum;
 using Services.Repository;
 using Services.Service.Base;
+using Services.Service.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 using static Services.Models.Enum.EnumType;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Services.Service
 {
     public interface IProductService : IServiceBase<Product>
     {
         ApiReponse GetAll();
-        ApiReponse GetById(Guid productID);
+        ApiReponse GetById(Guid productID, bool byManager);
         ApiReponse GetTopProduct(int number, byte byType);
+        ApiReponse GetProductByDemand(int number, byte demand);
         ApiReponse GetByFilter(bool byManager, Guid categoryID, Guid chipID, Guid memoryID, Guid storageID, bool? cardType,
-            Guid displayID, string trademark, string? keyword, int? sort, byte demand, byte priceRange, int pageSize, int pageNumber);
+            Guid displayID, string trademark, string? keyword, int? sort, byte status, byte demand, byte priceRange, int pageSize, int pageNumber);
 
-        Task<ApiReponse> Save(ProductModel product);
-        ApiReponse UpdateProduct(ProductModel product, Guid productID);
+        Task<ApiReponse> Save(ProductModel productModel, Guid productID);
+        //ApiReponse UpdateProduct(ProductModel product, Guid productID);
         ApiReponse UpdateMultiple(List<Guid> listID, byte status);
         ApiReponse Delete(List<Guid> listID);
     }
@@ -71,7 +75,7 @@ namespace Services.Service
 
             }
         }
-        public ApiReponse GetById(Guid productID)
+        public ApiReponse GetById(Guid productID, bool byManager)
         {
             try
             {
@@ -96,10 +100,11 @@ namespace Services.Service
                     //        image += _configuration["MinIO:PrefixLink"];
                     //    }
                     //}
-                    
-                    product.NumberView += 1;
-                    product.ModifiedDate = DateTime.Now;
-                    Update(product);
+                    if (!byManager) {
+                        product.NumberView += 1;
+                        product.ModifiedDate = DateTime.Now;
+                        Update(product);
+                    }
                     return new ApiReponse()
                     {
                         Success = true,
@@ -160,8 +165,41 @@ namespace Services.Service
                 };
             }
         }
+        public ApiReponse GetProductByDemand(int number, byte demand)
+        {
+            try
+            {
+                var result = _productRepository.GetProductByDemand(number, demand);
+                if (result != null)
+                {
+                    return new ApiReponse()
+                    {
+                        Success = true,
+                        Data = result
+                    };
+
+                }
+                else
+                {
+                    return new ApiReponse()
+                    {
+                        Success = false
+                    };
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new ApiReponse()
+                {
+                    Success = false,
+                    Data = HandleError.GenerateErrorResultException()
+                };
+            }
+        }
         public ApiReponse GetByFilter(bool byManager, Guid categoryID, Guid chipID, Guid memoryID, Guid storageID, bool? cardType,
-            Guid displayID, string? trademark, string? keyword, int? sort, byte demand, byte priceRange, int pageSize, int pageNumber)
+            Guid displayID, string? trademark, string? keyword, int? sort, byte status, byte demand, byte priceRange, int pageSize, int pageNumber)
         {
             try
             {
@@ -177,7 +215,7 @@ namespace Services.Service
                 {
                     Success = true,
                     Data = _productRepository.GetByFilter(byManager, categoryID, chipID, memoryID,
-                        storageID, cardType, displayID, trademark, keyword, sort, demand, priceRange, pageSize, pageNumber)
+                        storageID, cardType, displayID, trademark, keyword, sort, status, demand, priceRange, pageSize, pageNumber)
                 };
                 
             }
@@ -193,128 +231,223 @@ namespace Services.Service
             
         }
 
-        public async Task<ApiReponse> Save(ProductModel product)
+        public async Task<ApiReponse> Save(ProductModel productModel, Guid productID)
         {
             ApiReponse result = new ApiReponse();
             using (var transaction = _repositoryContext.Database.BeginTransaction())
             {
                 bool check = true;
+                var product = productModel.Product;
+                var mainImage = productModel.MainImage;
+                var listImage = productModel.ListImages;
+                var listGifts = productModel.ListGifts;
                 try
                 {
-                    Product p = product.Product;
-                    if (await _productRepository.AddImage(product.ListImages[0]) != null)
+                    if(productID != Guid.Empty)
                     {
-                        p.MainImage = await _productRepository.AddImage(product.ListImages[0]);
-                    }
-                    else
-                    {
-                        check = false;
-                    }
-                    var listImage = await AddImage(product.ListImages);
-                    if (listImage != null)
-                    {
-                        p.ListImageString = string.Join(",", listImage);
-                    }
-                    else if (product.ListImages.Count() > 0)
-                    {
-                        check = false;
-                    }
-                    _repositoryBase.Create(p);
-                    _productRepository.Save();
-
-                    List<GiftByProduct> listGiftByProducts = new List<GiftByProduct>();
-                    foreach (var gift in product.ListGifts)
-                    {
-                        listGiftByProducts.Add(new GiftByProduct()
+                        if(_repositoryContext.Products.Any(p => p.DelFalg == EnumType.DeleteFlag.Using && p.ProductID == productID) 
+                            && product.ProductID == productID)
                         {
-                            ID = Guid.NewGuid(),
-                            GiftID = gift.GiftID,
-                            ProductID = p.ProductID
-                        });
-                    }
-                    if (listGiftByProducts.Count() > 0 && _giftByProductRepository.CreateMultiple(listGiftByProducts) == 0)
-                    {
-                        check = false;
-                    }
-                    
-                    if (check)
-                    {
-                        result.Success = true;
-                        result.Data = p.ProductID;
-                        transaction.Commit();
-                    }
-                    else
-                    {
-                        result.Success = false;
-                        result.Data = Guid.Empty;
-                        transaction.Rollback();
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    transaction.Rollback();
-                    result.Success = false;
-                    result.Data = HandleError.GenerateErrorResultException();
-                }
-            }
-            return result;
-        }
-        public ApiReponse UpdateProduct(ProductModel product, Guid productID)
-        {
-            ApiReponse result = new ApiReponse();
-            using (var transaction = _repositoryContext.Database.BeginTransaction())
-            {
-                bool check = true;
-                try
-                {
-                    if (_repositoryBase.FindByCondition(p => p.DelFalg == EnumType.DeleteFlag.Using &&
-                        p.ProductID == productID).Any() && product.Product.ProductID == productID)
-                    {
-                        Product p = product.Product;
-                        List<GiftByProduct> listGiftByProducts = new List<GiftByProduct>();
-                        foreach (var gift in product.ListGifts)
-                        {
-                            var giftByProduct = _repositoryContext.GiftByProducts.FirstOrDefault(g => g.DelFalg == EnumType.DeleteFlag.Using &&
-                            g.ProductID == productID && g.GiftID == gift.GiftID);
-                            if (giftByProduct != null)
+                            if(mainImage != null)
                             {
-                                giftByProduct.ModifiedBy = p.CreatedBy;
-                                listGiftByProducts.Add(giftByProduct);
+                                await ImageService.DeleteImage(product.MainImage, _configuration);
+                                if (await ImageService.AddImage(mainImage, _configuration) != null)
+                                {
+                                    product.MainImage = await ImageService.AddImage(mainImage, _configuration);
+                                }
+                                else
+                                {
+                                    check = false;
+                                }
+                            }
+
+                            if (listImage != null)
+                            {
+                                var list = new List<string>();
+                                string nameImage = null;
+                                for (var i = 0; i < listImage.Files.Count - 2; i++)
+                                {
+                                    nameImage = await ImageService.AddImage(listImage.Files[i], _configuration);
+                                    if (nameImage != null)
+                                    {
+                                        list.Add(nameImage);
+                                    }
+                                    else
+                                    {
+                                        check = false;
+                                        break;
+                                    }
+                                }
+                                if (check)
+                                {
+                                    product.ListImageString = string.Join(",", list);
+                                }
+
+                            }
+
+                            List<GiftByProduct> listGiftByProducts = new List<GiftByProduct>();
+                            foreach (var gift in listGifts)
+                            {
+                                var giftByProduct = _repositoryContext.GiftByProducts.FirstOrDefault(g => g.DelFalg == EnumType.DeleteFlag.Using &&
+                                g.ProductID == productID && g.GiftID == gift.GiftID);
+                                if (giftByProduct != null)
+                                {
+                                    //giftByProduct.ModifiedBy = product.ModifiedBy;
+                                    listGiftByProducts.Add(giftByProduct);
+                                }
+                                else
+                                {
+                                    listGiftByProducts.Add(new GiftByProduct()
+                                    {
+                                        ID = Guid.NewGuid(),
+                                        GiftID = gift.GiftID,
+                                        ProductID = productID,
+                                        CreatedBy = product.CreatedBy
+                                    });
+                                }
+
+                            }
+
+                            if (_giftByProductRepository.UpdateMultiple(listGiftByProducts, productID) == -1)
+                            {
+                                check = false;
+                            }
+                            product.ModifiedDate = DateTime.Now;
+                            _repositoryBase.Update(product);
+                            _productRepository.Save();
+                            if (check)
+                            {
+                                result.Success = true;
+                                result.Data = product.ProductID;
+                                transaction.Commit();
                             }
                             else
                             {
-                                listGiftByProducts.Add(new GiftByProduct()
-                                {
-                                    ID = Guid.NewGuid(),
-                                    GiftID = gift.GiftID,
-                                    ProductID = productID,
-                                    CreatedBy = p.CreatedBy
-                                });
+                                result.Success = false;
+                                result.Data = Guid.Empty;
+                                transaction.Rollback();
                             }
-
-                        }
-                        p.ModifiedDate = DateTime.Now;
-                        _repositoryBase.Update(p);
-                        _productRepository.Save();
-                        if (_giftByProductRepository.UpdateMultiple(listGiftByProducts, productID) == 0)
-                        {
-                            check = false;
-                        }
-                        else
-                        {
-                            result.Success = true;
-                            result.Data = p.ProductID;
-                            transaction.Commit();
                         }
                     }
                     else
                     {
-                        result.Success = false;
-                        result.Data = Guid.Empty;
-                        transaction.Rollback();
+                        if (mainImage != null)
+                        {
+                            if (await ImageService.AddImage(mainImage, _configuration) != null)
+                            {
+                                product.MainImage = await ImageService.AddImage(mainImage, _configuration);
+                            }
+                            else
+                            {
+                                check = false;
+                            }
+                        }
+                        if (listImage != null)
+                        {
+                            var list = new List<string>();
+                            string nameImage = null;
+                            for (var i = 0; i < listImage.Files.Count - 2; i++)
+                            {
+                                nameImage = await ImageService.AddImage(listImage.Files[i], _configuration);
+                                if (nameImage != null)
+                                {
+                                    list.Add(nameImage);
+                                }
+                                else
+                                {
+                                    check = false;
+                                    break;
+                                }
+                            }
+                            if (check)
+                            {
+                                product.ListImageString = string.Join(",", list);
+                            }
+
+                        }
+
+                        _repositoryBase.Create(product);
+                        _productRepository.Save();
+
+                        List<GiftByProduct> listGiftByProducts = new List<GiftByProduct>();
+                        foreach (var gift in listGifts)
+                        {
+                            listGiftByProducts.Add(new GiftByProduct()
+                            {
+                                ID = Guid.NewGuid(),
+                                GiftID = gift.GiftID,
+                                ProductID = product.ProductID,
+                                CreatedBy = product.CreatedBy
+                            });
+                        }
+                        if (listGiftByProducts.Count() > 0 && _giftByProductRepository.CreateMultiple(listGiftByProducts) == 0)
+                        {
+                            check = false;
+                        }
+
+                        if (check)
+                        {
+                            result.Success = true;
+                            result.Data = product.ProductID;
+                            transaction.Commit();
+                        }
+                        else
+                        {
+                            result.Success = false;
+                            result.Data = Guid.Empty;
+                            transaction.Rollback();
+                        }
+
                     }
+
+                    //if (await _productRepository.AddImage(product.ListImages[0]) != null)
+                    //{
+                    //    p.MainImage = await _productRepository.AddImage(product.ListImages[0]);
+                    //}
+                    //else
+                    //{
+                    //    check = false;
+                    //}
+                    //var listImage = await AddImage(product.ListImages);
+                    //if (listImage != null)
+                    //{
+                    //    p.ListImageString = string.Join(",", listImage);
+                    //}
+                    //else if (product.ListImages.Count() > 0)
+                    //{
+                    //    check = false;
+                    //}
+                    //_repositoryBase.Create(p);
+                    //_productRepository.Save();
+
+                    //List<GiftByProduct> listGiftByProducts = new List<GiftByProduct>();
+                    //foreach (var gift in product.ListGifts)
+                    //{
+                    //    listGiftByProducts.Add(new GiftByProduct()
+                    //    {
+                    //        ID = Guid.NewGuid(),
+                    //        GiftID = gift.GiftID,
+                    //        ProductID = p.ProductID
+                    //    });
+                    //}
+                    //if (listGiftByProducts.Count() > 0 && _giftByProductRepository.CreateMultiple(listGiftByProducts) == 0)
+                    //{
+                    //    check = false;
+                    //}
+
+                    //if (check)
+                    //{
+                    //    result.Success = true;
+                    //    result.Data = p.ProductID;
+                    //    transaction.Commit();
+                    //}
+                    //else
+                    //{
+                    //    result.Success = false;
+                    //    result.Data = Guid.Empty;
+                    //    transaction.Rollback();
+                    //}
+
                 }
                 catch (Exception ex)
                 {
@@ -326,6 +459,71 @@ namespace Services.Service
             }
             return result;
         }
+        //public ApiReponse UpdateProduct(ProductModel product, Guid productID)
+        //{
+        //    ApiReponse result = new ApiReponse();
+        //    using (var transaction = _repositoryContext.Database.BeginTransaction())
+        //    {
+        //        bool check = true;
+        //        try
+        //        {
+        //            if (_repositoryBase.FindByCondition(p => p.DelFalg == EnumType.DeleteFlag.Using &&
+        //                p.ProductID == productID).Any() && product.Product.ProductID == productID)
+        //            {
+        //                Product p = product.Product;
+        //                List<GiftByProduct> listGiftByProducts = new List<GiftByProduct>();
+        //                foreach (var gift in product.ListGifts)
+        //                {
+        //                    var giftByProduct = _repositoryContext.GiftByProducts.FirstOrDefault(g => g.DelFalg == EnumType.DeleteFlag.Using &&
+        //                    g.ProductID == productID && g.GiftID == gift.GiftID);
+        //                    if (giftByProduct != null)
+        //                    {
+        //                        giftByProduct.ModifiedBy = p.CreatedBy;
+        //                        listGiftByProducts.Add(giftByProduct);
+        //                    }
+        //                    else
+        //                    {
+        //                        listGiftByProducts.Add(new GiftByProduct()
+        //                        {
+        //                            ID = Guid.NewGuid(),
+        //                            GiftID = gift.GiftID,
+        //                            ProductID = productID,
+        //                            CreatedBy = p.CreatedBy
+        //                        });
+        //                    }
+
+        //                }
+        //                p.ModifiedDate = DateTime.Now;
+        //                _repositoryBase.Update(p);
+        //                _productRepository.Save();
+        //                if (_giftByProductRepository.UpdateMultiple(listGiftByProducts, productID) == 0)
+        //                {
+        //                    check = false;
+        //                }
+        //                else
+        //                {
+        //                    result.Success = true;
+        //                    result.Data = p.ProductID;
+        //                    transaction.Commit();
+        //                }
+        //            }
+        //            else
+        //            {
+        //                result.Success = false;
+        //                result.Data = Guid.Empty;
+        //                transaction.Rollback();
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Console.WriteLine(ex.Message);
+        //            transaction.Rollback();
+        //            result.Success = false;
+        //            result.Data = HandleError.GenerateErrorResultException();
+        //        }
+        //    }
+        //    return result;
+        //}
         public ApiReponse UpdateMultiple(List<Guid> listID, byte status)
         {
             using (var transaction = _repositoryContext.Database.BeginTransaction())

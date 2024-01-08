@@ -88,6 +88,7 @@ namespace BaseProject.Controllers
             [FromQuery] string? trademark,
             [FromQuery] string? keyword,
             [FromQuery] int? sort,
+            [FromQuery] byte status = (byte)EnumType.StatusProduct.All,
             [FromQuery] byte demand = (byte)EnumType.DemandType.All,
             [FromQuery] byte priceRange = (byte)EnumType.SortByPrice.All,
             [FromQuery] int pageSize = 5,
@@ -96,7 +97,7 @@ namespace BaseProject.Controllers
             try
             {
                 var result = _productService.GetByFilter(byManager, categoryID, chipID, memoryID,
-                    storageID, cardType, displayID, trademark, keyword, sort, demand, priceRange, pageSize, pageNumber);
+                    storageID, cardType, displayID, trademark, keyword, sort, status, demand, priceRange, pageSize, pageNumber);
                 if (result.Success)
                 {
                     return StatusCode(StatusCodes.Status200OK, result.Data);
@@ -113,6 +114,32 @@ namespace BaseProject.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
             }
         }
+
+        [HttpGet("by-demand")]
+        public IActionResult GetProductByDemand(
+            [FromQuery] byte demand,
+            [FromQuery] int number = 5)
+        {
+            try
+            {
+                var result = _productService.GetProductByDemand(number, demand);
+                if (result.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, result.Data);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Data);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
+            }
+        }
+
         [HttpGet("topProduct")]
         public IActionResult GetTopProduct(
             [FromQuery] byte byType,
@@ -149,7 +176,7 @@ namespace BaseProject.Controllers
         {
             try
             {
-                var result = _productService.GetById(id);
+                var result = _productService.GetById(id, true);
                 if (result.Success)
                 {
                     return StatusCode(StatusCodes.Status200OK, result.Data);
@@ -167,22 +194,46 @@ namespace BaseProject.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("productDetail{id}")]
+        public IActionResult GetProductDetailById(Guid id) {
+            try {
+                var result = _productService.GetById(id, false);
+                if (result.Success) {
+                    return StatusCode(StatusCodes.Status200OK, result.Data);
+                } else {
+                    return StatusCode(StatusCodes.Status400BadRequest, HandleError.GenerateErrorResultNotFoundByID());
+                }
+
+            } catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
+            }
+        }
+
         /// <summary>
         /// API Thêm mới một sản phẩm
         /// </summary>
         /// <returns>ID của bản ghi vừa thêm. Nếu thêm thất bại thì return về Guid rỗng</returns>
         /// Author: HAQUAN (15/09/2023)
         [HttpPost]
-        public async Task<IActionResult> InsertRecord()
+        public async Task<IActionResult> InsertRecord([FromForm] Product product, [FromForm] IFormCollection? listImages,
+            [FromForm] IFormFile? mainImage, [FromForm] List<Gift> listGift)
         {
             try
             {
-                var product = new ProductModel();
-                product.Product = JsonConvert.DeserializeObject<Product>(Request.Form["product"]);
-                product.ListGifts = JsonConvert.DeserializeObject<List<Gift>>(Request.Form["listGifts"]);
-                product.ListImages = Request.Form.Files;
+                //var product = new ProductModel();
+                //product.Product = JsonConvert.DeserializeObject<Product>(Request.Form["product"]);
+                //product.ListGifts = JsonConvert.DeserializeObject<List<Gift>>(Request.Form["listGifts"]);
+                //product.ListImages = Request.Form.Files;
+
+                var productModel = new ProductModel();
+                productModel.Product = product;
+                productModel.ListImages = listImages;
+                productModel.MainImage = mainImage;
+                productModel.ListGifts = listGift;
                 var IdEmpty = Guid.Empty;
-                var result = await _productService.Save(product);
+                var result = await _productService.Save(productModel, IdEmpty);
 
                 if (result.Success)
                 {
@@ -206,11 +257,17 @@ namespace BaseProject.Controllers
         /// Author: HAQUAN (15/09/2023)
         [HttpPut]
         [Route("{id}")]
-        public IActionResult UpdateRecord([FromBody] ProductModel product, [FromRoute] Guid id)
+        public async Task<IActionResult> UpdateRecord([FromForm] Product product, [FromForm] IFormCollection? listImages,
+            [FromForm] IFormFile? mainImage, [FromForm] List<Gift> listGift, [FromRoute] Guid id)
         {
             try
             {
-                var result = _productService.UpdateProduct(product, id);
+                var productModel = new ProductModel();
+                productModel.Product = product;
+                productModel.ListImages = listImages;
+                productModel.MainImage = mainImage;
+                productModel.ListGifts = listGift;
+                var result = await _productService.Save(productModel, id);
 
                 if (result.Success)
                 {
@@ -310,5 +367,24 @@ namespace BaseProject.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
             }
         }
+
+        [HttpPost("test")]
+        public async Task<IActionResult> Test([FromForm] Product product, [FromForm] IFormCollection? listImages, 
+            [FromForm] IFormFile? mainImage, [FromForm] List<Gift> gift)
+        {
+            try
+            {
+                var test = product;
+                return Ok();
+
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
+            }
+        }
+
     }
 }

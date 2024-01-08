@@ -41,8 +41,12 @@ namespace Services.Repository
         public int UpdateMultiple(List<GiftByProduct> giftByProducts, Guid productID)
         {
             var listGiftByProducts = FindByCondition(o => o.ProductID == productID && o.DelFalg == EnumType.DeleteFlag.Using).ToList();
-            var giftByProductNeedDelete = listGiftByProducts.Except(giftByProducts).ToList();
-            var giftByProductNeedAdd = giftByProducts.Except(listGiftByProducts).ToList();
+            var listIdOnDb = listGiftByProducts.Select(g => g.ID).ToList();
+            var listIdInput = giftByProducts.Select(g => g.ID).ToList();
+            var listIdNeedDelete = listIdOnDb.Except(listIdInput).ToList();
+            var listIdNeedAdd = listIdInput.Except(listIdOnDb).ToList();
+            var giftByProductNeedDelete = listGiftByProducts.Where(g => listIdNeedDelete.Contains(g.ID)).ToList();
+            var giftByProductNeedAdd = giftByProducts.Where(g => listIdNeedAdd.Contains(g.ID)).ToList();
             foreach (var giftByProduct in giftByProductNeedDelete)
             {
                 giftByProduct.DelFalg = EnumType.DeleteFlag.Deleted;
@@ -55,7 +59,7 @@ namespace Services.Repository
                 && g.DelFalg == EnumType.DeleteFlag.Using);
                 if (gift == null)
                 {
-                    return 0;
+                    return -1;
                 }
             }
             UpdateMultiple(giftByProductNeedDelete);

@@ -1,46 +1,67 @@
 <template>
     <div class="product-item" v-if="this.product != null">
         <div class="product-image" @click="goToProduct(product.productID)">
-            <img :src="`${product.mainImage}`" alt="">
+            <img :src="`${Resource.PrefixImage + product.mainImage}`" alt="">
         </div>
         <div class="product-info">
             <div class="title" @click="goToProduct(product.productID)">
                 <p>
-                    <span v-show="product.condition != 2">
-                       [{{ configCondition(product.condition) }}]
+                    <span v-show="product.condition != Enum.Condition.Used">
+                        [{{ configCondition(product.condition) }}]
                     </span>
                     <span :title="product.productName">{{ product.productName }}</span>
 
-                </p>
+                </p>    
             </div>
             <div class="info-detail">
                 <table>
                     <tbody>
                         <tr>
-                            <td>CPU</td>
-                            <td>{{ product.chipDetail }}</td>
+                            <td class="min-w-48">{{ Resource.Label.Chip }}</td>
+                            <td>
+                                <span>
+                                    {{ product.chipDetail }}
+                                </span>
+                            </td>
                         </tr>
                         <tr>
-                            <td>RAM</td>
-                            <td>{{ product.memoryDetail }}</td>
+                            <td class="min-w-48">{{ Resource.Label.Memory }}</td>
+                            <td>
+                                <span>
+                                    {{ product.memoryDetail }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr >
+                            <td class="min-w-48">{{ Resource.Label.Storage }}</td>
+                            <td>
+                                <span :title="product.storageDetail">
+                                    {{ product.storageDetail }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr >
+                            <td class="min-w-48">{{ Resource.Label.CardHome }}</td>
+                            <td>
+                                <span :title="product.cardDetail">
+                                    {{ product.cardDetail }}
+                                </span>
+                            </td>
                         </tr>
                         <tr>
-                            <td>Ổ cứng</td>
-                            <td>{{ product.storageDetail }}</td>
-                        </tr>
-                        <tr>
-                            <td>Card</td>
-                            <td>{{ product.cardDetail }}</td>
-                        </tr>
-                        <tr>
-                            <td>M.Hình</td>
-                            <td>{{ product.displayDetail }}</td>
+                            <td class="min-w-48">{{ Resource.Label.DisplayHome }}</td>
+                            <td>
+                                <span :title="product.displayDetail">
+                                    {{ product.displayDetail }}
+                                </span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div class="price">
-                <div class="price-top flex-row align-items justify-content" v-show="product.discount > 0 && product.status == Enum.StatusProduct.Selling">
+                <div class="price-top flex-row align-items justify-content"
+                    v-show="product.discount > 0 && product.status == Enum.StatusProduct.Selling">
                     <div class="old-price">
                         {{ formatMoney(product.price) }}
                     </div>
@@ -50,7 +71,8 @@
                 </div>
                 <div class="price-bottom">
                     <span class="price-now">
-                        {{ product.status == Enum.StatusProduct.Selling ? this.getNewPrice(product.price, product.discount) : Resource.Text.Contact  }}
+                        {{ product.status == Enum.StatusProduct.Selling ? this.getNewPrice(product.price, product.discount)
+                            : Resource.Text.Contact }}
                     </span>
                 </div>
             </div>
@@ -63,7 +85,16 @@ import Enum from '@/utils/enum';
 import Resource from '@/utils/resource';
 export default {
     name: "ProductItem",
-    props: ["initProduct"],
+    // props: ["initProduct"],
+    props: {
+        initProduct: {
+            type: Object
+        },
+        notClick: {
+            type: Boolean,
+            default: false,
+        }
+    },
     data() {
         return {
             product: null,
@@ -72,10 +103,12 @@ export default {
         }
     },
     methods: {
-        goToProduct(productID){
-            this.$router.push({ name: 'ProductDetailPage', query: {productId: productID} });
+        goToProduct(productID) {
+            if (!this.notClick) {
+                this.$router.push({ name: 'ProductDetailPage', query: { productId: productID } });
+            }
         },
-        
+
         formatMoney(money) {
             return money.toLocaleString('vi-VN') + ' đ';
         },
@@ -168,7 +201,10 @@ export default {
     border-collapse: collapse;
     width: 100%;
 }
-
+.price{
+    height: 65px;
+    position: relative;
+}
 .price .price-top {
     height: 20px;
 }
@@ -192,7 +228,10 @@ export default {
     height: 20px;
     line-height: 20px;
 }
-
+.price-bottom{
+    position: absolute;
+    bottom: 0%;
+}
 .price-bottom .price-now {
     color: #fff;
     font-weight: 700;
@@ -205,4 +244,14 @@ export default {
     text-align: center;
     border-radius: 16px;
     margin: 10px auto 0;
-}</style>
+}
+.min-w-48{
+    min-width: 48px;
+}
+table td {
+    overflow: hidden;
+    max-width: 155px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+</style>

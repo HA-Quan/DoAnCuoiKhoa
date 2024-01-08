@@ -17,10 +17,6 @@ namespace Services.Models.Entities
         [Column("importID")]
         public Guid ImportID { get; set; }
 
-        [ForeignKey("Product")]
-        [Column("productID")]
-        public Guid ProductID { get; set; }
-
         [ForeignKey("Supplier")]
         [Column("supplierID")]
         public Guid SupplierID { get; set; }

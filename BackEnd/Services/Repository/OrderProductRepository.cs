@@ -13,7 +13,7 @@ namespace Services.Repository
     public interface IOrderProductRepository : IRepositoryBase<OrderProduct>
     {
         int DeleteByAccountID(Guid accountID);
-        PagingData<OrderProduct> GetByFilter(DateTime? timeStart, DateTime? timeEnd, string? keyword, int? sort,
+        PagingData<OrderProduct> GetByFilter(DateTime timeStart, DateTime timeEnd, string? keyword, int? sort,
             bool? deliveryMethod, bool? paymentMethod, bool? statusPayment, byte status, int pageSize, int pageNumber);
         //ApiReponse UpdateMultiple(List<Guid> listID, byte status);
     }
@@ -45,9 +45,17 @@ namespace Services.Repository
             Save();
             return 1;
         }
-        public PagingData<OrderProduct> GetByFilter(DateTime? timeStart, DateTime? timeEnd, string? keyword, int? sort,
+        public PagingData<OrderProduct> GetByFilter(DateTime timeStart, DateTime timeEnd, string? keyword, int? sort,
             bool? deliveryMethod, bool? paymentMethod, bool? statusPayment, byte status, int pageSize, int pageNumber)
         {
+            if(timeStart != DateTime.MinValue)
+            {
+                timeStart = timeStart.AddHours(-12);
+            }
+            if (timeEnd != DateTime.MaxValue)
+            {
+                timeEnd = timeEnd.AddHours(12);
+            }
             var respone = new PagingData<OrderProduct>();
             var result = new List<OrderProduct>();
             result = FindByCondition(a => a.DelFalg == EnumType.DeleteFlag.Using && a.CreatedDate >= timeStart && a.CreatedDate <= timeEnd && a.OrderBy.Contains(keyword)).ToList();
@@ -91,6 +99,22 @@ namespace Services.Repository
 
                 case (int)EnumType.Sort.StatusDesc:
                     result = result.OrderByDescending(s => s.Status).ThenByDescending(s => s.ModifiedDate).ToList();
+                    break;
+
+                case (int)EnumType.Sort.NameAsc:
+                    result = result.OrderBy(s => s.FullName).ThenByDescending(s => s.ModifiedDate).ToList();
+                    break;
+
+                case (int)EnumType.Sort.NameDesc:
+                    result = result.OrderByDescending(s => s.FullName).ThenByDescending(s => s.ModifiedDate).ToList();
+                    break;
+
+                case (int)EnumType.Sort.UsernameAsc:
+                    result = result.OrderBy(s => s.OrderBy).ThenByDescending(s => s.ModifiedDate).ToList();
+                    break;
+
+                case (int)EnumType.Sort.UsernameDesc:
+                    result = result.OrderByDescending(s => s.OrderBy).ThenByDescending(s => s.ModifiedDate).ToList();
                     break;
                 default:
                     result = result.OrderByDescending(s => s.ModifiedDate).ToList();

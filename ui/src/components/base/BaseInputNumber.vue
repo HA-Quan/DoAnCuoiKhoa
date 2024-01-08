@@ -1,8 +1,8 @@
 <template>
     <div :class="['flex-row border align-items-center ',
         { 'error': hasError }, {}]" v-if="!isCart">
-        <input class="input-form flex text-right" :class="hasIcon ? ' padding-r' : ''" @keyup="updateValue"
-            @blur="evenBlur" :tabindex="tabindex" ref="refName" :readonly="isReadonly">
+        <input class="input-form flex text-right" :class="hasIcon ? ' padding-r' : ''"  :placeholder="placeholder"
+        @keyup="updateValue" @blur="evenBlur" :tabindex="tabindex" ref="refName" :readonly="isReadonly">
         <div class="up-down" v-if="hasIcon">
             <div class="icon-up" @keydown.up="clickOnIconUp" @click="clickOnIconUp">
             </div>
@@ -71,7 +71,11 @@ export default {
         isReadonly: {
             type: Boolean,
             default: false
-        }
+        },
+
+        placeholder: {
+            type: String
+        },
 
     },
 
@@ -84,12 +88,7 @@ export default {
             let rawTextValue = this.valueNumeric.rawValue;
 
             let rawNumberValue = Number(rawTextValue);
-            if (!this.isCart) {
-                this.$emit('update', rawNumberValue, this.nameProperty);
-            }
-            else {
-                this.$emit('update', rawNumberValue);
-            }
+            this.$emit('update', rawNumberValue, this.nameProperty);
 
 
         },
@@ -113,12 +112,7 @@ export default {
         clickOnIconDown() {
             let rawNumberValue = this.getRawValue();
             if (rawNumberValue >= 1) {
-                if (!this.isCart) {
-                    this.$emit('update', rawNumberValue - 1, this.nameProperty);
-                }
-                else {
-                    this.$emit('update', rawNumberValue - 1);
-                }
+                this.$emit('update', rawNumberValue - 1, this.nameProperty);
             }
         },
 
@@ -129,12 +123,7 @@ export default {
         clickOnIconUp() {
             let rawNumberValue = this.getRawValue();
             if (rawNumberValue < this.max) {
-                if (!this.isCart) {
-                    this.$emit('update', rawNumberValue + 1, this.nameProperty);
-                }
-                else {
-                    this.$emit('update', rawNumberValue + 1);
-                }
+                this.$emit('update', rawNumberValue + 1, this.nameProperty);
             }
         },
 
@@ -241,7 +230,7 @@ input:focus {
 }
 
 .input-form.quantity {
-    width: 40px;
+    width: 60px;
     text-align: center;
 }</style>
   

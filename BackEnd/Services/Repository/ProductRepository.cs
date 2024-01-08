@@ -20,9 +20,10 @@ namespace Services.Repository
     {
         int UpdateMultiple(List<Guid> listID, byte status);
         PagingData<ProductView> GetByFilter(bool byManager, Guid categoryID, Guid chipID, Guid memoryID, Guid storageID, bool? cardType,
-            Guid displayID, string? trademark, string keyword, int? sort, byte demand, byte priceRange, int pageSize, int pageNumber);
+            Guid displayID, string? trademark, string keyword, int? sort, byte status, byte demand, byte priceRange, int pageSize, int pageNumber);
 
         List<Product> GetTopProduct(int number, byte byType);
+        List<Product> GetProductByDemand(int number, byte demand);
         int Delete(List<Guid> listID);
         int DeleteByCategoryID(Guid categoryID);
         int DeleteByChipID(Guid chipID);
@@ -93,8 +94,8 @@ namespace Services.Repository
                 });
             }
 
-            if (products.Where(product => GetPrice(product.Price, product.Discount) >= 10000000 &&
-            GetPrice(product.Price, product.Discount) < 15000000).Count() > 0)
+            if (products.Where(product => GetPrice(product.Price, product.Discount) >= 30000000 &&
+            GetPrice(product.Price, product.Discount) < 50000000).Count() > 0)
             {
                 record.SelectModels.Add(new SelectModel()
                 {
@@ -181,7 +182,7 @@ namespace Services.Repository
 
             var criteriaDisplay = new CriteriaModel()
             {
-                Title = "CPU",
+                Title = "Màn hình",
                 SelectModels = (from pro in products
                                 join display in _repositoryContext.Displays on pro.ChipID equals display.DisplayID
                                 group display by display.DisplayID into d
@@ -216,7 +217,7 @@ namespace Services.Repository
             {
                 criteriaDemand.SelectModels.Add(new SelectModel()
                 {
-                    ID = EnumType.DemandType.Office.ToString(),
+                    ID = ((byte)EnumType.DemandType.Office).ToString(),
                     Name = "Học tập - văn phòng",
                     Count = products.Where(p => CheckDemand(p.DemandTypeString, (byte)EnumType.DemandType.Office)).Count()
                 });
@@ -226,7 +227,7 @@ namespace Services.Repository
             {
                 criteriaDemand.SelectModels.Add(new SelectModel()
                 {
-                    ID = EnumType.DemandType.Gaming.ToString(),
+                    ID = ((byte)EnumType.DemandType.Gaming).ToString(),
                     Name = "Laptop Gaming",
                     Count = products.Where(p => CheckDemand(p.DemandTypeString, (byte)EnumType.DemandType.Gaming)).Count()
                 });
@@ -236,7 +237,7 @@ namespace Services.Repository
             {
                 criteriaDemand.SelectModels.Add(new SelectModel()
                 {
-                    ID = EnumType.DemandType.Graphics.ToString(),
+                    ID = ((byte)EnumType.DemandType.Graphics).ToString(),
                     Name = "Đồ họa - kĩ thuật",
                     Count = products.Where(p => CheckDemand(p.DemandTypeString, (byte)EnumType.DemandType.Graphics)).Count()
                 });
@@ -246,7 +247,7 @@ namespace Services.Repository
             {
                 criteriaDemand.SelectModels.Add(new SelectModel()
                 {
-                    ID = EnumType.DemandType.ThinAndLight.ToString(),
+                    ID = ((byte)EnumType.DemandType.ThinAndLight).ToString(),
                     Name = "Cao cấp - sang trọng",
                     Count = products.Where(p => CheckDemand(p.DemandTypeString, (byte)EnumType.DemandType.ThinAndLight)).Count()
                 });
@@ -258,11 +259,11 @@ namespace Services.Repository
 
         } 
         public PagingData<ProductView> GetByFilter(bool byManager, Guid categoryID, Guid chipID, Guid memoryID, Guid storageID, bool? cardType,
-            Guid displayID, string? trademark, string keyword, int? sort, byte demand, byte priceRange, int pageSize, int pageNumber)
+            Guid displayID, string? trademark, string keyword, int? sort, byte status, byte demand, byte priceRange, int pageSize, int pageNumber)
         {
             var respone = new PagingData<ProductView>();
             var result = new List<ProductView>();
-            var listProduct = FindByCondition(p => p.DelFalg == EnumType.DeleteFlag.Using && p.ProductName.Contains(keyword)).ToList();
+            var listProduct = FindByCondition(p => p.DelFalg == EnumType.DeleteFlag.Using && p.ProductName.ToLower().Contains(keyword)).ToList();
             if (!byManager)
             {
                 listProduct = listProduct.Where(p => p.Status != (byte)EnumType.StatusProduct.StopSelling).ToList();
@@ -270,6 +271,11 @@ namespace Services.Repository
             if (categoryID != Guid.Empty)
             {
                 listProduct = listProduct.Where(p => CheckCategory(p.CategoryID, categoryID)).ToList();
+            }
+
+            if (status != (byte)EnumType.StatusProduct.All)
+            {
+                listProduct = listProduct.Where(p => p.Status == status).ToList();
             }
 
             if (demand != (byte)EnumType.DemandType.All)
@@ -499,6 +505,14 @@ namespace Services.Repository
                 return _repositoryContext.Products.Where(p => p.DelFalg == EnumType.DeleteFlag.Using).OrderByDescending(p => p.NumberView).ThenByDescending(p => p.ModifiedDate).Take(number).ToList();
             }
             return null;
+
+        }
+
+        public List<Product> GetProductByDemand(int number, byte byDemand)
+        {
+            var respone = FindByCondition(p => p.DelFalg == EnumType.DeleteFlag.Using).ToList();
+            respone = respone.Where(p => CheckDemand(p.DemandTypeString, byDemand)).Take(number).ToList();
+            return respone;
 
         }
 

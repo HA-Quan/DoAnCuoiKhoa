@@ -1,8 +1,10 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using CommunityToolkit.HighPerformance;
+using Microsoft.IdentityModel.Tokens;
 using Services.Helpers;
 using Services.Models.Entities;
 using Services.Models.Entities.DTO;
 using Services.Models.Enum;
+using Services.Models.Resource;
 using Services.Repository;
 using Services.Service.Base;
 using System;
@@ -11,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static Services.Models.Enum.EnumType;
 
 namespace Services.Service
 {
@@ -18,6 +21,8 @@ namespace Services.Service
     {
         ApiReponse GetAll();
         ApiReponse GetById(Guid giftID);
+        ApiReponse GetByProductId(Guid productID);
+        ApiReponse GetByFilter(string? keyword, int? sort, bool? status, int pageSize, int pageNumber);
         ApiReponse Save(Gift gift, Guid giftID);
         ApiReponse UpdateMultiple(List<Guid> listID, bool status);
         ApiReponse Delete(List<Guid> listID);
@@ -85,6 +90,62 @@ namespace Services.Service
 
             }
         }
+        
+        public ApiReponse GetByProductId(Guid productID)
+        {
+            try
+            {
+                var record = (from gift in _repositoryContext.Gifts
+                              join giftBy in _repositoryContext.GiftByProducts on gift.GiftID equals giftBy.GiftID
+                              where giftBy.ProductID == productID && giftBy.DelFalg == EnumType.DeleteFlag.Using
+                              select gift).ToList();
+                
+                return new ApiReponse()
+                {
+                    Success = true,
+                    Data = record
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new ApiReponse()
+                {
+                    Success = false,
+                    Data = HandleError.GenerateErrorResultDatabase()
+                };
+
+            }
+        }
+        public ApiReponse GetByFilter(string? keyword, int? sort, bool? status, int pageSize, int pageNumber)
+        {
+            try
+            {
+                if (keyword == null)
+                {
+                    keyword = string.Empty;
+                }
+                else
+                {
+                    keyword = keyword.Trim().ToLower();
+                }
+                return new ApiReponse()
+                {
+                    Success = true,
+                    Data = _giftRepository.GetByFilter(keyword, sort, status, pageSize, pageNumber)
+                };
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new ApiReponse()
+                {
+                    Success = false,
+                    Data = HandleError.GenerateErrorResultException()
+                };
+            }
+        }
 
         public ApiReponse Save(Gift gift, Guid giftID)
         {
@@ -96,10 +157,25 @@ namespace Services.Service
                     if (_repositoryBase.FindByCondition(p => p.DelFalg == EnumType.DeleteFlag.Using &&
                     p.GiftID == giftID && gift.GiftID == giftID).Any())
                     {
-                        gift.ModifiedDate = DateTime.Now;
-                        Update(gift);
-                        result.Success = true;
-                        result.Data = gift.GiftID;
+                        if (FindByCondition(g => g.GiftCode.ToLower() == gift.GiftCode.ToLower() && g.GiftID != giftID).Any())
+                        {
+                            result.Success = false;
+                            result.Data = new ErrorResult()
+                            {
+                                ErrorCode = EnumType.ErrorCode.Duplicate,
+                                UserMsg = "Mã quà tặng đã tồn tại!",
+                                DevMsg = Resource.DevMsgDuplicate,
+                                MoreInfo = Resource.MoreInfo
+                            };
+                        }
+                        else
+                        {
+                            gift.ModifiedDate = DateTime.Now;
+                            Update(gift);
+                            result.Success = true;
+                            result.Data = gift.GiftID;
+                        }
+                        
                     }
                     else
                     {
@@ -110,10 +186,25 @@ namespace Services.Service
                 }
                 else
                 {
-                    gift.GiftID = Guid.NewGuid();
-                    Create(gift);
-                    result.Success = true;
-                    result.Data = gift.GiftID;
+                    if(FindByCondition(g => g.GiftCode.ToLower() == gift.GiftCode.ToLower()).Any())
+                    {
+                        result.Success = false;
+                        result.Data = new ErrorResult()
+                        {
+                            ErrorCode = EnumType.ErrorCode.Duplicate,
+                            UserMsg = "Mã quà tặng đã tồn tại!",
+                            DevMsg = Resource.DevMsgDuplicate,
+                            MoreInfo = Resource.MoreInfo
+                        };
+                    }
+                    else
+                    {
+                        gift.GiftID = Guid.NewGuid();
+                        Create(gift);
+                        result.Success = true;
+                        result.Data = gift.GiftID;
+                    }
+                    
                 }
 
             }

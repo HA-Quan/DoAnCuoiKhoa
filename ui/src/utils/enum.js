@@ -24,7 +24,7 @@ const Enum = {
   },
   // mã lỗi
   Error: {
-    Duplicode: 2, // lỗi trùng mã 
+    Duplicode: 4, // lỗi trùng mã 
     InputValid: 6, // lỗi dữ liệu đầu vào
     PasswordOldInvalid: 8, // lỗi mật khẩu cũ k khớp
     Login: 401 // lỗi hết phiên đăng nhập
@@ -82,18 +82,41 @@ const Enum = {
     QuantityAsc: 13,
     QuantityDesc: 14,
     NumberSellAsc: 15,
-    NumberSellDesc: 16
+    NumberSellDesc: 16,
+    UsernameAsc: 17,
+    UsernameDesc: 18,
   },
   SortAccount: {
-    UsernameAsc: 0,
-    UsernameDesc: 1,
-    FullNameAsc: 2,
-    FullNameDesc: 3,
-    RoleAsc: 4,
-    RoleDesc: 5,
-    StatusAsc: 6,
-    StatusDesc: 7,
-    All: 8
+    UsernameAsc: 1,
+    UsernameDesc: 2,
+    FullNameAsc: 3,
+    FullNameDesc: 4,
+    RoleAsc: 5,
+    RoleDesc: 6,
+    StatusAsc: 7,
+    StatusDesc: 8,
+    TimeAsc: 9,
+    TimeDesc: 10,
+    All: 0
+  },
+  SortPromotion: {
+    Default: 0,
+    CodeAsc: 1,
+    CodeDesc: 2,
+    DiscountAsc: 3,
+    DiscountDesc: 4,
+    DayStartAsc: 5,
+    DayStartDesc: 6,
+    DayExpiredAsc: 7,
+    DayExpiredDesc: 8,
+    ProvisoAsc: 9,
+    ProvisoDesc: 10,
+    QuantityAsc: 11,
+    QuantityDesc: 12,
+    NumUsedAsc: 13,
+    NumUsedDesc: 14,
+    TimeAsc: 15,
+    TimeDesc: 16
   },
   DemandType: {
     Office: 0,
@@ -121,8 +144,8 @@ const Enum = {
   },
   StatusProduct: {
     StopSelling: 0,
-    Selling : 1,
-    PrepairCome : 2
+    Selling: 1,
+    PrepairCome: 2
   },
   Step: {
     SelectProduct: 1,
@@ -130,5 +153,10 @@ const Enum = {
     Payment: 3,
     Done: 4,
   },
+  Condition: {
+    New: 0,
+    NewOutlet: 1,
+    Used: 2
+  }
 };
 export default Enum;

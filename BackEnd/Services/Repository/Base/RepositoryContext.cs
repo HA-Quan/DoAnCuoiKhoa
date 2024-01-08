@@ -17,9 +17,11 @@ namespace Services.Repository
         public DbSet<Category> Categorys { get; set; }
         public DbSet<Chip> Chips { get; set; }
         public DbSet<Display> Displays { get; set; }
+        public DbSet<ExportProduct> ExportProducts { get; set; }
         public DbSet<Gift> Gifts { get; set; }
         public DbSet<GiftByProduct> GiftByProducts { get; set; }
         public DbSet<ImportProduct> ImportProducts { get; set; }
+        public DbSet<ImportDetail> ImportDetails { get; set; }
         public DbSet<Memory> Memorys { get; set; }
         public DbSet<News> News { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
@@ -29,5 +31,6 @@ namespace Services.Repository
         public DbSet<Rate> Rates { get; set; }
         public DbSet<Storage> Storages { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<Warehouse> Warehouses { get; set; }
     }
 }

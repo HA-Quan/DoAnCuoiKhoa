@@ -16,7 +16,6 @@ namespace Services.Models.Entities.DTO
         public int Amount { get; set; }
         public byte Condition { get; set; }
         public long Price { get; set; }
-        public byte Discount { get; set; }
         public List<Gift>? ListGift {  get; set; }
         public Guid CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }

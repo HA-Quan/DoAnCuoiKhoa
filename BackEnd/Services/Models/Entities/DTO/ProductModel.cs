@@ -12,7 +12,8 @@ namespace Services.Models.Entities.DTO
     public class ProductModel
     {
         public Product Product { get; set; }
-        public IFormFileCollection? ListImages { get; set; }
+        public IFormCollection? ListImages { get; set; }
+        public IFormFile? MainImage { get; set; }    
 
         public List<string>? ListImageView { get; set; }
 

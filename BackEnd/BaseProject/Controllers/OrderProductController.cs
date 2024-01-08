@@ -42,11 +42,11 @@ namespace BaseProject.Controllers
         }
         [HttpGet]
         [Route("getByAccountID{id}")]
-        public IActionResult GetByAccountID(Guid id)
+        public IActionResult GetByAccountID([FromRoute] Guid id, [FromQuery] bool isDelivered)
         {
             try
             {
-                var result = _orderProductService.GetByAccountID(id);
+                var result = _orderProductService.GetByAccountID(id, isDelivered);
                 if (result.Success)
                 {
                     return StatusCode(StatusCodes.Status200OK, result.Data);

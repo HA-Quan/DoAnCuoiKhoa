@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Helpers;
 using Services.Models.Entities;
+using Services.Models.Enum;
 using Services.Service;
 
 namespace BaseProject.Controllers
@@ -38,6 +39,35 @@ namespace BaseProject.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
             }
         }
+
+        [HttpGet("filter")]
+        public IActionResult GetByFilter(
+            [FromQuery] string? keyword,
+            [FromQuery] int? sort,
+            [FromQuery] bool? status,
+            [FromQuery] int pageSize = 5,
+            [FromQuery] int pageNumber = 1)
+        {
+            try
+            {
+                var result = _giftService.GetByFilter(keyword, sort, status, pageSize, pageNumber);
+                if (result.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, result.Data);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Data);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
+            }
+        }
+
         /// <summary>
         /// API Lấy thông tin quà theo ID quà
         /// </summary>
@@ -51,6 +81,36 @@ namespace BaseProject.Controllers
             try
             {
                 var result = _giftService.GetById(id);
+                if (result.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, result.Data);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Data);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
+            }
+        }
+
+        /// <summary>
+        /// API Lấy danh sách quà theo ID sản phẩm
+        /// </summary>
+        /// <param name="id">ID sản phẩm</param>
+        /// <returns>Danh sách quà tặng của sản phẩm có id đầu vào. Nếu thêm thất bại thì return về lỗi</returns>
+        /// Author: HAQUAN (15/09/2023)
+        [HttpGet]
+        [Route("gifts{id}")]
+        public IActionResult GetListGiftByProductId(Guid id)
+        {
+            try
+            {
+                var result = _giftService.GetByProductId(id);
                 if (result.Success)
                 {
                     return StatusCode(StatusCodes.Status200OK, result.Data);

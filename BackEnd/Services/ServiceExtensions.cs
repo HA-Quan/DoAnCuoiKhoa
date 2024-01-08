@@ -83,6 +83,7 @@ public static class ServiceExtensions
         services.AddScoped<IDisplayRepository, DisplayRepository>();
         services.AddScoped<IGiftRepository, GiftRepository>();
         services.AddScoped<IGiftByProductRepository, GiftByProductRepository>();
+        services.AddScoped<IImportDetailRepository, ImportDetailRepository>();
         services.AddScoped<IImportProductRepository, ImportProductRepository>();
         services.AddScoped<IMemoryRepository, MemoryRepository>();
         services.AddScoped<INewsRepository, NewsRepository>();

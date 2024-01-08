@@ -7,7 +7,7 @@
         v-if="chekcRole(option.role)">
           <div class="nav-option-content">
             <div class="title-option">{{ option.content }}</div>
-            <div v-show="isZoomOut" class="icon-arrow-right"></div>
+            <!-- <div v-show="isZoomOut" class="icon-arrow-right"></div> -->
             <div v-show="!isZoomOut" class="tooltip-icon">
               {{ option.content }}
             </div>
@@ -247,6 +247,7 @@ export default {
   font-size: 13px;
   letter-spacing: .5px;
   box-shadow: 0 1.5px 2px 0 rgb(0 0 0 / 10%);
+  z-index: 20;
 }
 
 .tooltip-icon::before {

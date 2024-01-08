@@ -465,8 +465,8 @@ namespace Services.Service
                         Data = new ErrorResult()
                         {
                             ErrorCode = EnumType.ErrorCode.LoginFail,
-                            UserMsg = new List<string>() { Resource.UserMsgLoginFail },
-                            DevMsg = new List<string>() { Resource.DevMsgLoginFail },
+                            UserMsg = Resource.UserMsgLoginFail,
+                            DevMsg = Resource.DevMsgLoginFail,
                             MoreInfo = Resource.MoreInfo
                         }
                     };
@@ -510,8 +510,8 @@ namespace Services.Service
                 else
                 {
                     var errors = HandleError.GenerateErrorResultValidate();
-                    errors.UserMsg.AddRange(liseErrorValidate);
-                    errors.DevMsg.AddRange(liseErrorValidate);
+                    errors.UserMsg = string.Join("; ", liseErrorValidate);
+                    errors.DevMsg = string.Join("; ", liseErrorValidate);
                     return new ApiReponse()
                     {
                         Success = false,
@@ -612,8 +612,8 @@ namespace Services.Service
                             Data = new ErrorResult()
                             {
                                 ErrorCode = EnumType.ErrorCode.NotFoundByID,
-                                UserMsg = new List<string>() { Resource.UserMsgNotFoundRecordByID },
-                                DevMsg = new List<string>() { Resource.DevMsgNotFoundRecordByID },
+                                UserMsg = Resource.UserMsgNotFoundRecordByID,
+                                DevMsg = Resource.DevMsgNotFoundRecordByID,
                                 MoreInfo = Resource.MoreInfo
                             }
                         };
@@ -628,8 +628,8 @@ namespace Services.Service
                         Data = new ErrorResult()
                         {
                             ErrorCode = EnumType.ErrorCode.RenewTokenFail,
-                            UserMsg = new List<string>(validateMessage),
-                            DevMsg = new List<string>() { Resource.DevMsgRenewTokenFail },
+                            UserMsg = string.Join("; ", validateMessage),
+                            DevMsg = Resource.DevMsgRenewTokenFail,
                             MoreInfo = Resource.MoreInfo
                         }
                     };
