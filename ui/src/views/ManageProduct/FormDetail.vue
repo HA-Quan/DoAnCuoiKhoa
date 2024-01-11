@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="myForm">
     <form @keydown.esc="closeForm" class="modal-detail-wrapper" tabindex="0" @keydown.ctrl.s.prevent.exact="save(false)"
       @keydown.ctrl.shift.s.prevent.exact="save(true)">
 
@@ -385,8 +385,9 @@
                 </label>
 
                 <div class="flex text-field-form">
-                  <InputNumber :transmissionNumber="getNewPrice(product.price, product.discount)" :decimalPlaces="0" :isReadonly="true"
-                    tabindex="22" :nameProperty="Resource.ProductProperty.Discount" @update="updateDiscount" />
+                  <InputNumber :transmissionNumber="getNewPrice(product.price, product.discount)" :decimalPlaces="0"
+                    :isReadonly="true" tabindex="22" :nameProperty="Resource.ProductProperty.Discount"
+                    @update="updateDiscount" />
                 </div>
               </div>
               <div class="flex mr-10 block">
@@ -539,16 +540,16 @@
 
             </div>
             <div class="flex row-form">
-                <label for="" class="label-form d-flex">
-                  {{ Resource.Label.Gift }}
-                </label>
+              <label for="" class="label-form d-flex">
+                {{ Resource.Label.Gift }}
+              </label>
 
-                <div class="flex combobox-form">
-                  <ComboboxCheckbox tabindex="36" :items="listGift" :initItem="listGifts" fieldName="description"
-                    @getValue="setListGifts" :placehoder="Resource.Placehoder.Gift" :isReadonly="true" />
+              <div class="flex combobox-form">
+                <ComboboxCheckbox tabindex="36" :items="listGift" :initItem="listGifts" fieldName="description"
+                  @getValue="setListGifts" :placehoder="Resource.Placehoder.Gift" :isReadonly="true" />
 
-                </div>
               </div>
+            </div>
 
             <div class="row-form">
 
@@ -570,14 +571,14 @@
               <label for="" class="label-form d-flex">
                 {{ Resource.Label.Description }}
               </label>
-
-              <div class="flex text-aria-form">
+              <textarea v-model="product.description" ref="editor"></textarea>
+              <!-- <div class="flex text-aria-form">
 
                 <div class="flex-row border">
                   <textarea :placeholder="Resource.Placehoder.Description" class="aria-form flex" rows="4"
                     v-model.trim="product.description" tabindex="38"></textarea>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -645,6 +646,7 @@ import BaseToastMessage from '@/components/base/BaseToastMessage.vue';
 import ViewImage from '../Modal/ViewImage.vue';
 import axios from 'axios';
 import CommonFn from '@/utils/commonFuncion';
+import ClassicEditor from '../../../node_modules/ckeditor5/build/ckeditor';
 export default {
   components: {
     BaseCombobox, BaseButton, BasePopup, InputString, InputNumber, BaseRadio,
@@ -657,9 +659,8 @@ export default {
       Resource: Resource,
       Const: Const,
       isTitle: '', // tiêu đề của form
-
       titlePopup: Resource.Title.Management, // tiêu đề của popup
-
+      editor: null,
       contentPopup: '', // nội dung cảnh báo
 
       isShowPopup: false, // cờ điền khiển đóng mở cảnh báo lỗi
@@ -806,7 +807,7 @@ export default {
         this.listUrlImage.push(URL.createObjectURL(this.listImage[i]));
       }
     },
-    
+
     seeImageDetail() {
       this.isShowListImage = true;
     },
@@ -814,6 +815,7 @@ export default {
     cancelUploadListImage() {
       this.listUrlImage = [];
       this.listImageTxt = Resource.ChooseImage;
+      this.listImage = this.$refs.imageDetail.files;
     },
 
     getNewPrice(oldPrice, saleoff) {
@@ -822,13 +824,6 @@ export default {
       money = money * 10000;
       return money;
     },
-
-    // updateImage(value) {
-    //   this.product.mainImage = value;
-    // },
-    // updateImageDetail(value) {
-    //   this.product.listImageString = value;
-    // },
 
     reloadData() {
       this.getProductByID(this.productIdUpdate);
@@ -1306,7 +1301,7 @@ export default {
 
           else {
             this.sendRequestInsert(control);
-            
+
           }
 
         }
@@ -1320,6 +1315,8 @@ export default {
      *  Author: HAQUAN(29/08/2023) 
      */
     async sendRequestUpdate() {
+      // get data from ckeditor
+      this.product.description = document.querySelector('.ck-content').innerHTML;
       try {
         this.product.modifiedBy = this.$store.getters.user.accountID;
         // let productModel = {
@@ -1359,16 +1356,8 @@ export default {
      *  Author: HAQUAN(29/08/2023) 
      */
     async sendRequestInsert(control) {
-      // debugger
-      // let formData = new FormData();
-      // formData.append('listImages[' + 0 + ']', this.$refs.avatar.files[0]);
-      // let list = this.$refs.imageDetail.files;
-      // for (var i = 0; i < list.length; i++) {
-      //   formData.append('listImages[' + (i + 1) + ']', list[i]);
-      // }
-      // formData.append('product', JSON.stringify(this.product));
-      // formData.append('listGifts', JSON.stringify(this.listGifts));
-      console.log(this.listImage);
+      // get data from ckeditor
+      this.product.description = document.querySelector('.ck-content').innerHTML;
       try {
         await axios.post('Product/', {
           product: this.product, listImages: this.listImage,
@@ -1746,19 +1735,25 @@ export default {
         let url = `Product/${productID}`;
         await axios.get(url)
           .then((response) => {
+            this.listGifts = response.data.listGifts;
             this.product = response.data.product;
             this.urlImage = Resource.PrefixImage + this.product.mainImage;
-            this.listGifts = response.data.listGifts;
-            console.log(this.listGifts);
+            debugger
+            document.querySelector('.ck-content').innerHTML = this.product.description;
+            // this.editor.setData(this.product.description);
+            // console.log('1 ',"color: red;",this.editor);
           })
 
           .catch((error) => {
+            debugger
             console.log(error);
             this.handleErrorResponse(error);
           })
 
           .finally(() => {
             this.isLoading = false;
+            debugger
+            document.querySelector('.ck-content').innerHTML = this.product.description;
           })
       } catch (error) {
         console.log(error);
@@ -1820,14 +1815,45 @@ export default {
     }
   },
   mounted() {
+    debugger
     if (this.formMode == Enum.Mode.Add) {
       this.isTitle = Resource.Title.AddProduct;
     }
     // focus vào ô input tên sản phẩm
     this.focusProductName = true;
 
+    ClassicEditor.create(this.$refs.editor, {
+      simpleUpload: {
+        uploadUrl: "https://localhost:7101/api/Product/uploadImage",
+      },
+      }).then(editor => {
+        debugger
+        this.editor = editor;
+        if (document.querySelector('.ck-content') && this.product) {
+          document.querySelector('.ck-content').innerHTML = this.product.description;
+        }
+
+      }).catch(error => {
+        console.error('There was an error initializing the editor', error)
+      });
+
+    if (document.querySelector('.ck-content') && this.editor && this.formMode == Enum.Mode.Edit) {
+      console.log('2 ', "color: red;", this.editor);
+      debugger
+      document.querySelector('.ck-content').innerHTML = this.product.description;
+
+      // this.editor.setData(this.product.description);
+    }
   },
 
+  watch: {
+    product(newProduct) {
+      debugger
+      if (document.querySelector('.ck-content')) {
+        document.querySelector('.ck-content').innerHTML = newProduct.description;
+      }
+    }
+  }
 };
 </script>
 <style scoped>
@@ -2090,4 +2116,5 @@ input.input-file:hover {
 img {
   width: 256px;
   height: 256px;
-}</style>
+}
+</style>

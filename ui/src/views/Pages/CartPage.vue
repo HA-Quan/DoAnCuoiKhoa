@@ -145,7 +145,7 @@
             </div>
             <div class="box-cart payment" v-else-if="step == Enum.Step.Payment">
                 <div class="image">
-                    <img :src="`https://api.vietqr.io/image/970416-4181961-VmQSuKZ.jpg?accountName=HOANG%20ANH%20QUAN&amount=${orderModel.order.total/10}&addInfo=HAQ%20CK`"
+                    <img :src="`https://img.vietqr.io/image/MB-0050135109007-print.png?accountName=LE%20VAN%20THANG&amount=${orderModel.order.total / 10}&addInfo=HAQ%20CK`"
                         alt="">
                 </div>
             </div>
@@ -333,7 +333,21 @@ export default {
             focusEmail: false,
             focusAddress: false,
             promotion: null,
-            decreaseMoney: 0
+            decreaseMoney: 0,
+
+            timeNow: null,
+
+            formMb: {
+                accountNo: "0050135109007",
+                sessionId: "625a8f42-0c60-4a42-874b-d7ab635c64f8", // lấy ở api của NG
+                deviceIdCommon: "1blaoo31-mbib-0000-0000-2024011012573275", // lấy ở api của NG
+                fromDate: "",
+                toDate: "",
+                // refNo: "",
+                // historyNumber: "",
+                // historyType: "DATE_RANGE",
+                // type: "ACCOUNT"
+            },
         }
     },
     computed: {
@@ -439,7 +453,7 @@ export default {
         * Validate phone
          * Author: HAQUAN(29/08/2023) 
         */
-        validatePhone() { 
+        validatePhone() {
             try {
                 var validPhone = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
                 if (!this.orderModel.order.phone) {
@@ -631,9 +645,52 @@ export default {
             }
         },
 
+        configInfoRequest() {
+            this.timeNow = moment();
+            this.formMb.fromDate = this.timeNow.subtract(1, 'days').format('DD/MM/YYYY');
+            this.formMb.toDate = this.timeNow.format('DD/MM/YYYY');
+            this.formMb.refNo = "0337081000-" + this.timeNow.format('YYYYMMDDHHmmss00');
+            console.log(this.formMb);
+        },
+
+        /**
+        * Lấy lịch sử giao dịch
+        * Author: HAQUAN(29/08/2023) 
+        */
+        async sendRequestGetHistoryPayment() {
+            try {
+                const axiosInstance = axios.create({
+                    baseURL: 'https://online.mbbank.com.vn/api/',
+                });
+                this.configInfoRequest();
+                let url = `retail-web-transactionservice/transaction/getTransactionAccountHistory`;
+                // this.configInfoRequest();
+                // let url = `https://online.mbbank.com.vn/api/retail-transactionms/transactionms/get-account-transaction-history`;
+                await axiosInstance.post(url, this.formMb, {
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Accept': 'application/json',
+                        'Authorization': 'Basic RU1CUkVUQUlMV0VCOlNEMjM0ZGZnMzQlI0BGR0AzNHNmc2RmNDU4NDNm',
+                    }
+                })
+                    .then((response) => {
+                        console.log(response);
+                    })
+
+                    .catch((error) => {
+                        console.log(error);
+                        this.handleErrorResponse(error);
+                    })
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+
     },
     created() {
         this.cart = JSON.parse(localStorage.getItem('cart'));
+        this.sendRequestGetHistoryPayment();
     }
 }
 </script>
@@ -642,7 +699,7 @@ export default {
 @import url(../../css/base/radio.css);
 
 .container-cart {
-    width: 600px;
+    width: 700px;
     margin: 0 auto;
 }
 
@@ -970,5 +1027,6 @@ export default {
 
 .box-info .item-info span {
     font-weight: 600;
-}</style>
+}
+</style>
     

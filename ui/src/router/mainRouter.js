@@ -16,6 +16,8 @@ import CartPage from '@/views/Pages/CartPage.vue';
 import InfoAccount from '@/views/ManageInformation/InfoAccount.vue';
 import ChangePassword from '@/views/ManageInformation/ChangePassword.vue';
 import StatisticPage from '@/views/ReportAndStatistic/StatisticPage.vue';
+import RateList from '@/views/ManageRate/RateList.vue';
+import HistoryShopping from '@/views/Pages/HistoryShopping.vue';
 import CommonFn from '@/utils/commonFuncion';
 import store from "@/utils/vuex";
 import axios from "axios";
@@ -91,6 +93,15 @@ const routes = [
             }
           },
           {
+            path: '/history-shopping',
+            name: 'HistoryShopping',
+            component: HistoryShopping,
+            meta: {
+              isManager: true,
+              loginRequired: true
+            }
+          },
+          {
             path: '/product',
             name: 'ProductList',
             component: ProductList,
@@ -139,6 +150,15 @@ const routes = [
             path: '/promotion',
             name: 'PromotionList',
             component: PromotionList,
+            meta: {
+              isManager: true,
+              loginRequired: true
+            }
+          },
+          {
+            path: '/replyRate',
+            name: 'RateList',
+            component: RateList,
             meta: {
               isManager: true,
               loginRequired: true

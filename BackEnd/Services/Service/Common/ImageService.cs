@@ -34,7 +34,7 @@ namespace Services.Service.Common
                 }
                 using (var data = file.OpenReadStream())
                 {
-                    var objectName = file.FileName + '_' + DateTime.Now.ToString();
+                    var objectName = file.FileName;
                     var contentType = file.ContentType;
                     var putObjectArgs = new PutObjectArgs()
                         .WithBucket(bucketName)

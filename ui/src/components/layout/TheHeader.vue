@@ -224,6 +224,14 @@ export default {
             this.$router.push({ name: 'ProductDetailPage', query: { productId: productID } });
         },
 
+        historyShoppingOnClick() {
+            this.$router.push({ name: 'HistoryShopping' });
+        },
+
+        replyRateOnClick() {
+            this.$router.push({ name: 'RateList' });
+        },
+
         filterProductByCategory(categoryID) {
             this.$router.push(
                 {

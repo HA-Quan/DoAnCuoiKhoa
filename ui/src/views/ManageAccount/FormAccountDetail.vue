@@ -526,7 +526,7 @@ export default {
      */
     validatePassword() {
       try {
-        var validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+        var validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
 
         if (!this.accountModel.account.password) {
           this.errors.password = Resource.Error.Password;

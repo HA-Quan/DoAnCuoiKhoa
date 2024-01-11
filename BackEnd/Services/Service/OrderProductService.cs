@@ -12,19 +12,23 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
+using static Services.Models.Enum.EnumType;
 
 namespace Services.Service
 {
     public interface IOrderProductService : IServiceBase<OrderProduct>
     {
         ApiReponse GetAll();
-        ApiReponse GetByAccountID(Guid accountID, bool isDelivered);
+        ApiReponse GetByAccountID(Guid accountID, DateTime? timeStart, DateTime? timeEnd,
+                    bool? deliveryMethod, bool? paymentMethod, byte status, int pageSize, int pageNumber);
         ApiReponse GetById(Guid orderProductID);
         ApiReponse GetOrderDetailByOrderID(Guid orderProductID);
         ApiReponse GetByFilter(DateTime? timeStart, DateTime? timeEnd, string? keyword, int? sort, 
             bool? deliveryMethod, bool? paymentMethod, bool? statusPayment, byte status, int pageSize, int pageNumber);
         ApiReponse Save(OrderModel orderModel);
         ApiReponse Update(Guid orderID, OrderModel orderModel);
+        ApiReponse CancelOrder(Guid orderID);
         ApiReponse UpdateStatus(Guid orderID, byte status);
         ApiReponse Delete(List<Guid> listID);
     }
@@ -118,6 +122,31 @@ namespace Services.Service
                 Console.WriteLine(ex.Message);
                 return new ApiReponse()
                 {
+                    Success = false,
+                    Data = HandleError.GenerateErrorResultDatabase()
+                };
+
+            }
+        }
+        public ApiReponse GetByAccountID(Guid accountID, DateTime? timeStart, DateTime? timeEnd,
+                    bool? deliveryMethod, bool? paymentMethod, byte status, int pageSize, int pageNumber) 
+        {
+            try {
+                if (timeStart == null) {
+                    timeStart = DateTime.MinValue;
+                }
+                if (timeEnd == null) {
+                    timeEnd = DateTime.MaxValue;
+                }
+
+                return new ApiReponse() {
+                    Success = true,
+                    Data = _orderProductRepository.GetByAccountID(accountID, (DateTime)timeStart, (DateTime)timeEnd,
+                    deliveryMethod, paymentMethod, status, pageSize, pageNumber)
+                };
+            } catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+                return new ApiReponse() {
                     Success = false,
                     Data = HandleError.GenerateErrorResultDatabase()
                 };
@@ -435,6 +464,52 @@ namespace Services.Service
                 }
             }
     
+        }
+        public ApiReponse CancelOrder(Guid orderID) {
+            using (var transaction = _repositoryContext.Database.BeginTransaction()) {
+                try {
+                    var order = FindByCondition(o => o.DelFalg == EnumType.DeleteFlag.Using && o.OrderID == orderID).FirstOrDefault();
+                    if (order != null) {
+                        if(order.Status == (byte) EnumType.StatusOrder.NotApproved) {
+                            order.Status = (byte)EnumType.StatusOrder.Cancelled;
+                            order.ModifiedDate = DateTime.Now;
+                            Update(order);
+                            if (_orderDetailRepository.CancelByOrderID(orderID)) {
+                                transaction.Commit();
+                                return new ApiReponse() {
+                                    Success = true,
+                                    Data = orderID
+                                };
+                            } else {
+                                transaction.Rollback();
+                                return new ApiReponse() {
+                                    Success = false,
+                                    Data = Guid.Empty
+                                };
+                            }
+                        } else {
+                            return new ApiReponse() {
+                                Success = false,
+                                Data = "Đơn hàng đã được duyệt nên không thể hủy, vui lòng liên hệ với shop để biết thêm thông tin chi tiết"
+                            };
+                        }
+
+                    } else {
+                        return new ApiReponse() {
+                            Success = false,
+                            Data = Guid.Empty
+                        };
+                    }
+                } catch (Exception ex) {
+                    Console.WriteLine(ex.Message);
+                    transaction.Rollback();
+                    return new ApiReponse() {
+                        Success = false,
+                        Data = HandleError.GenerateErrorResultException()
+                    };
+                }
+            }
+
         }
 
         public ApiReponse Delete(List<Guid> listID)

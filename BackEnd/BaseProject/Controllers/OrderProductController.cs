@@ -5,6 +5,8 @@ using Services.Models.Entities;
 using Services.Models.Entities.DTO;
 using Services.Models.Enum;
 using Services.Service;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
+using static Services.Models.Enum.EnumType;
 
 namespace BaseProject.Controllers
 {
@@ -42,11 +44,20 @@ namespace BaseProject.Controllers
         }
         [HttpGet]
         [Route("getByAccountID{id}")]
-        public IActionResult GetByAccountID([FromRoute] Guid id, [FromQuery] bool isDelivered)
+        public IActionResult GetByAccountID(
+            [FromRoute] Guid id,
+            [FromQuery] DateTime? timeStart,
+            [FromQuery] DateTime? timeEnd,
+            [FromQuery] bool? deliveryMethod,
+            [FromQuery] bool? paymentMethod,
+            [FromQuery] byte status = (byte)EnumType.StatusOrder.Delivered,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] int pageNumber = 1)
         {
             try
             {
-                var result = _orderProductService.GetByAccountID(id, isDelivered);
+                var result = _orderProductService.GetByAccountID(id, timeStart, timeEnd,
+                    deliveryMethod, paymentMethod, status, pageSize, pageNumber);
                 if (result.Success)
                 {
                     return StatusCode(StatusCodes.Status200OK, result.Data);
@@ -208,6 +219,24 @@ namespace BaseProject.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
+            }
+        }
+
+        [HttpPut]
+        [Route("cancelOrder{id}")]
+        public IActionResult CancelOrder([FromRoute] Guid id) {
+            try {
+                var result = _orderProductService.CancelOrder(id);
+
+                if (result.Success) {
+                    return StatusCode(StatusCodes.Status201Created, result.Data);
+                }
+
+                return StatusCode(StatusCodes.Status400BadRequest, result.Data);
+
+            } catch (Exception ex) {
                 Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
             }

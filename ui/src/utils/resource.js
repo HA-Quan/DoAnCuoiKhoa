@@ -1,5 +1,5 @@
 const Resource = {
-    NameWeb: "Top Laptop",
+    NameWeb: "Laptop HQ",
     PrefixImage: "http://127.0.0.1:9000/doantotnghiep/",
     DefaultAvatar: "user_default.png",
     DefaultMainImage: "default-image.jpg",
@@ -64,6 +64,7 @@ const Resource = {
         DayExpiredNotEmpty: "Ngày kết thúc Voucher không được để trống",
         ProvisoNotEmpty: "Điều kiện áp dụng Voucher không được để trống",
         QuantityNotEmpty: "Số lượng Voucher không được để trống",
+        Max8Image: "Vui lòng thêm tối đa 8 ảnh!",
 
     },
 
@@ -85,10 +86,13 @@ const Resource = {
         AddProductToCartSucces: "Thêm sản phẩm vào giỏ hàng thành công",
         AddOrderSucces: "Thêm mới đơn hàng thành công",
         UpdateOrderSucces: "Cập nhật đơn hàng thành công",
+        CancelOrderSucces: "Hủy đơn hàng thành công",
         AddGiftSucces: "Thêm mới quà tặng thành công",
         UpdateGiftSucces: "Cập nhật quà tặng thành công",
         AddPromotionSucces: "Thêm mới voucher thành công",
         UpdatePromotionSucces: "Cập nhật voucher thành công",
+        AddRateSucces: "Gửi đánh giá thành công",
+        SingUpSucces: "Đăng ký thành công"
     },
 
     // Nội dung tiêu đề form
@@ -117,7 +121,8 @@ const Resource = {
         VerifyDelete: "Xác nhận xóa",
         OrderSucces: "Đặt hàng thành công",
         ImportProduct: "Nhập hàng",
-        SystemShop: "Hệ thống cửa hàng"
+        SystemShop: "Hệ thống cửa hàng",
+        Rate: "Đánh giá sản phẩm"
     },
 
     All: "Tất cả",
@@ -172,7 +177,8 @@ const Resource = {
         Card: "Card đồ họa",
         Demand: "Dòng máy",
         SeeAll: "Xem tất cả",
-        Login: "Đăng nhập"
+        Login: "Đăng nhập",
+        Rate: "Đánh giá"
     },
 
     Label: {
@@ -200,6 +206,7 @@ const Resource = {
         Status: "Trạng thái",
         Mode: "Chức năng",
         Avatar: "Ảnh hiển thị sản phẩm",
+        AddImageDescribe: "Thêm ảnh mô tả",
         ImageDetail: "Ảnh chi tiết sản phẩm",
         ChipType: "Loại Chip",
         ChipDetail: "Chi tiết Chip",
@@ -244,6 +251,7 @@ const Resource = {
         Email: "Email",
         Phone: "Số điện thoại",
         Address: "Địa chỉ",
+        DeliveryAddress: "Địa chỉ nhận hàng",
         Chip: "CPU",
         Memory: "RAM",
         Storage: "Ổ cứng",
@@ -261,6 +269,8 @@ const Resource = {
         Receiver: "Người nhận",
         PaymentMethod: 'Phương thức thanh toán',
         Order: "Danh sách đơn hàng",
+        HistoryShopping: "Lịch sử mua hàng",
+        RateList: "Danh sách đánh giá",
         ImportList: "Danh sách nhập hàng",
         PromotionList: "Danh sách Voucher",
         GiftList: "Danh sách quà tặng",
@@ -298,7 +308,12 @@ const Resource = {
         Proviso: "Điều kiện áp dụng",
         Used: "Đã sử dụng",
         DayStart: "Ngày áp dụng Voucher",
-        DayExpired: "Ngày kết thúc Voucher"
+        DayExpired: "Ngày kết thúc Voucher",
+        RateComment: "Nội dung đánh giá",
+        ReplyComment: "Phản hồi của người bán",
+        NumberStar: "Số sao",
+        RateBy: "Người đánh giá",
+        RateDate: "Ngày đánh giá"
     },
 
     LabelProduct: {
@@ -439,13 +454,22 @@ const Resource = {
         DayStart: "Chọn ngày áp dụng Voucher",
         DayExpired: "Chọn ngày kết thúc Voucher",
         Proviso: "Nhập điều kiện áp dụng Voucher",
-        Quantity: "Nhập số lượng Voucher"
+        Quantity: "Nhập số lượng Voucher",
+        RateComment: "Nhập nội dung đánh giá",
+        ReplyComment: "Nhập phản hồi"
     },
 
     Button: {
         Close: "Đóng",
         No: "Không",
         Cancel: "Hủy",
+        CancelOrder: "Hủy đơn hàng",
+        Rate: "Đánh giá",
+        SendRate: "Gửi đánh giá",
+        SendReply: "Gửi phản hồi",
+        UpdateRate: "Sửa đánh giá",
+        ViewRate: "Xem đánh giá",
+        BuyRepeat: "Mua lại",
         Save: "Lưu",
         SaveAndNew: "Lưu và thêm mới",
         SaveChange: "Lưu thay đổi",
@@ -464,6 +488,8 @@ const Resource = {
         BuyNow: "Mua ngay",
         AddToCart: "Thêm vào giỏ hàng",
         MoreAll: "Xem tất cả",
+        More: "Xem thêm",
+        Collapse: "Thu gọn",
         MoreConfigDetail: "Xem cấu hình chi tiết",
         OrderProduct: "Tiến hành đặt hàng",
         SelectMore: "Chọn thêm sản phẩm khác",

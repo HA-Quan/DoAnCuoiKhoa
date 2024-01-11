@@ -20,12 +20,19 @@ namespace Services.Models.Entities
         [ForeignKey("Product")]
         [Column("productID")]
         public Guid ProductID { get; set; }
+        [ForeignKey("Account")]
+        [Column("accountID")]
+        public Guid AccountID { get; set; }
 
         [Column("numStar")]
         public byte NumStar { get; set; }
 
         [Column("comment")]
         public string? Comment { get; set; }
+        [Column("commentReply")]
+        public string? CommentReply { get; set; }
+        [Column("listImg")]
+        public string? ListImg { get; set; }
         [Column("delFlag")]
         public bool DelFalg { get; set; } = EnumType.DeleteFlag.Using;
     }

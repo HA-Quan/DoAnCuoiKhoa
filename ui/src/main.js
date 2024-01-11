@@ -10,8 +10,10 @@ import router from './router/mainRouter'
 import CommonFn from './utils/commonFuncion';
 
 import store from './utils/vuex';
+import { Quasar } from 'quasar'
+import quasarUserOptions from './quasar-user-options'
 
-const app = createApp(App);
+const app = createApp(App).use(Quasar, quasarUserOptions);
 
 const emitter = mitt();
 app.config.globalProperties.emitter = emitter;

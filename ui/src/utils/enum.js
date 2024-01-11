@@ -140,12 +140,19 @@ const Enum = {
     Staff: 2,
   },
   StatusOrder: {
-    All: 0
+    All: 0,
+    NotApproved: 1,
+    Delivered: 4,
+    Cancel: 5
   },
   StatusProduct: {
     StopSelling: 0,
     Selling: 1,
     PrepairCome: 2
+  },
+  StatusRate: {
+    NotReply: 1,
+    Replyed: 2
   },
   Step: {
     SelectProduct: 1,

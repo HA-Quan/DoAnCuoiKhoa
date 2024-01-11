@@ -1,5 +1,42 @@
 const Const = {
-
+  TestMB: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'vi-US,vi;q=0.9',
+    'Authorization': 'Basic QURNSU46QURNSU4=',
+    'Connection': 'keep-alive',
+    'Host': 'online.mbbank.com.vn',
+    'Origin': 'https://online.mbbank.com.vn',
+    'Referer': 'https://online.mbbank.com.vn/information-account/source-account',
+    'sec-ch-ua': '"Google Chrome";v="105", "Not)A;Brand";v="8", "Chromium";v="105"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-origin',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
+  },
+  TestMB2: {
+    
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Accept': 'application/json',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'Accept-Language': 'vi-VN,vi;q=0.9,fr-FR;q=0.8,fr;q=0.7,en-US;q=0.6,en;q=0.5',
+                        'Authorization': 'Basic RU1CUkVUQUlMV0VCOlNEMjM0ZGZnMzQlI0BGR0AzNHNmc2RmNDU4NDNm',
+                        'Connection': 'keep-alive',
+                        'Host': 'online.mbbank.com.vn',
+                        'Origin': 'https://online.mbbank.com.vn',
+                        'Referer': 'https://online.mbbank.com.vn/information-account/source-account',
+                        'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+                        'sec-ch-ua-mobile': '?0',
+                        'sec-ch-ua-platform': '"Windows"',
+                        'Sec-Fetch-Dest': 'empty',
+                        'Sec-Fetch-Mode': 'cors',
+                        'Sec-Fetch-Site': 'same-origin',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    
+  },
   DemandCategory: {
     categoryID: null,
     title: "Chọn laptop theo nhu cầu",
@@ -216,6 +253,17 @@ const Const = {
     {
       Label: "Đã hủy",
       Value: 5
+    }
+  ],
+
+  StatusRate: [
+    {
+      Label: "Chưa phản hồi",
+      Value: 1
+    },
+    {
+      Label: "Đã phản hồi",
+      Value: 2
     }
   ],
 
@@ -458,11 +506,6 @@ const Const = {
           icon: "icon-history-shopping"
         },
         {
-          name: "Danh sách đơn hàng",
-          comand: "listOrderOnClick",
-          icon: "icon-shopping-list"
-        },
-        {
           name: "Đăng xuất",
           comand: "logout",
           icon: "icon-logout"
@@ -583,6 +626,11 @@ const Const = {
           icon: "icon-shopping-list"
         },
         {
+          name: "Phản hồi đánh giá",
+          comand: "replyRateOnClick",
+          icon: "icon-shopping-list"
+        },
+        {
           name: "Quản lý tin tức",
           comand: "manageNewsOnClick",
           icon: "icon-shopping-list"
@@ -658,6 +706,12 @@ const Const = {
     },
     {
       icon: "icon-news",
+      content: "Phản hồi đánh giá",
+      link: "/replyRate",
+      role: [2, 3, 4]
+    },
+    {
+      icon: "icon-news",
       content: "Quản lý tin tức",
       link: "/overview",
       role: [2, 3, 4]
@@ -675,7 +729,7 @@ const Const = {
       Label: "Thương hiệu",
       Value: "trademark",
       Key: "name"
-    },  
+    },
     {
       Label: "CPU",
       Value: "chip",

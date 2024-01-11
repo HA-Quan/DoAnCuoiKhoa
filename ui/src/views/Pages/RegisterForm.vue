@@ -28,10 +28,9 @@
                                 @blur="this.validateEmail">
                         </div> -->
 
-                        <InputString :transmissionString="registerModel.email" :hasError="error.email != ''"
-                            maxlength="150" tabindex="2" :nameProperty="Resource.AccountProperty.Email"
-                            @updateValue="updateValue" @eventBlur="focusEmail = false; validateEmail();"
-                            :isRef="focusEmail" />
+                        <InputString :transmissionString="registerModel.email" :hasError="error.email != ''" maxlength="150"
+                            tabindex="2" :nameProperty="Resource.AccountProperty.Email" @updateValue="updateValue"
+                            @eventBlur="focusEmail = false; validateEmail();" :isRef="focusEmail" />
                         <div class="error-text">{{ error.email }}</div>
                     </div>
                 </div>
@@ -93,25 +92,33 @@
                     </button>
                 </div>
                 <div class="login">
-                    <a @click="goToLogin">Login</a>
+                    <a @click="goToLogin">Back To Login</a>
                 </div>
             </div>
         </div>
     </div>
+    <BaseToastMessage v-show="toastMessage.isShowed" :class="`toast-${toastMessage.type} icon-toast-${toastMessage.type}`">
+
+        <template #message>{{ toastMessage.message }}</template>
+    </BaseToastMessage>
 </template>
 <script>
 import axios from 'axios';
 import InputPassword from '@/components/base/BaseInputPassword.vue';
 import InputString from '@/components/base/BaseInputString.vue';
+import BaseToastMessage from '@/components/base/BaseToastMessage.vue';
 import Resource from '@/utils/resource';
+import Const from '@/utils/const';
+import CommonFn from '@/utils/commonFuncion';
 export default {
     name: 'RegisterForm',
     components: {
-        InputPassword, InputString
+        InputPassword, InputString, BaseToastMessage
     },
     data() {
         return {
             Resource: Resource,
+            Const: Const,
             registerModel: {
                 username: '',
                 password: '',
@@ -135,10 +142,16 @@ export default {
             focusPassword: false,
             focusVerifyPassword: false,
 
+            toastMessage: { // cảnh báo
+                message: "", // nội dung cảnh báo
+                type: "", // loại cảnh báo
+                isShowed: false, // cờ điều khiển bật tắt cảnh báo
+            },
+
         };
     },
-    
-    created(){
+
+    created() {
         this.focusFullname = true;
     },
     methods: {
@@ -180,7 +193,12 @@ export default {
                 if (await this.validate()) {
                     await axios.post("Account/SingUp", this.registerModel)
                         .then((response) => {
-                            console.log(response);
+                            this.showToast(Resource.Message.SingUpSucces, Const.TypeToast.Success);
+                            CommonFn.setCookie('RefreshToken', response.data.refreshToken, 60);
+                            CommonFn.setCookie('Token', response.data.accessToken, 60);
+                            axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.accessToken;
+                            this.$store.dispatch('setUser', response.data.infoUser);
+                            this.$router.push({ name: 'HomePage' });
                         })
                         .catch((error) => {
                             console.log(error);
@@ -257,7 +275,7 @@ export default {
         },
 
         validatePassword() {
-            var validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+            var validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
             if (!this.registerModel.password) {
                 this.error.password = Resource.Error.Password;
                 return false;
@@ -278,7 +296,24 @@ export default {
             }
             this.error.verifyPassword = '';
             return true;
-        }
+        },
+
+        /**
+         * Hiển thị toast message khi thực hiện thành công
+         * @param {*} contentToast: nội dung thông báo 
+         * Author: HAQUAN(28/10/2022)
+         */
+        showToast(contentToast, TypeToast) {
+            this.toastMessage = {
+                message: contentToast,
+                type: TypeToast,
+                isShowed: true,
+            };
+            setTimeout(() => {
+                this.toastMessage.isShowed = false;
+            }, 5000);
+        },
+
     }
 }
 </script>
@@ -305,12 +340,12 @@ export default {
     background: #fff;
     display: flex;
     flex-direction: column;
-    padding: 20px 40px;
+    padding: 10px 40px 10px;
 }
 
 .title {
     width: 100%;
-    height: 60px;
+    height: 42px;
 }
 
 .title h2 {
@@ -325,7 +360,7 @@ export default {
 }
 
 .row-form {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     display: flex;
     flex-direction: column;
 }
@@ -423,9 +458,8 @@ button:hover {
 }
 
 .footer {
-    margin-top: 20px;
     border-top: 1px solid #e0e0e0;
-    padding-top: 20px;
+    padding-top: 16px;
     display: flex;
     flex-direction: column;
 }
@@ -436,7 +470,7 @@ button:hover {
 }
 
 .login {
-    margin-top: 20px;
+    margin-top: 8px;
     display: flex;
     justify-content: center;
 }

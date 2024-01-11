@@ -282,7 +282,7 @@ export default {
         },
 
         validatePassword() {
-            var validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+            var validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
         
             if (!this.passwordModel.password) {
                 this.errors.password = Resource.Error.Password;

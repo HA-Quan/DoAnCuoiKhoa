@@ -34,6 +34,7 @@ namespace Services.Service
             Guid displayID, string trademark, string? keyword, int? sort, byte status, byte demand, byte priceRange, int pageSize, int pageNumber);
 
         Task<ApiReponse> Save(ProductModel productModel, Guid productID);
+        Task<ImageResult> UploadImage(IFormFile image);
         //ApiReponse UpdateProduct(ProductModel product, Guid productID);
         ApiReponse UpdateMultiple(List<Guid> listID, byte status);
         ApiReponse Delete(List<Guid> listID);
@@ -88,18 +89,7 @@ namespace Services.Service
                                         join giftBy in _repositoryContext.GiftByProducts on gift.GiftID equals giftBy.GiftID
                                         where giftBy.ProductID == productID && gift.DelFalg == EnumType.DeleteFlag.Using && giftBy.DelFalg == EnumType.DeleteFlag.Using
                                         select gift).ToList();
-                    //result.ListImageView = product.ListImageString.Split(',').ToList();
-                    //if(result.ListImageView.Count > 0)
-                    //{
-                    //    foreach(string image in result.ListImageView)
-                    //    {
-                    //        if (image == null)
-                    //        {
-                    //            image = string.Empty;
-                    //        }
-                    //        image += _configuration["MinIO:PrefixLink"];
-                    //    }
-                    //}
+                    
                     if (!byManager) {
                         product.NumberView += 1;
                         product.ModifiedDate = DateTime.Now;
@@ -399,55 +389,6 @@ namespace Services.Service
                         }
 
                     }
-
-                    //if (await _productRepository.AddImage(product.ListImages[0]) != null)
-                    //{
-                    //    p.MainImage = await _productRepository.AddImage(product.ListImages[0]);
-                    //}
-                    //else
-                    //{
-                    //    check = false;
-                    //}
-                    //var listImage = await AddImage(product.ListImages);
-                    //if (listImage != null)
-                    //{
-                    //    p.ListImageString = string.Join(",", listImage);
-                    //}
-                    //else if (product.ListImages.Count() > 0)
-                    //{
-                    //    check = false;
-                    //}
-                    //_repositoryBase.Create(p);
-                    //_productRepository.Save();
-
-                    //List<GiftByProduct> listGiftByProducts = new List<GiftByProduct>();
-                    //foreach (var gift in product.ListGifts)
-                    //{
-                    //    listGiftByProducts.Add(new GiftByProduct()
-                    //    {
-                    //        ID = Guid.NewGuid(),
-                    //        GiftID = gift.GiftID,
-                    //        ProductID = p.ProductID
-                    //    });
-                    //}
-                    //if (listGiftByProducts.Count() > 0 && _giftByProductRepository.CreateMultiple(listGiftByProducts) == 0)
-                    //{
-                    //    check = false;
-                    //}
-
-                    //if (check)
-                    //{
-                    //    result.Success = true;
-                    //    result.Data = p.ProductID;
-                    //    transaction.Commit();
-                    //}
-                    //else
-                    //{
-                    //    result.Success = false;
-                    //    result.Data = Guid.Empty;
-                    //    transaction.Rollback();
-                    //}
-
                 }
                 catch (Exception ex)
                 {
@@ -458,6 +399,20 @@ namespace Services.Service
                 }
             }
             return result;
+        }
+        public async Task<ImageResult> UploadImage(IFormFile image) {
+            var nameImg = await ImageService.AddImage(image, _configuration);
+            if (nameImg != null) {
+                return new ImageResult {
+                    url = "http://127.0.0.1:9000/doantotnghiep/" + nameImg,
+                    Success = true
+                };
+            }
+            else {
+                return new ImageResult {
+                    Success = false
+                };
+            }
         }
         //public ApiReponse UpdateProduct(ProductModel product, Guid productID)
         //{

@@ -367,6 +367,22 @@ namespace Services.Models.Enum
         }
 
         /// <summary>
+        /// Trạng thái đánh giá
+        /// </summary>
+        /// Author: HAQUAN (13/09/2023)
+        public enum StatusRate : byte {
+            /// <summary>
+            /// Chưa phản hồi
+            /// </summary>
+            NotReply = 1,
+
+            /// <summary>
+            /// Đã phản hồi
+            /// </summary>
+            Replyed = 2,
+        }
+
+        /// <summary>
         /// Trạng thái đơn hàng
         /// </summary>
         /// Author: HAQUAN (13/09/2023)

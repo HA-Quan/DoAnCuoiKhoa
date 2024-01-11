@@ -738,14 +738,6 @@ namespace Services.Service
         public List<string> ValidateInput(SingUpModel singUpModel)
         {
             List<string> result = new List<string>();
-            //if (singUpModel.UserName.IsNullOrEmpty())
-            //    result.Add("Username not empty!");
-            //if (singUpModel.Password.IsNullOrEmpty())
-            //    result.Add("Password not empty!");
-            //if (singUpModel.FullName.IsNullOrEmpty())
-            //    result.Add("FullName not empty!");
-            //if (singUpModel.Email.IsNullOrEmpty())
-            //    result.Add("Email not empty!");
             if (singUpModel.UserName.Length == 0)
                 result.Add("Username not empty!");
             if (singUpModel.Password.Length == 0)

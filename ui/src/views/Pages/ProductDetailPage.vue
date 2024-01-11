@@ -12,9 +12,26 @@
             </h1>
             <div class="main-info-product d-flex">
                 <div class="main-product-left">
-                        <div class="product-image" @click="goToProduct(product.productID)">
+                    <!-- <div class="product-image" @click="goToProduct(product.productID)">
                             <img :src="`${Resource.PrefixImage + product.mainImage}`" alt="">
+                        </div> -->
+                    <div class="product-img-detail">
+                        <a v-for="(item, index) in listImg" :key="index" :href="item" data-fancybox="gallery"></a>
+                        <div class="product-image" id="product-big">
+                            <a data-fancybox="gallery" :href="listImg[slide]">
+                                <img :src="listImg[slide]" alt="">
+                            </a>
                         </div>
+                        <div class="product-detail-thumbnail">
+                            <Carousel :items-to-show="3">
+                                <Slide v-for="(item, index) in listImg" :key="index" @click="slide = index;">
+                                    <div class="carousel__item">
+                                        <img :src="listImg[index]" alt="">
+                                    </div>
+                                </Slide>
+                            </Carousel>
+                        </div>
+                    </div>
                     <div class="gift-product">
                         <div class="title flex-row">
                             <i class="icon-gift"></i>
@@ -148,10 +165,10 @@
                     <h3 class="title">
                         <span>{{ Resource.Text.Description }}</span>
                     </h3>
-                    <div :class="['content', { 'more-content': moreContent == true }]">
-                    {{ product.description }}</div>
+                    <div v-html="product.description" :class="['content ck-content', { 'more-content': moreContent == true }]">
+                        </div>
                     <div class="btn-more d-flex" @click="moreContent = !moreContent;">
-                        <span class="mr-10">{{ Resource.Button.MoreAll }}</span>
+                        <span class="mr-10">{{ moreContent ? Resource.Button.Collapse : Resource.Button.MoreAll }}</span>
                         <div :class="['icon-arrow', { 'icon-arrow-up': moreContent == true }]"></div>
                     </div>
                 </div>
@@ -334,6 +351,10 @@
     </BaseToastMessage>
 </template>
 <script>
+import { Fancybox } from "@fancyapps/ui";
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import { Carousel, Slide } from 'vue3-carousel'
+import 'vue3-carousel/dist/carousel.css'
 import axios from 'axios';
 import Resource from '@/utils/resource';
 import Const from '@/utils/const';
@@ -342,7 +363,7 @@ import BaseToastMessage from '@/components/base/BaseToastMessage.vue';
 export default {
     name: "ProductDetailPage",
     components: {
-        BaseToastMessage
+        BaseToastMessage, Carousel, Slide
     },
     data() {
         return {
@@ -357,6 +378,8 @@ export default {
                 type: "", // loại thông báo
                 isShowed: false, // cờ điều khiển bật tắt thông báo
             },
+            listImg: [],
+            slide: 0,
         }
     },
     watch: {
@@ -475,6 +498,7 @@ export default {
                     .then((response) => {
                         this.product = response.data.product;
                         this.listGifts = response.data.listGifts;
+                        this.configListImg(response.data.product);
                     })
                     .catch((error) => {
                         console.log(error);
@@ -482,6 +506,16 @@ export default {
             } catch (error) {
                 console.log(error);
             }
+        },
+
+        configListImg(product) {
+            this.listImg = [];
+            this.listImg.push((Resource.PrefixImage + product.mainImage));
+            let listImgPrd = product.listImageString.split(",");
+            listImgPrd.forEach(e => {
+                this.listImg.push((Resource.PrefixImage + e));
+            });
+            console.log(this.listImg);
         },
         /**
          * Hiển thị toast message khi thực hiện thành công
@@ -501,6 +535,9 @@ export default {
     },
     created() {
         this.getProductByID();
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
     }
 }
 </script>
@@ -767,6 +804,7 @@ span.name {
     border-bottom: 1px solid #ff9300;
     padding-bottom: 10px;
     padding-left: 15px;
+    font-weight: 700;
 }
 
 .more-info-product .content {
@@ -783,15 +821,20 @@ span.name {
 }
 
 .more-info-product .btn-more {
-    width: 130px;
+    width: 120px;
     text-align: center;
     margin: 10px auto;
     color: #222;
-    padding: 10px;
+    padding: 8px;
     border-radius: 20px;
     border: 1px solid #666;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
+    font-weight: 400;
+}
+.btn-more:hover{
+    color: orangered
 }
 
 .detail-info-product .detail-property-product {
@@ -825,11 +868,12 @@ span.name {
     border-bottom: 1px solid #ff9300;
     padding-bottom: 10px;
     padding-left: 15px;
+    font-weight: 600;
 }
 
 .property-product .content {
     padding: 10px;
-    height: 500px;
+    height: 200px;
     position: relative;
     overflow: hidden;
 }
@@ -902,11 +946,13 @@ span.name {
 .btn-contact:hover {
     background: #1097df;
 }
+
 .product-image {
     display: block;
     position: relative;
     height: 350px;
 }
+
 .product-image img {
     width: auto;
     position: absolute;
@@ -918,9 +964,20 @@ span.name {
     max-height: 100%;
     margin: auto;
 }
-.number-sell{
-    border-left: 1px solid rgba(0,0,0,.14);
+
+.number-sell {
+    border-left: 1px solid rgba(0, 0, 0, .14);
     padding: 0 15px;
     font-size: 15px;
+}
+.product-detail-thumbnail{
+    margin-top: 10px;
+}
+.carousel {
+    height: 100px;
+    cursor: pointer;
+}
+.carousel__item img{
+    width: 100px;
 }
 </style>

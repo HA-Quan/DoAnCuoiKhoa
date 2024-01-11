@@ -248,6 +248,22 @@ namespace BaseProject.Controllers
             }
         }
 
+        
+        [HttpPost("uploadImage")]
+        public async Task<IActionResult> UploadImage([FromForm] IFormFile upload) {
+            try {
+                var result = await _productService.UploadImage(upload);
+
+                if (result.Success) {
+                    return StatusCode(StatusCodes.Status201Created, result);
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, result);
+            } catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, HandleError.GenerateErrorResultException());
+            }
+        }
+
         /// <summary>
         /// Sửa thông tin một sản phẩm
         /// </summary>
